@@ -1,0 +1,44 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 2
+title = "SOLID"
+popularity = 18.63
+
+[[questions]]
+id = 1
+question = "What does each letter in SOLID stand for?"
+answer = """
+**SOLID** are the principles of software development, following which we get good code, which in the future will scale well and be maintained in working order.
+
+  **S** Single Responsibility Principle - the principle of single responsibility. Each class should have only one area of ​​responsibility.
+ 
+  **O** Open closed Principle – the principle of openness-closedness. Classes should be open for extension, but closed for change.
+  
+  **L** Liskov substitution Principle – Barbara Liskov’s substitution principle. It should be possible to substitute any of its subtypes (successor class) instead of the base (parent) type of a class, and the operation of the program should not change.
+  
+  **I** Interface Segregation Principle is the principle of separating interfaces. This principle means that there is no need to force the client (class) to implement an interface that is not related to it.
+  
+  **D** Dependency Inversion Principle is the principle of dependency inversion. Abstractions should NOT depend on details. Details must depend on abstractions. Top level modules should NOT depend on lower level modules BUT they should depend on the abstraction."""
+source_hash = "991f78714e912d565053f4d6981e6279c24f98ec49dffd9e9f62ec70ad1c5109"
+
+[[questions]]
+id = 2
+question = "What other software design principles can you name?"
+answer = """
+- DRY (Don't Repeat Yourself) - don't repeat yourself
+- KISS (Keep It Super Simple / Keep It Simple Stupid) - don't complicate it unnecessarily, keep it simple
+- Occam's Razor - Occam's razor: no need to produce entities until they are actually needed
+- EPO (Escape Premature Optimization) - "Premature optimization is the root of all evil", "Make it Work, Make it Right, Make it Fast"\
+"""
+source_hash = "87c2434819cec8e7b7d25022f9f2ce857db50feebba86daa650a06ae773f255a"
+
+[[questions]]
+id = 3
+question = "When can we violate the SOLID principles?"
+answer = """
+The SOLID principles provide guidance for writing flexible, maintainable, and extensible code, but there are situations where violating them may be justified. Let's consider the following cases:
+- Performance optimization
+- Prototyping and rapid iteration
+- Limited Resources
+- Code continuity"""
+source_hash = "1c9c8a0ed6e2f90f432b7613184b52a6a04be81f2e477d9f84f7ec8b22cb61c7"

@@ -1,0 +1,477 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 8
+title = "Stream API"
+popularity = 25.47
+
+[[questions]]
+id = 1
+question = "What is the Stream API, and what are streams used for?"
+answer = """
+A stream represents a sequence of elements that can be processed through a pipeline of operations.
+The Stream API is a way to concisely process data streams (filtering, sorting, type conversion) in a declarative style, introduced in Java 8.
+
+**What types of data can it work with?**
+- **Objects** - `Stream<T>`, where `T` is any reference type (for example, `String`, `Integer`, custom classes)
+- **Primitives** - there are specialized streams:
+    - **IntStream** for working with `int`
+    - **LongStream** for working with `long`
+    - **DoubleStream** for working with `double`
+    For other primitives, streams are not provided; they need to be packaged in wrapper objects (for example, `Byte` for `byte`)
+
+**Problem with primitives in streams?**
+Working with primitives through `Stream<T>` leads to **autoboxing and unboxing**. This leads to the following problems:
+1. **Performance overhead** - Boxing and unboxing add overhead.
+2. **Memory increase** - objects are created instead of primitives (for example, `Integer`, `Double`)
+Specialized streams (**IntStream, LongStream, DoubleStream**) operate directly on primitive values without autoboxing.
+"""
+source_hash = "94ce9e75335351f7bdd29d41558258e5aef90bab2602212633de5c9e6547facc"
+
+[[questions]]
+id = 2
+question = "Why are streams described as lazy?"
+answer = "Because processing will not start until the terminal method is called"
+source_hash = "0912c6bc1c18eead8585ba9f3885a5ea34f23928687c025f77ecbb48b469127c"
+
+[[questions]]
+id = 3
+question = "What are the different ways to create a Stream?"
+answer = """
+- From the collection (Collection interface) - `collection.stream()`
+- Empty stream - `Stream.empty()`
+- From the array - `Arrays.stream(array)`
+- From the specified elements directly - `Stream.of(1, 2, 3)`
+- From a string - `“some_string”.chars()`
+- Concatenation of two streams"""
+source_hash = "11e2a93e1a4d291851958325f322a531f2a5b8efb14d276367c4feac42200056"
+
+[[questions]]
+id = 4
+question = "What types of Stream API operations exist?"
+answer = """
+Intermediate and terminal
+- An intermediate method is a method that does NOT start execution and returns an object of type Stream
+- A terminal method is a method that starts execution of a chain and returns an object of a type other than Stream. There can only be one and it must be the last in the chain. After calling it, you can no longer work with the chain
+
+**Can Stream be reused after a terminal method?**
+No. After the terminal method is executed, the stream is closed, and any subsequent attempt to call methods will cause `IllegalStateException`
+
+**Using Stream without a terminal method?**
+Without a terminal operation, intermediate operations do not process the elements. This is **lazy evaluation**: execution is deferred until a terminal operation consumes the stream.
+"""
+source_hash = "d94a59db59e25e4ffa56cd6c944e98abe9964848d6ad699768598a1417efd913"
+
+[[questions]]
+id = 5
+question = "What are intermediate stream operations? Give examples."
+answer = """
+*Intermediate method* - a method that returns a Stream. There are:
+
+**Method peek()**
+The `peek(Consumer<T> action)` method is used for intermediate processing of stream elements. It allows you to perform an action on each element of the stream without changing the elements themselves. The main use is for debugging or logging data before performing the final operation.
+_Important:_ the `peek()` method does not change the stream and is most often used for side effects (for example, displaying information about each element).
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> result = numbers.stream()
+    .peek(n -> System.out.println("Processing: " + n))
+    ...
+    .collect(Collectors.toList());
+```
+
+**map() method**
+The `map(Function<T, R> mapper)` method is used to transform each element of the stream using a function. It takes an input element and returns a new element that matches the result of the applied function
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3);
+List<Integer> squares = numbers.stream()
+    .map(n -> n * n)
+    .collect(Collectors.toList());
+System.out.println(squares); // [1, 4, 9]
+```
+
+**flatMap() method**
+The `flatMap(Function<T, Stream<R>> mapper)` method is used to transform each element of a stream into another stream, and then “flatten” the resulting streams into one flat stream. This is especially useful for working with collections within collections
+```java
+List<List<Integer>> numbers = Arrays.asList(
+    Arrays.asList(1, 2),
+    Arrays.asList(3, 4),
+    Arrays.asList(5)
+);
+List<Integer> flatNumbers = numbers.stream()
+    .flatMap(List::stream)
+    .collect(Collectors.toList());
+System.out.println(flatNumbers); // [1, 2, 3, 4, 5]
+```
+
+**filter() method**
+The `filter(Predicate<T> predicate)` method is used to filter stream elements based on a condition (predicate). It skips elements that do not satisfy the condition
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> evenNumbers = numbers.stream()
+    .filter(n -> n % 2 == 0)
+    .collect(Collectors.toList());
+System.out.println(evenNumbers); // [2, 4]
+```
+
+**limit() method**
+The `limit(long maxSize)` method returns a stream consisting of no more than the specified number of elements. This is useful for limiting the size of the stream
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> limited = numbers.stream()
+    .limit(3)
+    .collect(Collectors.toList());
+System.out.println(limited); // [1, 2, 3]
+```
+
+**Skip() method**
+The `skip(long n)` method skips the specified number of elements and returns a stream of the remaining elements
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> skipped = numbers.stream()
+    .skip(2)
+    .collect(Collectors.toList());
+System.out.println(skipped); // [3, 4, 5]
+```
+
+**Concat() method**
+Method `concat(Stream<T> a, Stream<T> b)` combines two streams into one
+```java
+List<String> listOne = List.of("Apple", "Banana", "Cherry");
+List<String> listTwo = List.of("Orange", "Peach", "Plum");
+Stream<String> combinedStream = Stream.concat(listOne.stream(), listTwo.stream());
+        combinedStream.forEach(System.out::println);
+```
+
+**sorted() method**
+Method `sorted()` | `sorted(Comparator<T> comparator)` sorts stream items. By default, elements are sorted in their natural order, but you can specify a comparator for custom sorting
+```java
+List<String> names = Arrays.asList("John", "Anna", "Tom");
+List<String> sortedNames = names.stream()
+    .sorted()
+    .collect(Collectors.toList());
+System.out.println(sortedNames); // [Anna, John, Tom]
+```
+
+**The distinct() method**
+The `distinct()` method returns a stream that contains only unique elements (no duplicates)
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 2, 3);
+List<Integer> uniqueNumbers = numbers.stream()
+    .distinct()
+    .collect(Collectors.toList());
+System.out.println(uniqueNumbers); // [1, 2, 3]
+```
+
+If the stream is sorted and has the appropriate characteristic (it is added by `sorted()`, for example, the stream itself cannot find out about the sorting of the data), then when calling `distinct()` a more efficient algorithm is used: it will no longer collect the HashSet and look for the presence of duplicate objects, but simply compare each next one with the previous one. Those. `sorted().distinct()` can theoretically speed up method execution if the input data is already sorted. _Note_: `sorted()` for sorted data works very quickly, this is a cheap operation
+"""
+source_hash = "28f58254a74c8cce5e645cfc8ea18bb75cfffab6f6a99fc4be4f5ba0bc4b4423"
+
+[[questions]]
+id = 6
+question = "What are terminal stream operations? Give examples."
+answer = """
+*Terminal methods* terminate work with the stream; after they are called, further operations are impossible. Basic terminal methods:
+
+**collect() method**
+The `collect(Collector<T, A, R> collector)` method is used to convert a stream to a collection or other data type. Most commonly used to collect elements into a list, set, or string
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+List<Integer> collectedList = numbers.stream()
+    .collect(Collectors.toList());
+System.out.println(collectedList); // [1, 2, 3, 4, 5]
+```
+
+**forEach() method**
+Method `forEach(Consumer<T> action)` performs an action on each element of the stream
+```java
+List<String> words = List.of("hi", "hi", "goodbye", "ok", "dog", "cat", "dog");
+words.stream()
+\t\t\t\t.forEach(System.out::println);
+```
+
+**reduce() method**
+The `reduce(BinaryOperator<T> accumulator)` method reduces (aggregates) stream elements to a single value using the accumulator function. For example, to calculate the sum or product of all elements
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sum = numbers.stream()
+    .reduce(0, Integer::sum); // 0 — initial value
+System.out.println(sum); // 15
+```
+
+**count() method**
+Method `count()` Returns the number of elements in the stream
+```java
+List<Integer> numbers = List.of(1, 2, 3, 4, 10, 1298, 27);
+long counted = numbers.stream()
+        .filter(n -> n % 2 == 0)
+        .count(); // Counted even numbers
+```
+
+**min() method**
+The `min(Comparator<T> comparator)` method returns the minimum element of a stream according to a given comparator (Optional)
+```java
+List<Integer> numbers = List.of(1, 2, 3, 4, 10, 1298, 27);
+Optional<Integer> min = numbers.stream()
+\t\t\t\t.min(Integer::compareTo);
+```
+
+**max() method**
+Method `max(Comparator<T> comparator)` Returns the maximum element of a stream according to a given comparator (Optional)
+
+```java
+List<Integer> numbers = List.of(1, 2, 3, 4, 10, 1298, 27);
+Optional<Integer> max = numbers.stream()
+        .max(Integer::compareTo);
+```
+
+**findFirst() method**
+Method `findFirst()` returns the first element of the stream (Optional)
+```java
+List<Integer> numbers = List.of(1,2,3,4,5,6,10,120,130);
+Optional<Integer> first = numbers.stream()
+        .filter(n -> n > 10)
+        .findFirst();
+```
+
+**findAny() method**
+Method `findAny()` returns any element of the stream (Optional), useful in parallel streams
+```java
+List<String> names = List.of("hello java", "goodBye");
+Optional<String> name = names.stream()
+        .filter(s -> s.contains("java"))
+        .findAny();
+```
+
+**anyMatch() method**
+The `anyMatch(Predicate<T> predicate)` method returns true if at least one element matches the condition
+```java
+List<Integer> nums = List.of(1,2,3,4,5,6);
+boolean is = nums.stream()
+        .anyMatch(n -> n % 2 == 0); //Will return true
+```
+
+**allMatch() method**
+The `allMatch(Predicate<T> predicate)` method returns true if all elements match the condition
+```java
+List<Integer> nums = List.of(-1,2,3,4,5,6);
+boolean is = nums.stream()
+        .allMatch(n -> n > 0); //Will return false
+```
+
+**noneMatch() method**
+Method `noneMatch(Predicate<T> predicate)` returns true if no element matches the condition
+```java
+List<Integer> nums = List.of(1,3,3,5,5,7);
+boolean is = nums.stream()
+        .noneMatch(n -> n % 2 == 0); //Will return true 
+```
+"""
+source_hash = "4957ab51ffff9a59595a42948858a24c835edf9f3e94ed0cc1127cb0802d8778"
+
+[[questions]]
+id = 7
+question = "What methods does the Stream API provide?"
+answer = "See intermediate and terminal methods"
+source_hash = "2dd3a7b6ecfb4774416938be7291e88417146e8ad89a5a86abdf1545471e97a0"
+
+[[questions]]
+id = 8
+question = "What is the difference between the map() and flatMap() methods?"
+answer = """
+- `map()` applies the function to each element of the stream and returns a new stream with the results
+- `flatMap()` applies the function to nested structures (when a stream element is a collection or another stream) and combines all received streams into one (flattens)"""
+source_hash = "241d67a544208c5c3aafb929208bca64fe180ee8546cc7aa0272aa0adc1c8cbe"
+
+[[questions]]
+id = 9
+question = "What does Collectors provide, and which methods do you know?"
+answer = """
+The Collectors class provides a number of static methods for creating collections, such as lists, sets, maps, and others, from elements of a Stream. These methods are widely used for data aggregation in streams. Basic methods:
+- `toList()` - collects stream elements into a list
+- `toSet()` - collects stream elements into a set (Set)
+- `toMap()` - collects stream elements into a Map using keys and values that are specified by functions
+- `joining()` - concatenates stream elements into one line using the specified delimiter and prefix/suffix
+- `counting()` - counts the number of elements in the stream
+- `summarizingInt()` - collects statistics on numeric values (for example, sum, average, maximum and minimum value)
+- `averagingInt()` - calculates the average of numeric elements
+- `partitioningBy()` - divides the stream elements into two groups according to a given predicate
+- `groupingBy()` - groups stream elements according to a given classifier
+- `reducing()` - performs reduction of stream elements using a specified binary operator
+- `toCollection(Supplier<C>)` - converts a stream into a collection
+
+**Which Collector will you use to group elements in a Map?**
+- `toMap()` - collects stream elements into a Map using keys and values that are specified by functions, e.g.
+```java
+List<String> strings = Arrays.asList("cat", "dog", "fish", "ant", "elephant");
+Map<String, Integer> mappedByLength = strings.stream()
+                                .collect(Collectors.toMap(s -> s, String::length));
+                                
+// mappedByLength = {ant=3, cat=3, fish=4, dog=3, elephant=8}
+```
+
+- `groupingBy()` - groups stream elements according to a given classifier, for example
+  ```java
+  List<String> strings = Arrays.asList("cat", "dog", "fish", "ant", "elephant");
+  Map<Integer, List<String>> groupedByLength = strings.stream()
+        .collect(Collectors.groupingBy(String::length));
+       
+// groupedByLength = {3=[cat, dog, ant], 4=[fish], 8=[elephant]}
+  ```
+"""
+source_hash = "ed5b125fa12ec5db8c76112888e2289884c1c5617e48504c9de301e00721c296"
+
+[[questions]]
+id = 10
+question = "What are IntStream and DoubleStream?"
+answer = """
+IntStream, LongStream, and DoubleStream specialize streams for the primitive types int, long, and double, avoiding boxing for their elements.
+
+Additional terminal operations include `sum()` and `average()`. The intermediate operation `mapToObj()` converts a primitive stream into a stream of objects.
+"""
+source_hash = "e009462cefd0513423c6708ab1d1f07718b248ed57f919ac13befb8b48c502fd"
+
+[[questions]]
+id = 11
+question = "How do parallel() and parallelStream() differ?"
+answer = """
+Both methods give the same result, but the difference is in the way they are called:
+- `list.stream().parallel()` is useful if you first need to configure the stream (for example, add filtering), and then switch it to parallel mode
+- `list.parallelStream()` is used if you immediately need a parallel stream
+
+| Method                 | Description                                          |
+| --------------------- | ------------------------------------------------- |
+| `stream().parallel()` | Converts an existing stream into a parallel one |
+| `parallelStream()`    | Immediately creates a parallel stream from the collection     |"""
+source_hash = "fed0ddadf989aa00c7235d260a4718ea18e9844f6b577f3049255637dc040720"
+
+[[questions]]
+id = 12
+question = "What are Consumer, Function, and Supplier used for?"
+answer = """
+Java 8 introduced **functional interfaces** from the `java.util.function` package, which are used in **lambda expressions** and **Stream API**. Important among them are:
+
+|Functional interface|Input data|Return value|Application|
+|---|---|---|---|
+|`Consumer<T>`|Accepts `T`|Returns nothing (`void`)|Used when you want to perform an action but not return a result.|
+|`Function<T, R>`|Accepts `T`|Returns `R`|Converts one data type to another.|
+|`Supplier<T>`|Does not accept arguments|Returns `T`|Used to generate values.|
+
+**`Consumer<T>` - consumer**  
+
+`Consumer<T>` is used when you want to perform an operation on an object, but **not return anything**.
+
+**Example: Printing a list of items**
+
+```java
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+
+public class ConsumerExample {
+    public static void main(String[] args) {
+        List<String> names = Arrays.asList("Alice", "Bob", "Charlie");
+
+        Consumer<String> printName = name -> System.out.println("Hello, " + name);
+        names.forEach(printName);
+    }
+}
+```
+
+**Conclusion:**
+
+```
+Hello, Alice
+Hello, Bob
+Hello, Charlie
+```
+
+💡 **Where is it used?**
+
+- In `forEach()` collections
+- Logging (`Logger::info`)
+- Working with files (`Files.lines().forEach(...)`)
+
+**`Function<T, R>` - converter**
+
+`Function<T, R>` accepts an object of type `T` and returns an object of type `R`.
+
+**Example: converting a string to its length**
+
+```java
+import java.util.function.Function;
+
+public class FunctionExample {
+    public static void main(String[] args) {
+        Function<String, Integer> lengthFunction = str -> str.length();
+
+        System.out.println(lengthFunction.apply("Java")); // 4
+        System.out.println(lengthFunction.apply("Functional Interfaces")); // 21
+    }
+}
+```
+
+💡 **Where is it used?**
+
+- Converting data to `Stream API`
+- Object mapping (`List<String>` → `List<Integer>`)
+- Filtering and sorting
+
+**`Supplier<T>` - supplier**  
+
+`Supplier<T>` does not accept anything, but **generates a result**.
+
+**Example: random number generation**
+
+```java
+import java.util.function.Supplier;
+import java.util.Random;
+
+public class SupplierExample {
+    public static void main(String[] args) {
+        Supplier<Integer> randomSupplier = () -> new Random().nextInt(100);
+
+        System.out.println(randomSupplier.get()); // For example, 42
+        System.out.println(randomSupplier.get()); // For example, 87
+    }
+}
+```
+
+💡 **Where is it used?**
+
+- Lazy initialization
+- Random Data Generation
+- Factory Methods
+
+"""
+source_hash = "b91488383da472568e49f39f5afaf8c1c5bb1f4b2a56962146235f4a2c3aece6"
+
+[[questions]]
+id = 13
+question = "What are parallel streams?"
+answer = """
+Parallel streams allow you to divide data processing into several threads using `ForkJoinPool`. This can speed up suitable CPU-intensive workloads, but parallel execution also adds overhead. Threads are taken from the pool `ForkJoinPool.commonPool`
+
+**When to use parallel streams?**
+- there is a lot of data (millions of records)
+- CPU-intensive operations (such as complex calculations)
+- no dependencies between elements (for example, summing numbers)
+
+**When NOT to use?**  
+- the collection is small (concurrency will create overhead).  
+- encounter order matters: use order-preserving operations where required; forEach does not guarantee encounter order.  
+- there are side effects (`forEach()` in `parallelStream` may work unpredictably).
+"""
+source_hash = "6cfcaaa74ac79a7a2d68d0a6884d8dbb3579043fa120d5285147537428178be6"
+
+[[questions]]
+id = 14
+question = "How do findAny() and findFirst() differ?"
+answer = """
+| Criterion               | `findAny()`                                         | `findFirst()`                                                  |
+| ---------------------- | --------------------------------------------------- | -------------------------------------------------------------- |
+| **What returns**     | Any stream element (if any)                    | First stream element (if any)                              |
+| **Order**            | Doesn't guarantee order                              | Guarantees that it will return exactly the first element in the stream order |
+| **Parallel stream** | Can work faster (no need to follow order) | Can work slower (must maintain order)            |
+| **When to use** | If it doesn’t matter which element to get                | If you need to get exactly the first element in order            |
+| **Example**             | `stream.parallel().findAny()`                       | `stream.parallel().findFirst()`                                |
+"""
+source_hash = "555dc1d19cecaf232c462af131a160dc6b40efb6087d7e2655883938431e24bc"

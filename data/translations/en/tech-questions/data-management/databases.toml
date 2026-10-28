@@ -1,0 +1,226 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 10
+title = "Databases"
+popularity = 18.01
+
+[[questions]]
+id = 1
+question = "What types of databases exist, and when should each be used?"
+answer = """
+
+| **Database type**                | **Examples**           | **Main Application**                        |
+| ------------------------- | --------------------- | ---------------------------------------------- |
+| Relational               | MySQL, PostgreSQL     | Finance, CRM, online stores                |
+| Document-oriented | MongoDB, CouchDB      | Flexible data structures, user profiles |
+| Key-value             | Redis, DynamoDB       | Caching, sessions                            |
+| Search engines                 | Elasticsearch         | Full text search, log search           |
+| Column (wide-column)  | Cassandra, HBase      | Analytics, big data                      |
+| Graph                  | Neo4j, OrientDB       | Link analysis, social networks                 |
+| Time series           | InfluxDB, TimescaleDB | Metrics, IoT                                   |
+| Object-oriented  | ObjectDB              | CAD, modeling                             |
+| NewSQL                    | CockroachDB           | Scalability, transactions                   |
+
+There is also Clickhouse. It is relational, but column-oriented. Serves for analytics (OLAP).
+
+**OLAP** (Online Analytical Processing) - real-time analytical processing is a type of data processing that allows you to obtain a specific slice of data in real time for subsequent analysis
+
+**OLTP** (Online Transaction Processing) - real-time transaction processing is a type of data processing that involves executing multiple transactions simultaneously, such as online banking, shopping, order entry or text messaging
+"""
+source_hash = "093de0667b36f2f3c4bd0f71e16cd9ea229870ba82dc952c0a10db53c5c7cfa0"
+
+[[questions]]
+id = 2
+question = "How can a database be scaled when a server runs out of storage?"
+answer = """
+
+|**Zoom type**|**Description**|**Solving the problem of lack of space**|
+|---|---|---|
+|Vertical (Scaling Up)|Increasing the resources of the current server: more processors, memory, disks|Installing new disks, RAM sticks, moving to a more powerful server|
+|Horizontal (Scaling Out)|Adding additional servers that work together|Sharing a database across multiple servers using sharding|
+|Data replication|Creating database copies on other servers to distribute the load|Unloading the main server by distributing read requests|
+|Using cloud solutions|Data storage in cloud systems such as AWS, Azure, GCP|Scalable pay-per-volume storage|
+|Data archiving|Moving rarely used data to archive|Reduce load and save space by moving legacy data to separate storage|
+"""
+source_hash = "7222b64e4a75c381fa617926deb7f37bf5dc37d642aa43ec33e6e059210c5543"
+
+[[questions]]
+id = 3
+question = "What is database replication?"
+answer = """
+
+Replication is the process of creating and maintaining copies of a database across multiple servers.  
+It is used to provide fault tolerance, increase performance and scalability.
+
+**Types of replication**
+1. **Synchronous replication**:
+    - data is copied to the replica immediately after changes are made
+    - high consistency, but may reduce productivity
+2. **Asynchronous replication**:
+    - data is copied with a delay
+    - more productive, but temporary data inconsistency is possible.
+
+**Advantages:**
+- increased fault tolerance
+- load balancing (for example, reading can be done from a replica)
+- geographic distribution of data to improve latency
+
+**Example of using replication**
+- **Master-Slave** - one master server (`master`) handles writing, and copies (`slave`) are responsible for reading.
+- **Master-Master** - all nodes can write and read, a conflict resolution mechanism is required (in fact, this is already a cluster)
+"""
+source_hash = "943caeaf9a68b7cb09115900a9495f4142e294388c7a263fbe6c9077f17ce5ce"
+
+[[questions]]
+id = 4
+question = "What is sharding?"
+answer = """
+Sharding is a method of horizontal scaling that consists of dividing the data of the source database into parts (shards) and distributing these parts across different database instances on one or more servers. Each shard contains only part of the total data set and operates as a separate database
+
+**How does sharding work?**
+1. Data is broken down by a specific key (for example, user ID, geographic region)
+2. Each part (shard) is stored on a separate server or database instance
+3. When making a request, the system determines which shard contains the required data and accesses it
+
+**Why do you need sharding?**
+- **Scalability** - increasing data volume is processed by adding new servers
+- **Performance** - queries run faster as each server processes only part of the data
+- **Isolation** - an error on one shard does not affect others
+
+**Pros of sharding**
+- Ability to process large amounts of data
+- Reducing the load on each individual server
+- Horizontal scaling is cheaper than vertical scaling
+
+**Disadvantages of sharding**
+- Complexity of implementation - proper distribution of data between shards is required
+- Difficulty in providing ACID across multiple nodes
+- Maintenance - managing multiple servers is more difficult
+- Data redistribution - if the number of servers changes, the data needs to be redistributed
+"""
+source_hash = "da752848cdbf32319e097c68f1d4a8a36724cf609fe2ec28f63e375fe5731e64"
+
+[[questions]]
+id = 5
+question = "NoSQL vs SQL"
+answer = """
+- SQL (relational databases) - structured tables with a clear data schema.
+- NoSQL (non-relational databases) is a flexible framework for unstructured or semi-structured data.
+
+| **Criterion**                         | **SQL (relational)**                                                                          | **NoSQL (non-relational)**                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Data structure                     | Tables (rows and columns)                                                                     | Documents, key-value, columns, columns                                                |
+| Scheme                                | Rigid, needs to be determined in advance                                                          | Flexible, you can change the data structure                                                 |
+| Query language                        | SQL (standard query language)                                                                | API or custom queries (e.g. MongoDB Query)                                   |
+| Preferred scaling type | Vertical (adding resources to the server). Horizontal is difficult due to the rigid structure | Horizontal (adding servers), although vertical does not cause big problems |
+| Data integrity                   | High (ACID transactions)                                                                      | May be weaker, sometimes BASE supported                                           |
+| Speed                             | Optimized for complex operations and JOINs                                                     | High speed for simple operations                                                   |
+| When to use                   | Structured data, complex relationships                                                        | Flexible, fast-changing data                                                        |
+| Examples                              | MySQL, PostgreSQL, Oracle                                                                      | MongoDB, Redis, Cassandra, Neo4j                                                        |
+
+ACID is a classic approach to managing transactions in relational databases that provides high levels of data consistency and reliability. ACID transactions are “strong” because they ensure that the transaction either completes or rolls back if it fails, ensuring data consistency
+
+BASE is a more flexible approach that takes into account the limitations and inevitability of errors in distributed systems. BASE supports high availability and fault tolerance by reducing data consistency requirements. This is achieved by allowing the database to be in an intermediate state - a state where some copies of the data can be updated but others cannot. However, over time, all copies of the data converge to one state (eventually consistent), which ensures consistency.
+- **B**asic **A**vailability - the system responds to any request, but this response may contain an error or inconsistent data
+- **S**oft-state - the state of the system may change over time due to changes in eventual consistency
+- **E**eventual consistency - the system will eventually become consistent. It will continue to accept data and will not check each transaction for consistency
+
+Thus, the main difference between BASE and ACID is that ACID provides strong data consistency, while BASE provides soft consistency to achieve high availability and fault tolerance of data in a distributed and scalable environment.
+"""
+source_hash = "9f087b9fd7d253f7c09a7f62f564297c507660dba45dbecd88bd433fa6b6233f"
+
+[[questions]]
+id = 6
+question = "What is database partitioning?"
+answer = """
+Partitioning is the partitioning of a large table into small subtables (partitions) to speed up queries and optimize the operation of the database
+
+Benefits:
+- fast queries - processing less data
+- easy management - deleting old data without affecting the entire table  
+- load balancing - even distribution of data between servers  
+- reduction of blocking - parallel access to different partitions
+
+Types of partitioning
+- Horizontal Partitioning
+
+ ```sql
+  CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    created_at DATE NOT NULL
+    ) PARTITION BY RANGE (created_at);
+
+CREATE TABLE orders_2023 PARTITION OF orders
+    FOR VALUES FROM ('2023-01-01') TO ('2023-12-31');
+
+CREATE TABLE orders_2024 PARTITION OF orders
+    FOR VALUES FROM ('2024-01-01') TO ('2024-12-31');
+
+  ```
+- vertical partitioning
+    
+ ```sql
+CREATE TABLE users_main (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100)
+);
+
+CREATE TABLE users_details (
+    id INT PRIMARY KEY,
+    address VARCHAR(255),
+    preferences TEXT,
+    FOREIGN KEY (id) REFERENCES users_main(id)
+);
+ ```
+    
+- list partitioning
+
+```sql
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    country TEXT NOT NULL
+) PARTITION BY LIST (country);
+
+CREATE TABLE orders_usa PARTITION OF orders
+    FOR VALUES IN ('USA');
+
+CREATE TABLE orders_europe PARTITION OF orders
+    FOR VALUES IN ('Germany', 'France');
+```
+  
+- hash partitioning
+
+```sql
+  CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name TEXT
+    ) PARTITION BY HASH (id);
+
+CREATE TABLE users_0 PARTITION OF users FOR VALUES WITH (MODULUS 3, REMAINDER 0);
+CREATE TABLE users_1 PARTITION OF users FOR VALUES WITH (MODULUS 3, REMAINDER 1);
+```
+
+
+| Type of partitioning            | How to share              | When to use?                                |
+| -------------------------------- | ------------------------ | ----------------------------------------------- |
+| **Horizontal (Range)**       | By ranges (date, ID) | Dates, IDs, archive data                       |
+| **Vertical**      | By columns              | Frequently/infrequently used data                 |
+| **By List**             | By specific values  | Separation by categories (countries, departments) |
+| **Hash Partitioning (Hash)** | By hash function           | Uniform distribution                       |
+
+**When to use partitioning?**
+- huge tables (>10M records)
+- Frequent access to specific data ranges (by date, country, etc.)
+- long request processing - partitions help speed up `SELECT`
+- simplifies deletion of old data - `DROP PARTITION` is faster than `DELETE`
+
+**When NOT needed:**
+- if the table is small (<1M records)
+- if the data is updated frequently (`UPDATE` in partitions can be difficult)
+- if the database does not support partitioning (for example, MySQL InnoDB before version 5.7)
+
+
+
+"""
+source_hash = "fc5c9ba98f9e3166963a51c8dc85939be66e6d7da3c88e095f06b647afad296d"

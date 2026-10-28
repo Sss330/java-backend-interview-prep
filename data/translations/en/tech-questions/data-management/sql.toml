@@ -1,0 +1,729 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 11
+title = "SQL"
+popularity = 71.74
+
+[[questions]]
+id = 1
+question = "What are transactions?"
+answer = """
+A transaction is a set of logically related requests executed atomically (either all are executed - commit transactions, or rollback of everything - rollback)
+"""
+source_hash = "ca675dda4431948d3a40049b4f9ad58c6ffdaf241e09cbd09dea7462a9c44f51"
+
+[[questions]]
+id = 2
+question = "Explain the ACID properties."
+answer = """
+ACID is a set of properties that guarantee the reliability of a transaction:
+- **A**tomicity (atomicity/indivisibility of operations) - all operations within a transaction are either performed completely or not performed at all
+- **C**onsistency (data consistency) - after the transaction, the data follows all integrity rules (integrity rules are determined by business logic)
+- **I**solation - while a transaction is running, concurrent transactions should not affect its outcome
+- **D**urability (durability/survivability) - ensures that committed changes cannot be lost under any failures (server failure, power outage, etc.)
+"""
+source_hash = "e6d3b2233d9c6885658c067ad6274e96f61fa381a243fc864409568e42ab85d3"
+
+[[questions]]
+id = 3
+question = "What anomalies can occur with concurrent transactions?"
+answer = """
+- **Dirty read** - the ability of one transaction to read uncommitted data of another transaction. Transaction A is updating values ​​in the database but has not yet committed them. Transaction B reads this value without knowing that the changes can be rolled back. If transaction A is rolled back, the value read by transaction B was dirty because it does not reflect the final state of the database. Solved by isolation level **read committed** and higher
+- **Lost update** - when the same data is simultaneously changed by different transactions, only the changes in the last transaction take effect. Solved by **repeatable read** and higher
+- **Non-repeatable read** - occurs when the data itself changes. Those. when, within the same transaction, two readings of the same data over a period of time give two different results. Solved by **repeatable read** and higher
+- **Phantom read** - occurs when the volume of data / rows changes. Those. During one transaction, another transaction added several rows to the table and committed the changes. When requesting data again, the first transaction will receive more data (original + “phantom” records from another transaction)
+
+In Postgres, `Repeatable Read` is implemented through MVCC so strictly that phantom reading actually does not occur there (although the SQL standard allows it)
+
+**MVCC** (**Multiversion Concurrency Control**) is a method of managing concurrent access to data in a database, which allows multiple transactions to work with data simultaneously without conflicts. MVCC supports high performance and transaction isolation, minimizing blocking and improving concurrency.
+- **Multi-version**:
+  MVCC uses a multi-versioning mechanism to manage data changes. Instead of changing data where it is stored, MVCC creates new versions of the data. Each transaction sees the data in the state in which it was at the time the transaction began, and not in the current state.
+  When data is written, a new version of the row is created. The new version includes information about which transaction created it and becomes visible to transactions that begin after it was created.
+  Because a version indicates which transaction created it and when the data was created or deleted, it is possible to determine which version is available for a particular transaction.
+  From time to time, the DBMS cleans up old versions of data that are no longer needed (that is, that are no longer used by any transaction). This is called garbage collection and helps maintain system efficiency.
+- **Transaction isolation**:
+  Transactions see only the data that was recorded before they began. This prevents dirty reads, non-repeated reads, and phantom reads.
+- **No read locks**:
+  Reading data does not block writing, and writing does not block reading. This improves system performance because transactions can operate on data in parallel.
+- **Conflict Management**:
+  Conflicts between transactions, such as two transactions attempting to change the same row, are resolved by committing the transactions. If one of the transactions cannot be committed due to a conflict, it can be rolled back.
+"""
+source_hash = "f89ad9f4655b2b30052700f4af0e14f720af7604a3bec2d0a4aa14f345f8962f"
+
+[[questions]]
+id = 4
+question = "Isolation levels (read uncommitted, read committed, repeatable read, serializable)"
+answer = """
+[Article on Habré about isolation levels](https://habr.com/ru/articles/845522/)
+
+From least strict to most strict:
+- Read uncommitted (unprotected reading) - transactions can read data that has not yet been committed by other transactions (use when all transactions are read)
+- Read committed (secure read) - transactions can only read data that is already committed by other data (solves lost update and dirty read)
+- Repeatable read - within a single transaction, querying data multiple times always returns the same set of data, regardless of changes made by other transactions (addresses lost update, dirty read, and non-repeatable read)
+- Serializable is the most stringent isolation level. Transactions are executed as if they were happening sequentially one after another (solves everything, but hurts performance)
+
+**What is the default isolation level in MySQL?**
+In MySQL - Repeatable read, in PostgreSQL - Read commited
+
+**Dependence between database speed and isolation level**
+
+| **Insulation level** | **Description**                                                                                 | **Performance Impact**                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Read Uncommitted     | Transactions can read data that has not yet been committed                                 | Fastest, but data may be inconsistent                                       |
+| Read Committed       | Transactions read only committed data                                              | Average performance, balance between speed and consistency                      |
+| Repeatable Read      | Ensures that the data read by a transaction does not change until the transaction is completed | Reduces performance due to blocking, but provides higher consistency |
+| Serializable         | Highest level of isolation, prevents all types of anomalies                              | Slowest because it uses full locks                                      |
+"""
+source_hash = "f50632d5965cd5fdb1808e84fce80ee9d2d482af6ffeafe997e6666b06968e55"
+
+[[questions]]
+id = 5
+question = "Types of JOIN. How does each JOIN work?"
+answer = """
+An operator that allows you to link data from two tables. There are:
+- **(INNER) JOIN** - will return the common value for the left and right tables (can be replaced by WHERE)
+- **LEFT (OUTER) JOIN** - will return all values from the left table and all matching values from the right one
+- **RIGHT (OUTER) JOIN** - will return all values from the right table and all matching ones from the left
+- **FULL (OUTER) JOIN** - will return all records that are present in the tables
+- **CROSS JOIN** - will create a Cartesian product of two tables (if the first table has 5 rows and the second has 3, it will return 5 x 3 = 15)
+- **NATURAL JOIN** - joins tables by columns with the same names if the values in these columns are the same
+- **SELF JOIN** - joins a table to itself
+"""
+source_hash = "8e598229c3a785c8ebf6a1da533492ae1784330fe25086b6420271df982bd00e"
+
+[[questions]]
+id = 6
+question = "What is a database index?"
+answer = """
+Indexes in a database are a tool for optimizing/accelerating queries by creating an ordered set of pointers to table rows. The acceleration occurs due to the fact that the index structure is optimized for search (for example, b-tree). At the same time, the more duplicates in a column, the worse the index performs
+
+**Is there a link to the data in the index or is the data cached in the index itself?**
+The index stores **links** to the real data that is in the database table. These links can be presented as:
+- **pointers to rows** in the table where the data is stored
+- **record identifiers** that allow you to find data in the table
+
+In Postgres, the index stores **links** to the actual data that resides in the database table. For example, in **B-tree**:
+- intermediate nodes of the tree contain only **keys** for the search direction
+- The leaves of the tree do not store the data itself, but **links to data** in the table (or other indexes)
+
+However, it is possible to create a covering index - an index that includes not only the keys, but also the value of the column(s). Such indexes allow you to retrieve data without accessing the table. Example:
+```sql
+CREATE INDEX idx_price ON products(price) INCLUDE (name);
+-- The index now stores the values price + column name, which allows you to execute the request
+SELECT price, name FROM products WHERE price > 50;
+-- without referring to the table
+```
+
+In MySQL (InnoDB), the behavior of indexes differs depending on their type:
+1. PRIMARY KEY (clustered index) - the index contains the data itself
+2. A regular (SECONDARY INDEX) index stores references (PRIMARY KEYs) to data
+
+**What are the default indexes in different DBMSs?**
+By default, most DBMSs use B-tree
+
+**Search difficulty comparison**
+
+|**Search Type**|**Structure**|**Difficulty**|**When to use?**|
+|---|---|---|---|
+|**No index**|Complete search|`O(N)`|Small tables|
+|**B-Tree index**|Balanced tree|`O(log N)`|Frequent search by ranges|
+|**Hash index**|Hash table|`O(1)`|Quick search by `=`|
+
+**How can I add a new index to a large, heavily used table in production without blocking access or pausing the application, and what strategies can be used to minimize the impact on the system?**
+- **PostgreSQL** - `CREATE INDEX CONCURRENTLY` / pg_repack / gh-ost
+- **MySQL** - `ALTER TABLE … ALGORITHM=INPLACE, LOCK=NONE` / pt-online-schema-change
+
+**How do you determine which index to use in a query filtering on a column with low selectivity (such as gender), and how does selectivity affect the performance of indexes?**
+1. **EXPLAIN ANALYZE** will show whether there will be `Index Scan` or `Seq Scan`
+2. **pg_stats.n_distinct** gives an estimate of the number of unique values
+"""
+source_hash = "e0771ad8af7a6cb9b6659b668e14e240771793b065e310ff46aad6fd8b5cd4ee"
+
+[[questions]]
+id = 7
+question = "Why is having a lot of indexes bad?"
+answer = """
+- Complicating the scheduler's work - the DBMS may not choose the best index for a query if there are too many of them. Some indexes may be redundant, which not only does not speed up queries, but also increases the load on the system
+- Hard disk space utilization - indexes take up additional disk space in proportion to the amount of data and the number of selected columns
+- Increased write time - when inserting, updating or deleting data, indexes need to be updated, which slows down write operations
+- Increasing management complexity - managing large numbers of indexes becomes complex, including tracking and maintaining them
+"""
+source_hash = "93252e44d3a80d4d64cf4095f4d136a6e2f9bfd8c3358561f04d7eeca240ea5d"
+
+[[questions]]
+id = 8
+question = "Pros and cons of indexes"
+answer = """
+**Pros:**
+- Improve performance for select and sorting on specific fields
+
+**Cons:**
+- Performance suffers when you need to insert, update, or delete data
+- Additional space is required and the larger/longer the key, the larger the index size
+"""
+source_hash = "d1c9b4a81f421bac6c872f288287dd7021e762e152bbeef7687235cf8b71c96b"
+
+[[questions]]
+id = 9
+question = "What types of indexes do you know?"
+answer = """
+
+| **Index type**                                          | **Description**                                                                                                                                                      | **Usage**                                                                                      |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| B-tree                                        | Standard index used in most DBMSs. Data is stored in a balanced tree                                                                    | For searching, sorting, range queries                                                           |
+| Hash Index                                  | Uses a hash function to find exact matches                                                                                                               | To quickly search by unique values (for example, ID)                                             |
+| Composite Index         | An index that includes multiple columns. Speeds up queries that use multiple filters                                                                          | When queries filter on multiple columns simultaneously                                            |
+| Index with unique values (Unique Index)           | An index that ensures that the values in a column are unique                                                                                                            | To ensure uniqueness of values (for example, email)                                                |
+| Full-Text Index                  | Index for quick text search, including keywords and phrases                                                                                              | Search long text fields, such as articles or documents                                   |
+| Bitmap Index                   | Bitmap index for columns with few unique values                                                                                          | For columns with a limited number of unique values, such as gender                                  |
+| Incremental (Clustered Index)                           | An index where table data is physically ordered according to the index                                                                                | When it is necessary to store data in index order, for example by ID                                     |
+| Functional Index                   | Index based on calculated values or functions on columns                                                                                            | For queries that use functions or expressions in filters                                            |
+| Tree-based index (GiST - Generalized Search Tree) | General tree type used for indexing complex data types                                                                                                | For indexing geographic data or other complex types                                          |
+| Prefix Index                 | An index created on part of a string, such as the first characters                                                                                                   | For text fields where it is important to index only part of the string (for example, the first few characters) |
+| GIN (Generalized Inverted Index)                         | Inverted structure: GIN creates a map that associates values (keys) with row identifiers (TIDs) in which those values occur. B-tree under the hood | Ideal for<br>`JSONB` (operators `@>`, `?`), <br>`ARRAY` (operators `<@`, `@>`, `&&`)<br>             |
+| Covering Index                      | Similar to composite, but INCLUDE columns do not participate in search/filtering<br><br>CREATE INDEX idx_users_cover<br>ON users(email)<br>INCLUDE(name, age)              | For a specific set of frequently requested fields that are not included in filtering                        |
+"""
+source_hash = "9bf9f12dadf405acdc6be6391574acfc8f1cd10321a1590489a26777101fbb60"
+
+[[questions]]
+id = 10
+question = "How to choose the right index?"
+answer = """
+
+| Index type        | When to use                                    | Where available             |
+| ------------------ | ----------------------------------------------------- | ------------------------ |
+| B-Tree             | Universal, for `=`, `<`, `>`, `ORDER BY`          | Everywhere                    |
+| Hash               | Only `=` (search by exact value)                | PostgreSQL, MySQL MEMORY |
+| Bitmap             | Column with a small number of unique values (`status`) | Oracle, Postgres ext     |
+| Full-text/GIN/GiST | Search by text, JSON, arrays, geo data           | PostgreSQL, MySQL        |
+| Clustered          | Primary key, ranges                                | SQL Server, MySQL InnoDB |
+| Non-clustered      | Additional indexes                                | SQL Server, MySQL        |
+| Partial            | Index only by condition `WHERE`                      | PostgreSQL, SQL Server   |
+"""
+source_hash = "05ea6bfa34ea7c7d861eb4138653da3a9ec0ab2250f371827504cf980aba2424"
+
+[[questions]]
+id = 11
+question = "What are normalization and denormalization? Describe the normal forms."
+answer = """
+Normalization is the process of transforming database relationships into a form without redundant information. Redundancy is a situation where the same data is stored in several places in the database. Normalization takes several forms:
+- **1NF** (1st normal form). One cell - one value.
+- **2NF** (2nd normal form). All non-key columns depend on the entire key.
+- **3NF** (3rd normal form). All non-key columns are independent of each other.
+
+Denormalization is the reverse process of normalization. This is usually necessary to improve performance and data retrieval speed by increasing data redundancy (resulting in a reduction in query complexity)
+"""
+source_hash = "4b3f019b1349bfc7d10e131c275317dec793cf6915de39f0f5b2d3a895fa9b36"
+
+[[questions]]
+id = 12
+question = "What is a foreign key?"
+answer = """
+A Foreign Key is a column (or set of columns) in a table that references the primary key (or any UNIQUE column) of another table. Ensures referential integrity.
+
+```sql
+CREATE TABLE users (
+    id INT PRIMARY KEY
+);
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    user_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+**Can Foreign Key be compound?**
+Yes, Foreign Key can be Composite Foreign Key
+
+| **Characteristics** | **Primary Key (PK)**                   | **Foreign Key (FK)**                          |
+| ------------------ | -------------------------------------- | --------------------------------------------- |
+| **Purpose**     | Guarantees uniqueness of strings         | Ensures referential integrity            |
+| **Uniqueness**   | Always unique                        | May be repeated                             |
+| **NULL?**          | You can't                                 | You can                                         |
+| **Quantity**     | One per table (can be composite) | There may be several                          |
+| **Removal**       | Cannot be changed without `CASCADE`            | `ON DELETE CASCADE` - will delete dependent records |
+"""
+source_hash = "9c0db2ee8fe4808e031b93dc9af749a56fa4b2ef79440fe10d186f4a53a9c295"
+
+[[questions]]
+id = 13
+question = "How do WHERE and HAVING differ, and can they be used in the same query?"
+answer = """
+WHERE is responsible for filtering all records in the query (before applying aggregate functions), HAVING applies filters to groups formed by GROUP BY
+"""
+source_hash = "1089b5c74125a2debfb326d332e7b428138dbfd1b9b79a7e62c23ce083d40ea6"
+
+[[questions]]
+id = 14
+question = "How is MySQL different from PostgreSQL?"
+answer = """
+**MySQL** - simpler, faster in basic operations, good for applications with high read load
+**PostgreSQL** - more powerful, with advanced features and stricter standards compliance, better suited for complex applications
+"""
+source_hash = "254386f3ba7dcb85b4d33984dca5dc6fc9f3e7a13b4bd677f3cb57dcbe71ad5d"
+
+[[questions]]
+id = 15
+question = "What tools can be used to optimize SQL queries?"
+answer = """
+- **EXPLAIN** - shows the theoretical query execution plan, which allows you to see how the DBMS **plans** to retrieve data
+- **EXPLAIN ANALYZE** - executes the query and shows the **real execution plan**, including the resources spent (time, memory)
+- **Indexes** - indexes speed up data access, especially when used in WHERE conditions
+- **pg_stat_statements** (for PostgreSQL) - module for collecting query execution statistics
+
+**Your SQL query is normal, but execution still takes a long time. Your actions?**
+- **Execution plan optimization** - use EXPLAIN and EXPLAIN ANALYZE to analyze the query execution plan and find problem areas
+- **Index Usage** - Check if existing indexes are being used correctly. If necessary, create or change current
+- **Query refactoring** - change the query structure if there is a more efficient way to get the same data. For example, joining multiple subqueries or using simpler JOINs
+- **Resource limitations** - check for absence of hardware limitations (lack of CPU, memory, disk)
+"""
+source_hash = "07cccaac01119706d78437c354cb0cd1eb86a00994cd985dafb732ffcdcdf428"
+
+[[questions]]
+id = 16
+question = "EXPLAIN vs EXPLAIN ANALYZE"
+answer = """
+EXPLAIN shows the query execution plan before it is actually executed. It displays how the DBMS is going to retrieve the data. This includes:
+- what type of scanning will be used (Seq Scan, Index Scan)
+- sorting and joining (Nested Loop, Hash Join)
+- estimated number of lines and cost of execution at each stage
+
+**Explain analyze. How is it arranged? What to pay attention to?**
+EXPLAIN ANALYZE not only shows the execution plan, but also executes the query, outputting the actual execution time of each operation. Useful points:
+- **actual time** (Actual Time) - how long the operation took
+- **ROWS** - the actual number of rows that passed through each stage
+- **LOOPS** - number of times this step was executed (important for nested loops)
+```sql
+EXPLAIN ANALYZE SELECT * FROM employees WHERE salary > 100000;
+```
+"""
+source_hash = "749b8949be0315d429522a51acf3efefec6f3d13248ed4ed9e14f24784b693d7"
+
+[[questions]]
+id = 17
+question = "What tools collect query statistics in PostgreSQL?"
+answer = """
+PostgreSQL uses the built-in pg_stat_statements module to collect query statistics. Stores information about requests, frequency and time of their execution, as well as how many resources they consume
+"""
+source_hash = "76c76f010653521c310b0e855aa77f9487fa9f4b38e88034beba9a5449692e26"
+
+[[questions]]
+id = 18
+question = "What is selectivity?"
+answer = """
+Selectivity is a characteristic of the selectivity of a request. If the values ​​in a column vary within a small range, then the selectivity of the query that selects values ​​for this column is low. High selectivity allows you to greatly speed up the data reading process
+"""
+source_hash = "c94bc194b9f575c820af0c5d7ecfa2e538ba85f178d0ce937617f5be420f8dc6"
+
+[[questions]]
+id = 19
+question = "What does the LATERAL keyword do?"
+answer = """
+LATERAL allows you to use data from each row of an external table in a subquery (similar to “for each row”)
+
+**Example:**
+Let's say we have a table `users` and for each user we want to take his last 3 transactions from the table `transactions`
+```sql
+SELECT u.id, u.name, t.*
+FROM users u,
+LATERAL (
+  SELECT *
+  FROM transactions t
+  WHERE t.user_id = u.id
+  ORDER BY t.date DESC
+  LIMIT 3
+) t;
+```
+- For each row of the table `users`, a subquery with the constraint (`LIMIT 3`) is executed
+- Without `LATERAL`, the subquery could not reference the external table `u`
+"""
+source_hash = "c56b8d3c5684285d3c23718d5cb01778aebedc5de3da9321466d000082aee20e"
+
+[[questions]]
+id = 20
+question = "How do window functions and PARTITION BY work?"
+answer = """
+Window functions allow you to divide a sample into disjoint groups (partitions) along any column and work with them independently
+
+Syntax:
+```sql
+SELECT <window_function>(<field_tables>)
+OVER (
+      [PARTITION BY <columns_for_separation>]
+      [ORDER BY <columns_for_sorting>]
+      [ROWS|RANGE <definition_range_lines>]
+)
+```
+- `PARTITION BY <columns_for_separation>` divides the sample into disjoint subsets, where each subset contains rows with the same values in one or more columns, partitions are formed. Similar to `GROUP BY`, but does not aggregate rows, but allows you to work with them individually within a group
+- `ORDER BY <columns_for_sorting>` sets the order of rows within a window, especially important in window ranking functions
+- `ROWS|RANGE <row_range_definition>` generates row ranges. Using this parameter, you can specify how many lines to take before and after the current one into the window
+
+**Syntax ROW | RANGE**
+```sql
+ROWS|RANGE BETWEEN <start of window border> AND <end of window border>
+```
+- UNBOUNDED PRECEDING - all lines preceding the current one
+- N PRECEDING - N lines before the current line
+- CURRENT ROW - current row
+- N FOLLOWING - N lines after the current line
+- UNBOUNDED FOLLOWING - all subsequent lines
+
+**Example:**
+Let there be a table `sales` with columns `region`, `salesperson` and `sales`. We want to calculate the amount of sales in each region and rank employees within regions
+```sql
+SELECT
+  region,
+  salesperson,
+  sales,
+  SUM(sales) OVER (PARTITION BY region) AS total_region_sales,
+  RANK() OVER (PARTITION BY region ORDER BY sales DESC) AS rank_in_region
+FROM sales;
+```
+- `PARTITION BY region` - grouping by region
+- `SUM(sales)` - executed for each row, but only within the region
+- `RANK()` - assigns a rank based on sales within each region
+
+{{< figure src="/java-backend-interview-prep/window_functions_sql.png" title="" >}}
+
+"""
+source_hash = "3cc56abf12add8ad4894c4c8c3750757fbe33755a01710302de05ff5f67de5cf"
+
+[[questions]]
+id = 21
+question = "How do GROUP BY, ROLLUP, and CUBE differ?"
+answer = """
+{{< figure src="/java-backend-interview-prep/cube_rollup_groupby_sql.png" title="" >}}
+
+**CUBE**
+Creates all possible combinations of groupings.
+```sql
+SELECT region, product, SUM(sales)
+FROM sales
+GROUP BY CUBE(region, product);
+```
+Result:
+- Grouping by `region, product`
+- Grouping only by `region`
+- Grouping only by `product`
+- Total amount for all sales
+
+**ROLLUP**
+Creates hierarchical grouping levels (top to bottom)
+```sql
+SELECT region, product, SUM(sales)
+FROM sales
+GROUP BY ROLLUP(region, product);
+```
+Result:
+- Grouping by `region, product`
+- Grouping only by `region`
+- Total amount for all sales
+
+**GROUPING SETS**
+Explicitly indicates grouping combinations
+```sql
+SELECT region, product, SUM(sales)
+FROM sales
+GROUP BY GROUPING SETS ((region, product), (region), ());
+```
+The result is identical to `ROLLUP`, but the groups can be set arbitrarily
+
+**`GROUP BY`** is used to group rows into specific columns and apply aggregate functions to each group. This allows you to perform calculations on groups of data, for example, calculating the sum, average, etc.
+
+**Example:**
+There is a table `sales` with columns `region` and `revenue`. To find the total income for each region:
+```sql
+SELECT region, SUM(revenue) AS total_revenue
+FROM sales
+GROUP BY region;
+```
+- `region` - grouping column
+- `SUM(revenue)` is calculated for each group
+
+If you don't use `GROUP BY`, SQL will treat all rows as one group
+"""
+source_hash = "5a71533bb8e6b1b6017c9c357b0e0a66b58d6a1400278e943a44f076b45c3c4a"
+
+[[questions]]
+id = 22
+question = "What are stored procedures?"
+answer = """
+**A stored procedure** (essentially an analogue of a function in Java) is a set of SQL instructions (PL/pgSQL, PL/Python) created once and stored in the database that performs a specific task. Serves for code reuse and optimization
+
+**Key Features:**
+- **Input parameters** - transferring data to the procedure
+- **Output parameters** - return result
+- **Execution flow control operators** - loops, conditional structures (`IF`, `WHILE`)
+
+**Example of creating and calling a stored procedure:**
+```sql
+CREATE PROCEDURE CalculateBonus (IN employee_id INT, OUT bonus_amount DECIMAL(10,2))
+BEGIN
+  SELECT salary * 0.1 INTO bonus_amount
+  FROM employees
+  WHERE id = employee_id;
+END;
+```
+
+Call:
+```sql
+CALL CalculateBonus(101, @bonus);
+SELECT @bonus;
+```
+
+Benefits:
+- reducing traffic between client and server
+- better code organization
+"""
+source_hash = "79e740a2625059b948749f7c882bd0b0801c6ddb8690276907bb1d87af9f2cd6"
+
+[[questions]]
+id = 23
+question = "How is the SERIALIZABLE isolation level implemented?"
+answer = """
+Serializable is the strictest transaction isolation level. Ensures that transactions are executed as if they were occurring sequentially (one at a time), even though they are actually occurring in parallel. Uses locks or versioning control (MVCC) to control concurrency
+Completely prevents all 4 types of transaction problems
+
+May cause performance degradation due to increased wait time between transactions
+```sql
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+BEGIN TRANSACTION;
+
+-- First transaction
+SELECT SUM(balance) FROM accounts WHERE account_type = 'savings';
+
+-- Second transaction (waiting for the first one to complete)
+INSERT INTO accounts (account_type, balance) VALUES ('savings', 500);
+
+COMMIT;
+```
+"""
+source_hash = "074664fc9db139eb66a26163eebe534d40126c406aec583c2b0d487c3d656cae"
+
+[[questions]]
+id = 24
+question = "How do ordinary views and materialized views differ?"
+answer = """
+View is a saved SQL query that is used to conveniently (without having to re-write the query) obtain a specific data sample. Does not store data
+```sql
+CREATE VIEW ActiveUsers AS 
+SELECT id, name, email 
+FROM users 
+ WHERE status = 'active'; 
+ 
+ -- Using a View 
+ SELECT * FROM ActiveUsers;
+```
+
+Materialized View is a direct selection obtained from some request and stored in memory. It can speed up the execution of complex queries due to the fact that it does not re-read the data. It is not updated automatically (requires `REFRESH`), and therefore the data may not be consistent
+```sql
+CREATE MATERIALIZED VIEW SalesSummary AS
+SELECT region, SUM(revenue) AS total_revenue
+FROM sales
+GROUP BY region;
+
+-- Data Update
+REFRESH MATERIALIZED VIEW SalesSummary;
+```
+"""
+source_hash = "028dc26ba44d80211d73ad97f06eea055425be112cc456b01ffd32690e4183a8"
+
+[[questions]]
+id = 25
+question = "How can SELECT FOR UPDATE be used to lock rows?"
+answer = """
+**`SELECT FOR UPDATE`** is used to lock rows in a table that are part of a query until the end of the transaction to prevent other transactions from changing them
+```sql
+BEGIN;
+
+-- Locking a row with id = 1
+SELECT * FROM accounts
+WHERE id = 1
+FOR UPDATE;
+
+-- Making an update
+UPDATE accounts
+SET balance = balance - 100
+WHERE id = 1;
+
+COMMIT;
+```
+- In this case, the line with `id = 1` is blocked for other transactions until the current one is completed
+- If another transaction tries to lock the same row, it will wait for the current transaction to complete
+"""
+source_hash = "19a0d155d4b39684349d2eb2fc84f4ec0cbd1ea7a3aec611e3fc2347bdb36e36"
+
+[[questions]]
+id = 26
+question = "UNION vs UNION ALL"
+answer = """
+`UNION` and `UNION ALL` combine the results of two or more queries. The difference is that `UNION` searches for and eliminates duplicate rows, while `UNION ALL` does not. As a result, `UNION` may run slower. Both operators require that the number and types of columns in the merged selections be the same
+```sql
+SELECT city FROM customers
+UNION [ALL]
+SELECT city FROM suppliers;
+```
+
+If both queries return `city = 'New York'`, then the result `UNION` will only appear once. In the case of `UNION ALL` - twice
+"""
+source_hash = "a6bde6e2c507373a9bc69bbefc1f7f1ed51eca33945041a26e1e76851e1af2e3"
+
+[[questions]]
+id = 27
+question = "What does DISTINCT do?"
+answer = """
+`DISTINCT` is an SQL keyword used to select only unique records, i.e. eliminates duplicate rows from the query result
+"""
+source_hash = "91fad41a26b6bc0751cb78cd2c15af2c64efdefdb0e3e6f57623b1aac48eac02"
+
+[[questions]]
+id = 28
+question = "What are table expressions?"
+answer = """
+A common table expression or **CTE (Common Table Expressions)** is a named temporary result set of data that can be accessed in subsequent queries. Implemented via the WITH keyword
+
+```sql
+WITH recent_sales AS (
+    SELECT * 
+    FROM sales 
+    WHERE sale_date > '2023-01-01'
+)
+SELECT * FROM recent_sales WHERE amount > 1000
+```
+Temporary table `recent_sales` is only available within the current query
+
+CTEs can be materialized or immaterialized. By default, the scheduler decides this based on analysis of CTE usage in subsequent requests. But you can explicitly specify this parameter
+```sql
+WITH recent_sales AS [NOT] MATERIALIZED (
+    SELECT * 
+    FROM sales 
+    WHERE sale_date > '2023-01-01'
+)
+```
+"""
+source_hash = "cd2318a4d3325e8557cb2cbc5db7c11ae5035b6261843032f827cf485ebd3ad0"
+
+[[questions]]
+id = 29
+question = "Why use a database connection pool such as HikariCP, and what happens when it is exhausted?"
+answer = """
+Database Connection Pool is a pool of database connections that manages a limited number of connections to reduce the load on the database server and improve performance. Hikari is one of the most popular Connection Pools
+
+**Why do you need a pool?**
+- Reduces the overhead of creating/closing connections
+- Improves performance of multi-threaded applications
+
+Since opening and closing connections to a database is an expensive operation, it is more profitable to keep a pool of open connections and issue them upon request. Connections that have been idle for a long time are closed.
+
+Moreover, limiting the number of connections in the pool allows you to avoid overloading the database with multiple connections. If there are no free connections, anyone wishing to access the database must wait for one of the pool connections to become free.
+
+**Connection Pool exhaustion** occurs when an application requires more connections than the pool allows. Possible reasons:
+- Leaking connections (do not close after use)
+- incorrect setting `maxPoolSize`
+- excessive application load
+
+Solutions:
+1. Close connections via `try-with-resources`
+2. Increase `maxPoolSize` if justified
+"""
+source_hash = "060c5c4acf562f231c8e00c7dec7f824a2420351005a2735c6a071fe2403264a"
+
+[[questions]]
+id = 30
+question = "How do optimistic and pessimistic locking differ?"
+answer = """
+Locks (or locks) in a database are a mechanism that controls concurrent access to data to avoid conflicts and errors. There are two types of locks
+
+**Optimistic locking** - when a transaction completes, the current version of the data is checked against the version received at the beginning of the transaction. If they do not match, the transaction is rolled back. Implies that conflicts will occur infrequently
+```sql
+SELECT version 
+FROM orders 
+WHERE id = 1;
+
+-- Update if the version has not changed
+UPDATE orders
+SET status = 'processed', version = version + 1
+WHERE id = 1 AND version = 5;
+```
+
+**Pessimistic locking** - when a transaction starts, the data being changed is locked for everyone else until the current transaction ends
+```sql
+SELECT *
+FROM orders
+WHERE id = 1 
+FOR UPDATE;
+```
+
+**Comparison**
+
+| **Characteristics**   | **Optimistic locks**         | **Pessimistic locks**   |
+| -------------------- | ------------------------------ | ------------------------- |
+| Conflicts            | Rare                         | Frequent                    |
+| Mechanism             | Checking the Data Version         | Blocking a resource        |
+| Productivity   | Higher for rare conflicts     | Lower due to blocking     |
+| Handling conflicts | Requires additional code              | Not required              |
+| Applicability         | Read takes precedence over write | Highly competitive entry |
+"""
+source_hash = "6b66fd21fd4410435097eec496b7931ace02480dcd089c6e6b1583503ea532a5"
+
+[[questions]]
+id = 31
+question = "What types of database constraints exist?"
+answer = """
+**Constraint** is a rule placed on columns or tables to ensure data integrity and correctness
+
+| **Limitation**               | **Description**                                                                                                                              | **Applicability**                |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| NOT NULL                      | This field is required                                                                                                           | Identifiers, key data |
+| UNIQUE                        | The values in the field are unique                                                                                                                 | Email, username                 |
+| PRIMARY KEY                   | Uniquely identifies a string                                                                                                           | Primary Record ID   |
+| FOREIGN KEY                   | Ensures the integrity of relationships between tables                                                                                            | Tables with dependent data    |
+| CHECK                         | Sets conditions for values                                                                                                        | Business rules                  |
+| DEFAULT                       | Default value                                                                                                                     | Dates, statuses                   |
+| EXCLUSION <br>(for postgres) | The generalized case of uniqueness allows you to write custom conditions for comparing two columns that must be met when adding |                                 |
+
+Example EXCLUDE
+```sql
+CREATE TABLE reservations  
+(  
+        id serial PRIMARY KEY,  
+        room_id INTEGER,  
+        booking_status TEXT,  
+        start_date TIMESTAMP,  
+        end_date TIMESTAMP,  
+        EXCLUDE USING GIST (TSRANGE(start_date, end_date) WITH &&)  
+);
+```
+The EXCLUDE USING GIST clause creates an exclusion constraint that ensures that there are no conflicting reservations for the same period. The TSRANGE(start_date, end_date) WITH && condition checks whether date ranges overlap.
+"""
+source_hash = "fcaa9a3dfd07463ab544a3195975636ed2c4b0703c2788d56b29672c2967dced"
+
+[[questions]]
+id = 32
+question = "What is a primary key?"
+answer = """
+**Primary Key (PK)** is a unique identifier for a record in a table. Without it, it is difficult to work effectively with data, especially in large tables
+1. **Uniqueness Guarantee** - ensures that no record will be completely duplicated, which means it can be accurately identified
+2. **Relationship between tables** - used as a basis for creating foreign keys (FK)
+3. **Search acceleration** - PK is automatically indexed, which speeds up data retrieval
+
+**PK indexed?**
+Yes, Primary Key is **automatically indexed** by the database. This index includes UNIQUE and NOT NULL restrictions
+- Speeds up searching, sorting and filtering by PK
+- Guarantees uniqueness of values in the PK column
+"""
+source_hash = "6122f946852905e524c56c37f9f01e063f4951ae05989b1e70eb2f93ced236b3"
+
+[[questions]]
+id = 33
+question = "DELETE vs TRUNCATE"
+answer = """
+- DELETE is a DML statement that removes records from a table that satisfy the WHERE conditions. Maintains logging. Doesn't reset sequences. Slower. It is possible to restore data
+
+- TRUNCATE is a DDL operator that deletes all rows from a table, quickly freeing up occupied memory. Does not log, does not reset sequences. There is no way to recover data
+
+
+ """
+source_hash = "7b7b185f66fdb36002b43fa87484aaecb69c8c16e760a9a59fb52554a3cfd908"

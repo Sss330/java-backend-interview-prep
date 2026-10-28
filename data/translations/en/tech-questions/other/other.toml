@@ -1,0 +1,455 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 22
+title = "Other Topics"
+popularity = 19.57
+
+[[questions]]
+id = 1
+question = "What tools help diagnose application failures, memory leaks, and freezes (VisualVM, jmap, and profilers)?"
+answer = """
+When an application behaves abnormally (for example, it consumes too much memory, freezes, or crashes), it is important to understand the reason. Monitoring and debugging tools are used for this.
+
+ **1. VisualVM**
+
+- **What is it:** A JVM (Java Virtual Machine) monitoring tool included with the JDK.
+
+ **2. JMap**
+
+- **What is it:** A utility for working with memory state in the JVM.
+
+ **3. Profilers**
+
+- **What is it:** Specialized tools for analyzing application performance.
+- **Examples:**
+    - **YourKit**: Analysis of memory consumption, threads and method execution.
+    - **JProfiler**: Profiling performance, memory, threads.
+    - **Async Profiler**: Low-level tool for analyzing CPU and JVM load.
+- **When to use:** If your application is slow, you can profile its execution and identify bottlenecks—methods or sections of code that are taking a long time.
+
+"""
+source_hash = "67e392a78b48d5d4790100d0d581e049d480f5a78f9cc83066c46f3169b98a2d"
+
+[[questions]]
+id = 2
+question = "How do you determine an algorithm's complexity?"
+answer = """
+**Algorithm complexity** is a measure of **how fast the algorithm runs** or **how many resources it uses** (mainly time and memory) based on the size of the input data.
+
+They speak in two types:
+
+1. **Time complexity** – how many steps the algorithm performs.
+2. **Space complexity** – how much memory the algorithm uses.
+
+
+🔹 **How difficulty is measured**
+
+Count the **number of operations** depending on the size of the input `n`.
+
+- If operations depend linearly on n → **O(n)**
+- If the operations are quadratic → **O(n²)**
+- If constant → **O(1)**
+
+
+Examples from life:
+
+1. **O(1) - constant**
+
+    - Withdraw money from an ATM. No matter how many accounts you have, the transaction is always the same.
+
+2. **O(n) - linear**
+
+    - Check every letter in your mailbox. The more letters, the longer.
+
+3. **O(n²) - quadratic**
+
+    - Find all pairs of friends among n people. The number of checks grows as n × n.
+
+4. **O(log n) - logarithmic**
+
+    - Searching for a book in a sorted library using the halving method. The more books there are, the faster the algorithm finds the one you need.
+"""
+source_hash = "63e64a19c779b018cd919d90655d0595c2f997d4d3270816cb659ffbe80a8c85"
+
+[[questions]]
+id = 3
+question = "What is Big O notation, and why is it useful?"
+answer = """
+**Big O** is a **notation** used to **describe the complexity of an algorithm**, that is, **how fast or slow** an algorithm runs based on the size of its input data. This notation helps you understand **how efficiently an algorithm works** and how it will behave as the amount of data increases.
+
+ **✅ Algorithm complexity**
+
+**The complexity of an algorithm** is measured by how the number of operations the algorithm performs changes as the amount of input data increases. Main types of difficulty:
+
+1. **Time Complexity** - how long the algorithm takes to complete.
+2. **Space Complexity** - how much memory the algorithm uses to execute.
+
+ **📌 Main types of difficulty in Big O:**
+
+- **O(1)** — **Constant Complexity**  
+    Execution time does not depend on the size of the input data. The algorithm runs in constant time.
+    
+    - Example: accessing an array element by index.
+- **O(log n)** — **Logarithmic complexity**  
+    The algorithm performs work that decreases each iteration depending on the size of the input data.
+    
+    - Example: binary search in a sorted array.
+- **O(n)** — **Linear complexity**  
+    Execution time is proportional to the number of elements in the data.
+    
+    - Example: Finding the maximum element in an array.
+- **O(n log n)** — **Linear-logarithmic complexity**  
+    Commonly found in efficient sorting algorithms.
+    
+    - Example: merge sort algorithm or quick sort (QuickSort).
+- **O(n^2)** — **Quadratic complexity**  
+    Execution time is proportional to the square of the size of the input data. Often found in algorithms with two nested loops.
+    
+    - Example: bubble sort, selection sort.
+- **O(2^n)** — **Exponential Complexity**  
+    Execution time increases exponentially as data size increases. This is a very inefficient algorithm.
+    
+    - Example: solving the knapsack problem with exhaustive search.
+- **O(n!)** — **Factorial complexity**  
+    Execution time increases at a factorial rate. Usually found in problems of enumerating all possible options.
+    
+    - Example: traveling salesman problem.
+
+ **✅ Why do you need a big O?**
+
+1. **Performance assessment**  
+    Big O helps you **evaluate how efficient an algorithm is**. For example, an algorithm with **O(n log n)** will run faster than **O(n^2)** when the amount of data increases.
+    
+2. **Comparison of algorithms**  
+    Using Big O, we can compare different algorithms based on their complexity and choose the most efficient one for a particular problem.
+    
+3. **Behavior Prediction**  
+    Big O allows you to **predict how an algorithm will behave** when given large amounts of data. This is especially important on systems with heavy loads (eg databases, web applications).
+    
+
+ **📌 Example: linear search vs binary search**
+
+4. **Linear Search** (O(n)): In the worst case, we go through all the elements of the list.
+    
+    ```java
+    public int linearSearch(int[] arr, int target) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == target) {
+                return i;
+            }
+        }
+        return -1; // element not found
+    }
+    ```
+    
+5. **Binary Search** (O(log n)): For a sorted array, binary search reduces the number of elements to be checked by half each iteration.
+    
+    ```java
+    public int binarySearch(int[] arr, int target) {
+        int left = 0, right = arr.length - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == target) return mid;
+            if (arr[mid] < target) left = mid + 1;
+            else right = mid - 1;
+        }
+        return -1; // element not found
+    }
+    ```
+    
+
+**Why is binary search faster**?  
+Binary search runs in **O(log n)**, and linear search in **O(n)**. This means that as the array size increases, binary search will be **significantly faster**.
+
+ **📌 Bottom line**
+
+✅ **Big O** is used to **describe the complexity of algorithms** and helps understand how an algorithm behaves as input data increases.  
+✅ **Time complexity** and **space** allow you to evaluate how efficiently the algorithm works.  
+✅ **Importance**: helps you choose the **most efficient algorithm** for a specific task and predict its behavior when faced with large amounts of data.
+"""
+source_hash = "036ff78240536181216639a4994aaa11bf70ff057c01eac6075534f62436a5c7"
+
+[[questions]]
+id = 4
+question = "How should methods be named to clearly describe operations such as sorted searches, cache invalidation, and saving calculation results?"
+answer = """
+The best way to give methods meaningful names is to follow the pattern **verb + object + additional qualifications**, and if necessary, sequentially list the main actions through the `And` connector.
+
+
+**Basic principles**
+
+1. **Verb at the beginning**
+   — immediately shows what the method does:
+
+   * `find`, `get`, `search` - read operations
+   * `save`, `persist`, `update` - write operations
+   * `clear`, `refresh` - cleaning/updating
+   * `calculate`, `compute` - calculations
+
+2. **Object after verb**
+   — what the method does:
+
+   * `findUsers`, `clearCache`, `calculateMetrics`
+
+3. **Clarifications via `By`/`With`/`And`**
+   — filtering criteria, sorting, additional steps:
+
+   * `findUsersByStatus`
+   * `findUsersSortedByRegistrationDate`
+   * `calculateMetricsAndSave`
+   * `clearCacheForUser`
+
+4. **Return result in name (optional)**
+   - if the method makes a record and returns a status or DTO, you can add a suffix:
+
+   * `saveOrderAndReturnStatus`
+   * `calculateReportAndGetSummary`
+
+5. **Clear separation of commands and queries** (CQRS principle)
+
+   * Query methods **do not change** state and usually return data:
+
+     ```java
+     List<User> findActiveUsersSortedByLastLogin();
+     UserDto getUserProfile(int userId);
+     ```
+   * Command methods **change** state and can return status:
+
+     ```java
+     boolean clearUserCache(int userId);
+     SaveResult calculateAndPersistMetrics(MetricsRequest request);
+     ```
+
+
+
+**Examples**
+
+| Action                                  | Method name                                                  |
+| ----------------------------------------- | ---------------------------------------------------------------- |
+| Search for products sorted by price       | `List<Product> findProductsSortedByPriceDesc()`                  |
+| Clearing the entire cache                        | `void clearCache()`                                              |
+| Clearing a specific user's cache     | `boolean clearCacheForUser(int userId)`                          |
+| Calculation and saving of a report with ID return | `Long calculateReportAndSave(ReportParams params)`               |
+| Calculation and return of status                  | `OperationStatus calculateAndPersistMetrics(MetricsRequest req)` |
+
+
+
+ 🔑 **Key points**
+
+* **Verb + object** is the basis of a readable name.
+* **By/With/And** - for filters, sorting and sequential actions.
+* **Query vs Command**: query methods do not change the state, command methods do (and return the status or result).
+* The method name should be **self-documenting**: without comments, it is clear what it does and what it will return.
+
+"""
+source_hash = "386bd84a7e72099a71b11c6b26185cadd8c09f04c3b735bffa7c05e0692039b0"
+
+[[questions]]
+id = 5
+question = "How do you identify and resolve performance bottlenecks in REST services and microservices under increased load?"
+answer = """
+| Stage/Category                              | Tool / Technique                                       | Description                                                     | Benefits                                              |
+| --------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
+| **1. Monitoring and detection**                 | APM (Datadog, NewRelic)                                  | Collection of CPU, memory, response time metrics                     | Quick overview of service status                          |
+|                                               | Distributed tracing (Jaeger, Zipkin)            | HTTP/DB/MSG spans show “long” sections                | End-to-end call visibility                                |
+|                                               | Profiling (YourKit, VisualVM)                       | CPU/Memory profiles, hot methods                              | Deep analysis of hot code                           |
+|                                               | Load testing (JMeter, Gatling)               | Emulation of traffic growth, search for degradation points               | Allows you to plan scaling                     |
+| **2. Local optimization**                  | Code optimization                                         | Elimination of hot loops, recomposition of algorithms           | Reduced CPU and latency consumption                       |
+|                                               | Database optimization (EXPLAIN, indexes)                        | Fast SQL, correct indexes, breaking up heavy queries  | Significant acceleration of data access                 |
+|                                               | Caching (HTTP, Redis, Caffeine)                      | Caching duplicate queries/computations                | Reducing the load on the database and business logic                   |
+|                                               | Connection pooling (HikariCP, thread pool)               | Efficient reuse of connections and threads           | Fewer connection delays                   |
+| **3. Architectural and scalable solutions** | Asynchrony and queues (Kafka, RabbitMQ, `@Async`)      | Separating heavy tasks into background processes                   | Stable operation under peaks, does not block HTTP streams    |
+|                                               | CQRS                                                     | Separating read and write operations into different services/models | Optimization for different loads (write vs read)           |
+|                                               | Resilience (Circuit Breaker, Bulkhead, Rate Limiter) | Protection against avalanche of errors and overload                         | Improving service resilience                           |
+|                                               | Horizontal scaling (Kubernetes HPA, ELB)     | Autoscaling based on load metrics                            | Automatically adding resources                        |
+|                                               | Database replication and sharding                                  | Read from replicas, write to primary; horizontal sharding   | Reduced load on one database, increased throughput |
+|                                               | Separation of heavy subsystems into separate services          | Separate microservices for reports, ML, file downloads      | Independent scaling and deployment                      |
+
+"""
+source_hash = "6036acbde60e364b2e42bbc6e81704285793e9b697f0a8499f0c15ddd24692ba"
+
+[[questions]]
+id = 6
+question = "How do imperative and reactive programming differ?"
+answer = """
+1. **Imperative (regular) programming**
+
+In imperative style, you describe **step by step** exactly how the program should achieve the result:
+
+```java
+// Example: reading a list of numbers, filtering, summing
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sum = 0;
+for (Integer n : numbers) {
+    if (n % 2 == 0) {
+        sum += n;
+    }
+}
+System.out.println("Sum of evens = " + sum);
+```
+
+- **Sequence of steps**: `create → go through elements → check → accumulate results`.
+
+- The code is **hard synchronous**: the thread of execution is blocked at each step.
+
+- Easy to understand, but difficult to scale for asynchronous/event driven tasks.
+
+
+2. **Reactive Programming**
+
+Reactive Programming is focused on **event streams** and **asynchronous processing** - you describe **what** should happen when new data arrives:
+
+```java
+import reactor.core.publisher.Flux;
+
+public class ReactiveExample {
+    public static void main(String[] args) {
+        Flux<Integer> numbers = Flux.just(1, 2, 3, 4, 5);
+        numbers
+            .filter(n -> n % 2 == 0)    // we skip only the even ones
+            .reduce(Integer::sum)       // accumulate the amount
+            .subscribe(sum ->            // when ready, display the result
+                System.out.println("Sum of evens = " + sum)
+            );
+    }
+}
+```
+
+Here we are:
+
+1. **Create a stream** (`Flux.just(...)`).
+
+2. **We write down the operators** (`filter`, `reduce`) - they are not executed immediately, but form a pipeline.
+
+3. **We subscribe** (`subscribe`), and then the data “flows” through the pipeline **asynchronously** or **gradually**.
+
+
+**Key Features of Reactive Style**
+
+- **Push model**: data is “pushed” into the pipeline, and you describe what to do with each element.
+
+- **Non-blocking**: Easily handle high loads, handle network responses, timers, etc.
+
+- **Backpressure**: reactive libraries are able to regulate the flow rate so that the consumer does not drown in data.
+
+- **Composition**: Operators (`map`, `flatMap`, `buffer`, `window`, etc.) allow you to construct complex asynchronous scripts declaratively.
+
+
+3. **Example: HTTP requests**
+
+**Imperative (RestTemplate)**
+
+```java
+RestTemplate rest = new RestTemplate();
+String body = rest.getForObject("https://api.example.com/data", String.class);
+System.out.println("Response: " + body);
+```
+
+This call **blocks** the current thread until a response is received.
+
+**Reactive (WebClient)**
+
+```java
+WebClient client = WebClient.create("https://api.example.com");
+client.get()
+      .uri("/data")
+      .retrieve()
+      .bodyToMono(String.class)  // Mono<String> — single element stream
+      .subscribe(body -> System.out.println("Response: " + body));
+```
+
+- `retrieve().bodyToMono(...)` returns `Mono<String>` without blocking the thread.
+
+- Easily add timeouts, retry, combine multiple requests via `zip`, `flatMap`, etc.
+
+
+4. **When to choose what**
+
+|Approach|When it suits|Cons|
+|---|---|---|
+|**Imperative**|Simple scripts, synchronous logic, fast PoC|More difficult in asynchronous tasks, scaling|
+|**Reactive**|High-load systems, I/O‑operations, event‑driven|Steeper barrier to entry, more difficult debugging|
+
+**Key Points**
+
+1. **Imperative style** describes _how_ to do step by step, is easy to read for simple tasks, but blocks the flow.
+
+2. **Reactive style** describes _what_ should happen to data as it arrives, builds a pipeline of operators, and supports asynchrony.
+
+3. **Push vs Pull**: Reactive code pushes events down the chain instead of pulling them through loops.
+
+4. **Backpressure** allows you to control processing speed, ensuring stable operation under high load.
+
+5. **Operator composition** provides expressive, declarative code, but requires some getting used to and new tools (Reactor, RxJava).
+"""
+source_hash = "be7f369e50be497a7705139e87ef3f4e9291180396b145e7fcf06153457fe547"
+
+[[questions]]
+id = 7
+question = "What is reflection used for?"
+answer = """
+Reflection in Java is a powerful mechanism that allows you to “look” inside classes and objects during program execution, as well as dynamically create instances, call methods, and get/change field values without knowing their names at compile time.
+
+**Why do you need Reflection**
+
+1. **Frameworks and Libraries**  
+   Many frameworks (Spring, Hibernate, JUnit) use Reflection to automatically scan classes, create beans, inject dependencies, call annotated methods, etc.
+
+2. **Plugins and modules**  
+   Allows you to load and use "plugins" (classes) that were not initially visible in your code. You can dynamically load JARs, find the necessary classes in them and call methods in them.
+
+3. **Tools and Utilities**  
+   Testing, serialization/deserialization tools (Jackson, Gson), mappers (MyBatis) use Reflection to automatically traverse object fields and map them to JSON, XML or SQL string.
+
+4. **Diagnostics and debugging**  
+   Allows you to read private fields or call private methods in debugging or logging mode to find out the state of an object or execute some hidden code.
+
+
+
+**Use example**
+
+```java
+public class Person {
+    private String name;
+    private int age;
+
+    private void greet(String prefix) {
+        System.out.println(prefix + ", my name is " + name + ", me " + age + " years");
+    }
+}
+
+// ------------------------
+
+Class<?> clazz = Class.forName("com.example.Person");
+Object person = clazz.getConstructor().newInstance();
+
+// Setting the fields name and age
+Field nameField = clazz.getDeclaredField("name");
+nameField.setAccessible(true);
+nameField.set(person, "Alexey");
+
+Field ageField = clazz.getDeclaredField("age");
+ageField.setAccessible(true);
+ageField.set(person, 30);
+
+// Calling a private method greet
+Method greet = clazz.getDeclaredMethod("greet", String.class);
+greet.setAccessible(true);
+greet.invoke(person, "Hello");
+```
+
+In this example we:
+
+1. Load the class `Person` by name.
+2. We create an instance of it without directly calling the constructor.
+3. We change the private fields `name` and `age`.
+4. Call the private method `greet`.
+
+"""
+source_hash = "da5f843d51abfa061b3dfb218053c00d5ce9113d08271e1b20fa8cafcc001209"
+
+[[questions]]
+id = 8
+question = "What is idempotency?"
+answer = "Idempotency is the property of an operation in which a repeated call produces the same result as the first."
+source_hash = "51c0c18953b0c9a7fcd8d919a470f0c5b68737729cbc236b5ec83bb79520c083"

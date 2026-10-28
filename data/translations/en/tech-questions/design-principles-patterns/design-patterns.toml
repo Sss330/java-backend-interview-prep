@@ -1,0 +1,448 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 16
+title = "Design Patterns"
+popularity = 19.25
+
+[[questions]]
+id = 1
+question = "What are the Gang of Four (GoF) design patterns?"
+answer = "GOF patterns are classic design patterns described in the book _“Design Patterns: Elements of Reusable Object-Oriented Software”_, written by four authors (the so-called “Gang of Four”). These patterns solve common design problems in object-oriented programming (OOP) and help you create a flexible and maintainable architecture"
+source_hash = "d15b51a0fca9588d541d924d458366fd29db70b6d5257689e92d21097e18a371"
+
+[[questions]]
+id = 2
+question = "What is a pattern?"
+answer = """
+Pattern - a ready-made template/approach to solving a popular problem
+"""
+source_hash = "348b98d0f424593c0a839f1edfb5c8d4d4e142bc3222a84c3e22efa5c4a9a9b5"
+
+[[questions]]
+id = 3
+question = "Pros and cons of using patterns"
+answer = """
+**Pros:**
+- no need to reinvent the wheel
+- acceleration of development
+**Cons:**
+- Thoughtless implementation of patterns can impair code readability and/or add unnecessary complexity
+"""
+source_hash = "f418e4b3a82f464929f0a7efe748984c5680f0af64f110a1564d3456a25678ac"
+
+[[questions]]
+id = 4
+question = "What are the main categories of design patterns?"
+answer = """
+According to GoF:
+- Generative
+- Structural
+- Behavioral
+
+Architectural patterns are also distinguished separately.
+"""
+source_hash = "51d3f5e97d825be98faa7e1b7d0323a450f1445308a404ff1ff649e6c4e52b6b"
+
+[[questions]]
+id = 5
+question = "Which patterns belong to each category?"
+answer = """
+Generators:
+- Singletone (singleton, single)
+- Prototype
+- Builder (builder)
+- Factory | factory method
+- Abstract factory
+
+Structural:
+- Adapter
+- Decorator
+- Proxy
+- Facade
+
+Behavioral:
+- Chain of Responsibility
+- Strategy
+- Iterator
+- Command
+
+*Architectural:
+- MVC (model-view-controller) or MVSC (model-view-service-controller)
+- Front controller
+"""
+source_hash = "27701c74f8372b9cd426fa268a5c24ff91c118ef81ecae982362c622af411eb6"
+
+[[questions]]
+id = 6
+question = "Adapter vs Decorator"
+answer = """
+
+|**Criterion**|**Adapter**|**Decorator**|
+|---|---|---|
+|**Goal**|Convert the interface of one class to the interface that the client expects|Add new functionality to an object without changing its structure|
+|**Interaction**|Adapts an existing class to a new interface|Wraps an object, adding or changing its behavior|
+|**Structure**|Implements the interface that the client expects and delegates calls to the adaptable class|Wraps an object of the same interface, adding new logic|
+|**Use example**|Used when we have incompatible interfaces that need to be linked|Used when you need to dynamically add new capabilities to objects|
+|**Real life example**|Electrical adapter from European socket to Chinese socket|Gift wrapping on the box that does not change the contents but adds decoration|
+
+**Decorator Pattern**
+A decorator is a structural design pattern that allows you to add new responsibilities to objects on the fly by wrapping them in special wrappers
+
+**Key Features:**
+- dynamically adding functionality without changing the code of the original object
+- composition instead of inheritance - the decorator wraps the object instead of extending it through inheritance
+- transparency to the client - the decorator uses the same interface as the object it wraps
+"""
+source_hash = "8471d86584aa1cb2a4450264202246cb9876255574cbc80037a9b95434088e44"
+
+[[questions]]
+id = 7
+question = "MVC pattern"
+answer = """
+**MVC** (Model-View-Controller) is an architectural pattern that divides an application into three components:
+- **Model** - responsible for the data and logic of the application
+- **View** - displays data to the user (UI)
+- **Controller** - controls user interaction with the model and updates the view
+
+_Note: sometimes they add the letter S (Service) - responsible for business logic, it turns out MVSC_
+"""
+source_hash = "62a75f2c4a0160b1e50be7ed719f5d8efbc83e14ebf7312014ac2773fc86ea89"
+
+[[questions]]
+id = 8
+question = "Command Pattern"
+answer = """
+Command is a behavioral design pattern that turns requests into objects, allowing them to be passed as arguments when calling methods, queuing requests, logging them, and supporting cancellation of operations
+"""
+source_hash = "849cd937e47dce47b971e6a4746a590d89581f995f2ae7a75e75d061df4a3b35"
+
+[[questions]]
+id = 9
+question = "Chain of responsibility pattern"
+answer = """
+Chain of Responsibility is a behavioral design pattern that allows requests to be passed sequentially through a chain of handlers. Each subsequent handler decides whether it can process the request itself and whether it is worth passing the request further down the chain
+"""
+source_hash = "f4ea156c3537c788c0128bfba68ed24c21dd9810033f02a5011520da8dda9ec8"
+
+[[questions]]
+id = 10
+question = "How is the Abstract Factory pattern implemented?"
+answer = """
+Abstract Factory is a generative design pattern that provides an interface for creating families of related objects without specifying their specific classes. It allows you to easily add new families of objects while keeping your code flexible and extensible
+
+
+**Scenario:** Let's say we are creating interfaces for two families of GUI components: Windows and MacOS. Each family includes a button (`Button`) and a checkbox (`Checkbox`)
+
+1. **Interfaces for components**
+\t```java
+    public interface Button {
+        void render();
+    }
+    
+    public interface Checkbox {
+        void render();
+    }
+    ```
+    
+2. **Component implementations for Windows**
+\t```java
+    public class WindowsButton implements Button {
+        @Override
+        public void render() {
+            System.out.println("Rendering Windows Button");
+        }
+    }
+    
+    public class WindowsCheckbox implements Checkbox {
+        @Override
+        public void render() {
+            System.out.println("Rendering Windows Checkbox");
+        }
+    }
+    ```
+    
+3. **Component implementations for MacOS**
+    ```java
+    public class MacOSButton implements Button {
+        @Override
+        public void render() {
+            System.out.println("Rendering MacOS Button");
+        }
+    }
+    
+    public class MacOSCheckbox implements Checkbox {
+        @Override
+        public void render() {
+            System.out.println("Rendering MacOS Checkbox");
+        }
+    }
+    ```
+    
+4. **Abstract Factory Interface**
+    ```java
+    public interface GUIFactory {
+        Button createButton();
+        Checkbox createCheckbox();
+    }
+    ```
+    
+5. **Factory implementations for Windows and MacOS**
+    ```java
+    public class WindowsFactory implements GUIFactory {
+        @Override
+        public Button createButton() {
+            return new WindowsButton();
+        }
+    
+        @Override
+        public Checkbox createCheckbox() {
+            return new WindowsCheckbox();
+        }
+    }
+    
+    public class MacOSFactory implements GUIFactory {
+        @Override
+        public Button createButton() {
+            return new MacOSButton();
+        }
+    
+        @Override
+        public Checkbox createCheckbox() {
+            return new MacOSCheckbox();
+        }
+    }
+    ```
+    
+6. **Client code**
+    The client works with the factory through an interface, which makes it easy to switch between families
+    ```java
+    public class Application {
+        private Button button;
+        private Checkbox checkbox;
+    
+        public Application(GUIFactory factory) {
+            button = factory.createButton();
+            checkbox = factory.createCheckbox();
+        }
+    
+        public void render() {
+            button.render();
+            checkbox.render();
+        }
+    }
+    
+    public class Main {
+        public static void main(String[] args) {
+            GUIFactory factory;
+            String os = "Windows"; // Can be replaced with "MacOS" for another family
+    
+            if (os.equals("Windows")) {
+                factory = new WindowsFactory();
+            } else {
+                factory = new MacOSFactory();
+            }
+    
+            Application app = new Application(factory);
+            app.render();
+        }
+    }
+    ```
+"""
+source_hash = "5cf668f5ef9cf95dea9a0d8b6ed03ba911dbf0abac391f2fb9d61c076f8561ab"
+
+[[questions]]
+id = 11
+question = "What design patterns are used in Spring?"
+answer = """
+[An article on Habré with examples of using patterns in Spring](https://habr.com/ru/companies/otus/articles/451516/)
+
+| **Pattern**              | **Description**                                                                              | **Application in Spring**                                                          |
+| ------------------------ | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Factory**              | Creates objects through a factory method                                                     | `BeanFactory` and `ApplicationContext` for creating and managing beans            |
+| **Singleton**            | Ensures that only one instance of a class exists                                  | Spring beans are created by default as `Singleton`                               |
+| **Prototype**            | Creates a new object instance on every request                                        | Used for beans with scope `Prototype`                          |
+| **Proxy**                | Controls access to an object through a dummy object                                      | Implemented in AOP for aspects, transactions, caching and other proxy settings |
+| **Dependency Injection** | Dependency injection to reduce class coupling                                   | Spring Framework's Core Principle for Dependency Management                   |
+| **Template Method**      | Defines the basis of the algorithm and allows subclasses to override certain steps       | `JdbcTemplate`, `RestTemplate` and other “templates”                                |
+| **Observer**             | Notifies subscribers about events                                                          | Spring Event Handling for working with events (for example, ApplicationEvent)        |
+| **Adapter**              | Converts a class's interface to another one expected by the client                                 | `HandlerAdapter` in Spring MVC                                                    |
+| **Decorator**            | Adds additional behavior to an object dynamically                                    | In Spring AOP to add aspects to methods or classes                       |
+| **Strategy**             | Defines a set of algorithms that can be replaced with each other depending on the situation | Interfaces such as `PlatformTransactionManager` with different implementations       |
+| **Builder**              | Simplifies the creation of complex objects by dividing their construction into steps                        | `UriComponentsBuilder` for constructing URIs in Spring Web                           |
+
+**Details of implementation of some patterns in Spring**
+
+1. **Factory:**
+    `BeanFactory` - implementation of a factory pattern to control the creation and initialization of beans
+    `MyBean myBean = context.getBean(MyBean.class);`
+    
+2. **Proxy** is used for aspects (AOP) such as logging, transactions or caching
+3. **Observer** - events such as `ContextRefreshedEvent` are used to notify beans about the state of the context
+    ```java
+    @Component
+    public class MyEventListener implements ApplicationListener<ContextRefreshedEvent> {
+        @Override
+        public void onApplicationEvent(ContextRefreshedEvent event) {
+            System.out.println("Context Refreshed!");
+        }
+    }
+    ```
+4. **Strategy** - different implementations of interfaces are used depending on the situation. For example, `PlatformTransactionManager` has implementations for JPA, JDBC and Hibernate
+\t```java
+\t@Bean
+\tpublic PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+\t    return new JpaTransactionManager(emf);
+\t}
+\t```
+"""
+source_hash = "7a431849fac7822d8b74fcfd5fac436105b7b9253514472cad82d19c8e8d62ff"
+
+[[questions]]
+id = 12
+question = "Pros and cons of the Singleton pattern?"
+answer = """
+Singleton is a pattern that ensures that a class has only one instance and provides a global access point to it.
+
+**Singleton Implementation**
+Simple lazy Singleton (not thread safe!)
+```java
+public class Singleton {
+    private static Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+```
+
+Thread-safe Singleton (Double-Checked Locking)
+```java
+public class Singleton {
+    private static volatile Singleton instance;
+
+    private Singleton() {}
+
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+Uses `volatile` and `synchronized` to avoid problems with multithreading.
+
+Singleton via `enum` (advantage - protected from serialization and reflection)
+```java
+public enum Singleton {
+    INSTANCE;
+
+    public void doSomething() {
+        System.out.println("Singleton through enum");
+    }
+}
+```
+
+ *Pros and cons of Singleton*
+
+**Pros:**
+- global access - one object is available throughout the entire program. 
+- saving resources - the object is created only once
+- lazy initialization (if `getInstance()` is used) 
+- suitable for logging, cache, configurations, connection pools
+- ri `enum` protection against reflection and serialization
+
+**Cons:**
+- violates the SOLID (Single Responsibility Principle) principle - the class is responsible for both business logic and instance control
+- difficulty in testing - due to the global state it is difficult to **mock** an object
+- can cause memory leaks - if the object lives for a long time and contains resources
+- problems with multithreading - if the implementation is not thread safe
+- can hide dependencies - if used in `getInstance()` inside classes
+
+**When to use Singleton?**
+If you need a single object for the entire application, and DI frameworks are not used:
+- logging (`Logger`)
+- caching (`CacheManager`)
+- connection pools (`ConnectionPool`)
+- configurations (`AppConfig`)
+
+**When NOT to use:**
+- if an object contains different states for different parts of the program
+- when is it easier to transfer dependency via DI (Dependency Injection)
+"""
+source_hash = "d45ef8bb22ade412343d6881057f023c9921bb43b0fbbdda39f0c847982c3a59"
+
+[[questions]]
+id = 13
+question = "How does the Builder pattern work?"
+answer = """
+Builder is a generative design pattern that allows you to create complex objects step-by-step and conveniently, while hiding the details of their construction.
+
+**When is it needed?**
+- the object has many parameters, some of which are optional
+- The readability and flexibility of the object configuration is important
+
+**Advantages**
+- Reduces the number of constructors
+- The code becomes readable
+- Allows you to create immutable objects
+- Allows you to validate data during assembly
+
+Example code
+```java
+public class User {
+    private final String name; // let's say this is a required field
+    private int age;
+    private String email;
+
+    private User(Builder builder) {
+        this.name = builder.name;
+        this.age = builder.age;
+        this.email = builder.email;
+    }
+
+    public static class Builder {
+\t    // good practice is to make it immutable in a builder
+        private final String name; 
+        private int age;
+        private String email;
+\t\t
+\t\t// and add to the constructor
+\t\tpublic Builder (String name) {
+\t\t\tthis.name = name;
+\t\t}
+
+        public Builder age(int age) {
+            this.age = age;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
+    }
+}
+```
+
+Usage:
+```java
+User user = new User.Builder("Alex")
+        .age(30)
+        .email("test@gmail.com")
+        .build();
+```"""
+source_hash = "fede7b875205cdd4d99d75374ab2e1fcd1203d849817a4a5a0689d56e32e6f69"

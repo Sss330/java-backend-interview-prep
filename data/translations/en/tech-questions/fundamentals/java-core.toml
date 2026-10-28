@@ -1,0 +1,842 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 3
+title = "Java Core"
+popularity = 65.22
+
+[[questions]]
+id = 1
+question = "Describe the equals() and hashCode() contracts."
+answer = """
+***Contract:***
+
+- If `hashCode()` of two objects returns different values, then they cannot be equal
+- If `equals()` of objects is true, then the hash codes must be equal
+- After overriding `equals()`, always override `hashCode()`
+- If objects have the same `hashCode()`, then they are not necessarily `equals()` 
+- Each call to `hashCode()` for the same object must return the same hash code
+
+***equals() properties:***
+ The `equals()` method implements an equality (equivalence) relation, which has the following properties:
+  - **Reflexivity**. The object must be equal to itself (`x.equals(x) == true`)
+  - **Symmetrical**. Any two objects must have the same opinion regarding their equality or inequality (`x.equals(y) == true` and `y.equals(x) == true`)
+  - **Transitivity**. If one object is equal to the second, and the second is equal to the third, then the first object must also be equal to the third (`x.equals(y) == true` and `y.equals(z) == true` and `x.equals(z) == true`)
+  - **Consistency**. If two objects are equal, they must always be equal until one of them (or both of them) is changed
+  - For any non-null reference to the value `x`, the expression `x.equals(null)` must return `false`.
+
+  ***hashCode() properties:***
+  - **Consistency**. Each call to `hashCode()` for the same object within the same program must return the same value if the object fields involved in hash code calculation have not changed
+  - **Equality and hash code.** If two objects are equal according to the `equals()` method, their hash codes must also be equal. However, the opposite is not necessary - objects with the same hash code may not be equal
+  - **Distribution**. Implementation `hashCode()`, which returns a different hash code for unequal objects, allows you to increase the efficiency of working with hash data structures (such as HashMap or HashSet) by distributing objects across different hash table buckets
+
+"""
+source_hash = "684f174f1eec3237d6702dedef266c65f747d5e9f13a40984666b18d0908f5d1"
+
+[[questions]]
+id = 2
+question = "What is a collision?"
+answer = """
+A collision occurs when different objects have the same hash codes
+
+---
+ ***What happens if you override equals() without overriding hashCode()?***
+- An object that is `equals()` equal to an existing key in the HashMap may not be found if their hashes are different. This is due to the fact that HashMap first uses `hashCode()` to find the bucket, and only then compares objects by `equals()`.
+- If you try to delete a key that is equal to another key by `equals()`, but has a different `hashCode()`, the deletion may not work.
+
+"""
+source_hash = "12a5391bef1f5cfc52e86b68554ac00caed7da59197cb8c6bf4ea5a97392d7e6"
+
+[[questions]]
+id = 3
+question = "What types of object references exist in Java?"
+answer = """
+Types of references in Java:
+- **Strong reference** - the object will not be deleted by the garbage collector as long as there is at least one strong reference to it `Object a = new Object()`
+- **Soft reference** - used for caching. The object referenced by the soft reference will only be garbage collected when there is out of memory
+  `SoftReference<MyObject> softRef = new SoftReference<>(new MyObject())`
+- **Weak reference** - the object it refers to may be deleted the next time the garbage collector is called
+  `WeakReference<MyObject> weakRef = new WeakReference<>(new MyObject())`
+- **Phantom reference** - used to track when an object has been removed from memory. A phantom reference does not allow you to access an object directly, it only signals that the object will soon be deleted 
+  `PhantomReference<MyObject> phantomRef = new PhantomReference<>(new MyObject(), referenceQueue)`"""
+source_hash = "368a23ba3ce3e8a50d8c049e74b734655ca9147b615504f3be4997958d25e4b8"
+
+[[questions]]
+id = 4
+question = "What makes a class immutable?"
+answer = """
+An immutable class is a class whose instances cannot be changed once created. Creation principles:
+- modifier `final` for the class
+- all fields `private final`
+- lack of setters
+- all fields are set via the constructor
+"""
+source_hash = "6556172e46149c1f4e0c935c73006b53915d5a03b8321084cacabf46260ec9b9"
+
+[[questions]]
+id = 5
+question = "What is the central idea behind Java?"
+answer = """
+Written once, works everywhere
+
+"""
+source_hash = "3b83b1b59eb96975c16235ce19794bcd1d8a5187a0e6cc952593f6f96193ba37"
+
+[[questions]]
+id = 6
+question = "How does Java achieve platform independence?"
+answer = "Due to the fact that the source code is compiled into bytecode, which is then executed by the Java Virtual Machine (JVM)."
+source_hash = "9bc02ae55bf881c8358fbb7a83f52b7915f6d2ab5feb3fa8a02d95d3fd4233f0"
+
+[[questions]]
+id = 7
+question = "What are the advantages and disadvantages of Java?"
+answer = """
+***Pros:***
+- **Object-oriented programming** The data structure becomes an object that can be manipulated, creating relationships between different objects.
+
+- **A high-level language with simple syntax and a smooth learning curve.** Java syntax is based on C++, so Java is similar to C. However, Java's syntax is simpler, allowing beginners to learn faster and use code more efficiently to achieve specific results.
+- **The standard for enterprise computing.** Enterprise applications have been Java's main strength since the 90s, when organizations began looking for reliable non-C programming tools.
+- **Security** Thanks to the absence of pointers and the Security Manager (a security policy in which you can specify access rules, you can run Java applications in a sandbox).
+- **Platform independent** You can create a Java application on Windows, compile it to bytecode, and run it on any other platform that supports the Java Virtual Machine (JVM). Thus, the JVM serves as an abstraction layer between the code and the hardware.
+- **A language for distributed programming and comfortable remote collaboration.** A Java-specific distributed computing methodology is called Remote Method Invocation (RMI). RMI allows you to take full advantage of Java: security, platform independence, and object-oriented programming for distributed computing. In addition, Java also supports socket programming and the CORBA distribution methodology for exchanging objects between programs written in different languages.
+- **Automatic Memory Management** (Debatable: Pro or Cons) Java developers don't have to manually write memory management code thanks to Automatic Memory Management (AMM).
+- **Multi-threading** A thread is the smallest unit of processing in programming. To make the most of CPU time, Java allows threads to run simultaneously, which is called multithreading.
+- **Stability and Community.** The Java developer community is second to none. About 45% of StackOverflow 2018 survey respondents use Java.
+
+***Cons:***
+- Paid commercial use (since 2019)
+- Verbose code
+
+"""
+source_hash = "b90ce9c446ae873235eed3e78488acd09ee44e60154d0eabf6ec73e5126972a8"
+
+[[questions]]
+id = 8
+question = "What are the JVM, JRE, JDK, and JIT compiler?"
+answer = """
+**JVM (Java Virtual Machine)** is a Java virtual machine that executes bytecode.
+**JRE (Java Runtime Environment)** - JVM + a set of standard libraries required to run Java applications:
+- java.lang - String, System, Object
+- java.io - InputStream, OutputStream
+- java.util - collections (List, Set, Map)
+**JDK (Java Development Kit)** - developer kit, includes JRE + compiler and other tools
+**JIT(C) (Just-In-Time Compilation)** - compilation of bytecode into machine code during program execution. Allows you to speed up program execution by compiling the most frequently executed sections of code into machine code and storing it in memory"""
+source_hash = "faea86ae7bb085b2d9676ec43efbff4c6f20385849cd829752a975642e5250c2"
+
+[[questions]]
+id = 9
+question = "What is bytecode?"
+answer = "Bytecode is a set of instructions executed by the JVM, obtained from source code through compilation."
+source_hash = "a34b148377ad1e24c9906afd24d052e137b61b84f28095bf6c6b253f7fbec3c7"
+
+[[questions]]
+id = 10
+question = "What is a garbage collector?"
+answer = """
+**The garbage collector** is a mechanism in the JVM that is responsible for managing objects in memory. The programmer allocates memory for objects; the collector searches for and clears memory of unused objects (objects to which there are no direct or indirect references).
+
+| **Java Version** | **GC by default** | **Notes**                                             |
+| --------------- | ------------------- | ---------------------------------------------------------- |
+| Java 8          | Parallel GC         | Optimized for throughput.                  |
+| Java 9          | G1                  | G1 became the default collector, replacing Parallel GC.       |
+| Java 10         | G1                  | Improvements in G1, including parallel full garbage collection. |
+| Java 11         | G1                  | ZGC and Shenandoah (experimental) introduced.              |
+| Java 12         | G1                  | Improvements to G1, including reclaiming unused memory.     |
+| Java 13         | G1                  | Improvements to ZGC and Shenandoah.                              |
+| Java 14         | G1                  | ZGC and Shenandoah became stable.                        |
+| Java 15         | G1                  | ZGC has become cross-platform.                               |
+| Java 16         | G1                  | Improvements to ZGC and Shenandoah.                              |
+| Java 17         | G1                  | CMS has been permanently removed.                                   |
+| Java 21         | G1                  | Introduced Generational ZGC, improvements to G1, ZGC and Shenandoah. |
+
+**When to use other GCs?**
+- **ZGC** - for applications with huge heaps (terabytes) and minimal latency requirements (less than 10 ms).
+- **Shenandoah** - for applications with low latency and large heaps.
+- **Parallel GC** - for applications where throughput is important, not low latency.
+- **Serial GC** - for single threaded applications or applications with small heaps."""
+source_hash = "9554bf78346468acc9b249700e75f2f0043f632413a46cd2569eb561dda7b042"
+
+[[questions]]
+id = 11
+question = "How does GC work?"
+answer = """
+1. Finding unreachable objects - checks if there are references to the object.
+2. Cleanup - if an object is unreachable, its memory is freed.
+3. Memory refresh - freed memory becomes available for new objects.
+
+Basic GC algorithms:
+- Mark-and-Sweep - marks used objects and removes unused ones.
+- Generational GC - divides memory into young, older and permanent generations to optimize performance."""
+source_hash = "75838f4ab61292bcecd30b89b89ca068233a2605f33f9d2a800c143274847077"
+
+[[questions]]
+id = 12
+question = "Which garbage collectors do you know?"
+answer = """
+- **Serial GC** is a simple single-threaded garbage collector that is well suited for small applications and small memory footprints.
+- **Parallel GC (Throughput GC)** is a multi-threaded collector that focuses on maximum application performance.
+- **CMS (Concurrent Mark Sweep)** - A low latency sweeper that attempted to do some work in parallel with the application, but is now deprecated.
+- **G1 GC (Garbage First)** is a versatile picker that balances speed with predictable pauses.
+- **ZGC** is a modern collector for applications where ultra-low latency, typically within milliseconds, is important.
+- **Shenandoah** - a low-latency collector, similar in purpose to ZGC, also tries to minimize application pauses.
+- **Epsilon GC** is a special collector that does not free memory at all and is used mainly for tests and benchmarks."""
+source_hash = "25442368af3e0b95390687a644df532de3d05758fc75902f99e895f8a6fa0e60"
+
+[[questions]]
+id = 13
+question = "What are the JVM memory areas, including the stack and heap?"
+answer = """
+{{< figure src="/java-backend-interview-prep/jvm_memory_structure.png" title="JVM memory structure according to the specification" >}}
+
+Let's sort it out from the point of view. specifications and implementations in the HotSpot JVM. 
+
+**Native memory** is all the memory that the JVM process receives directly from the operating system. It has a heap inside, all other areas are in native memory.
+
+**Heap** (heap) - used to allocate memory for objects and classes. Creation of a new object also occurs on the heap. Any object created on the heap has global access and can be referenced from anywhere in the application. Managed by the garbage collector.
+In implementation, HotSpot is divided into:
+- **Young Generation** - for recently created objects
+    - **Eden Space** - newly created objects go here, GC takes place here most often
+    - **Survivor Space** - divided into two (S1, S2), from Eden the “surviving” objects go to S1, those that survived several garbage collections in S1 go to S2
+- **Old Generation** - for long-lived objects
+- **(before Java 8) Perm Generation** - storage of static objects, size limited
+
+**Method Area** (**MetaSpace** for HotSpot) - Stores class structure such as class metadata, constant pool, static variables and method code. Available to all threads in the JVM. In Java 8, **MetaSpace** replaced PermGen (which was part of the heap) and, unlike it, its size increases automatically and has no explicit limit
+
+**Stack Area** is the Thread Stack storage area. The stack is created when a thread starts and is accessible only from its own thread. The stack stores frames (those lines in the lower left corner in debug mode in IntelliJ) that are created when a method is called and deleted when it exits. Frames are stored on the stack using the LIFO principle (last in, first out)
+
+
+{{< figure src="/java-backend-interview-prep/ide_stackframes.png" title="" >}}
+
+The frame contains all the local variables required to execute the methods. All local variables of primitive types are completely stored on the stack, local variables that reference an object are also stored on the stack, but the object itself is stored on the heap
+
+**Registers (PC Registers)** - each thread has its own register, it stores the address of the current bytecode instruction and allows the JVM to continue executing the thread after switches
+
+**Native Method Stack** is a memory area that stores stacks for calling native methods, that is, methods written in other programming languages such as C or C++
+
+In addition to the specification, HotSpot has 
+- **Code Cache** - stores code optimized by the JIT compiler for fast execution, used during the JVM “warm-up” process. Separate area in native memory
+- **Shared Libs** are native libraries connected by the JVM (libc, libjvm.so, JNI libraries)"""
+source_hash = "aafa08ff51c89aae9a7543bd9a55c9dc9271650c50cc6808460ac1f0a8970e59"
+
+[[questions]]
+id = 14
+question = "What data types does Java support?"
+answer = """
+Java has primitive and reference data types.
+
+**Primitive data types:**
+- byte(0) (8 bits)
+- short(0) (16 bits)
+- int(0) (32 bits)
+- long (0L) (64 bits)
+- float (0.0f) (32 bit)
+- double (0.0d) (64 bits)
+- char (\\u0000) (16 bits)
+- boolean (false) (JVM dependent)
+
+"""
+source_hash = "41a418bdea632a5088f85e4ead822cf3f957fbf096c9889b08493244ca989d52"
+
+[[questions]]
+id = 15
+question = "What is a wrapper class?"
+answer = "A wrapper class is an immutable class that represents a primitive data type as an object. Such classes allow you to store null, unlike primitives, where null causes a NullPointerException. Wrappers contain useful static fields (MIN_VALUE, MAX_VALUE) that simplify working with data."
+source_hash = "54eb6d3adeed22ca8acff2b2c8d1e5913b310845e051c39bdf1f9c680a4dd078"
+
+[[questions]]
+id = 16
+question = "What are autoboxing and unboxing?"
+answer = """
+Autoboxing - primitive type -> wrapper class
+```java
+int x = 10;  
+Integer obj = x;
+```
+
+Auto-unboxing - wrapper class -> primitive type
+```java
+Integer obj = 10;  
+int x = obj;
+```"""
+source_hash = "6136fada7b92aeaf1b953f125340f33a81a187a6b09894b70360633b8565f33e"
+
+[[questions]]
+id = 17
+question = "How are strings represented in Java, and what details matter?"
+answer = """
+String in Java is an object. Comparison through the `==` operator compares strings by object references - if the references are equal, then the strings are equal, otherwise they are not equal. You need to use `equals()` and derived methods to compare content.
+
+The String class is immutable due to the final modifier and the lack of a setter. When editing rows, a new row will be created."""
+source_hash = "7edbb43c43f9f36b39b71c41ba798d732ead88d460626ce2341de3ef64f88817"
+
+[[questions]]
+id = 18
+question = "What is the string pool?"
+answer = """
+A string pool is a special area of the heap where string objects are stored. Serves primarily to optimize work with string literals. When you declare a literal (string in double quotes) the pool searches for this string:
+- If there is no such string in the pool ⇒ a string is created and a reference is returned
+- If yes ⇒ the reference of the found string is returned  
+
+Strings created using `new String()` are not placed in the string pool and are stored on the heap like other objects.
+
+---
+***What does the intern() method do in the String class?***
+- Places a string into the string pool
+
+"""
+source_hash = "718c8347c5247ee9b09f0b58326ea606f4bcf3d84bdbfeae1d8da1d966c041b1"
+
+[[questions]]
+id = 19
+question = "Why should repeated string concatenation in a loop be avoided?"
+answer = """
+A string is immutable and finalized in Java, so all our string manipulations will always create a new string. String manipulation is resource intensive, so Java provides two useful classes for string manipulation - **StringBuffer** and **StringBuilder**.
+
+"""
+source_hash = "ffd4f75384b62dfdac401c242e6092216d26e495aedfa1fdd60581c0aa345737"
+
+[[questions]]
+id = 20
+question = "How do String, StringBuffer, and StringBuilder differ?"
+answer = """
+**String** - immutable, thread safe
+**StringBuilder** - mutable, optimized for string concatenation (new strings are not created from each concatenation)
+**StringBuffer** - thread-safe version of StringBuilder, worse performance"""
+source_hash = "92f7d41d9b52c4d453566439c31b60423c9f59c821ea924ac26dc1f2c9d6672f"
+
+[[questions]]
+id = 21
+question = "Does Java pass arguments by value or by reference?"
+answer = "By value. Always. When transferring objects, a **copy** of a reference to them is transferred. Those. inside a method you can access an object and change its state, but you cannot change the memory area referenced by an external variable"
+source_hash = "1a8d88853fb97aa36cbc5347296d9c35eb879c2c026890a286af3aa1cf1bfec6"
+
+[[questions]]
+id = 22
+question = "What is an enum?"
+answer = "**Enum** is a specialized class in Java, which is a set of logically related constants. It cannot be inherited from it."
+source_hash = "ae46eb122b36344a61cad633bccc07af73ef201c6cf7d0c6455cc79064d0b618"
+
+[[questions]]
+id = 23
+question = "What is a constructor?"
+answer = """
+**Constructor** is a specialized method of a class designed to initialize an instance of that class.
+
+**The default constructor** is a parameterless constructor that is automatically created by the compiler if no other constructors have been declared.
+
+**Why are private constructors needed?**
+A private constructor prevents the creation of an instance of a class outside of the methods of the class itself. Needed to implement patterns `singleton`
+```java
+public class Singleton {
+    // Static field for storing a single instance of a class
+    private static Singleton instance;
+
+    // Private constructor to prevent instantiation from outside
+    private Singleton() {}
+
+    // Public method for accessing a single instance of a class
+    public static Singleton getInstance() {
+        if (instance == null) {
+            instance = new Singleton();
+        }
+        return instance;
+    }
+}
+```
+
+**What is the difference between a default constructor, a copy constructor, and a constructor with parameters?**
+- Default constructor - no parameters, default
+- Copy constructor - accepts an object of the same type, copies its fields
+- Constructor with parameters - takes as input parameters for the configuration of the object when created
+"""
+source_hash = "da11f44d99a4c66dbbeef400af39db55e2eea20405d8c2728a5eea7bb1b5bcc7"
+
+[[questions]]
+id = 24
+question = "What are the access modifiers? Which ones apply to classes?"
+answer = """
+- `private` - access only from the class in which it is declared
+- `default` - the component is available to any other class in the same package
+- `protected` - the component is available to all classes inside the package, as well as to all descendant classes outside the package
+- `public` - access to the component from anywhere in the program
+
+{{< figure src="/java-backend-interview-prep/java_access_modifiers.png" title="" >}}
+
+`protected` and `private` in the context of classes only apply to inner (nested) classes, because there is no point in other `protected` classes - `default` visibility does the same thing, and the `private` outer class could not be accessed from any other class."""
+source_hash = "a0bbd610880ee2a8a834aedfe019cb03ad1fd613c46f71386883bfc1a7aa9c7b"
+
+[[questions]]
+id = 25
+question = "What does static mean?"
+answer = """
+- `static` variable - a variable that belongs to a class, not an object
+- `static` class is a nested class that can only access static fields of the wrapper class
+- `static` method is a method that belongs to a class, not an object. Static methods only access other static methods and variables
+
+---
+***Can a static method be overridden?***
+
+You cannot override static methods.
+If we declare the same method in a descendant class, then we will only “hide” the superclass method instead of overriding it. This is called method hiding.
+
+> *Note* You can overload, but you cannot override. In the case of static methods, this is not overriding, but hiding.
+
+---
+***Can non-static methods overload static ones?***
+
+Yes. The end result is two different methods. 
+A static one will belong to a class and will be accessible through its name, while a non-static one will belong to a specific object and will be accessible through a method call on that object.
+
+---
+***Can classes be static?***
+
+Yes, nested classes
+
+"""
+source_hash = "6cd217d098533c469ac02a84090b48ed4eb9145788974c8b6fb242967a5038de"
+
+[[questions]]
+id = 26
+question = "Can an overriding method narrow visibility or specialize its return type?"
+answer = """
+It is possible to expand the access modifier and narrow the return type (if they are compatible)
+
+"""
+source_hash = "a58a452a33aa96c057b8431b75f549118e3ee7b0f310476ad32e94b65256493e"
+
+[[questions]]
+id = 27
+question = "What can an overriding method change, including modifiers and declared exceptions?"
+answer = """
+According to the Java specification, a signature consists of a method name, a list of parameters and their types (the order of the types is important). This does not include the return value, access modifier, or enumeration of exceptions thrown.
+
+Therefore, nothing can be changed in the signature itself when redefining methods.
+You can:
+- expand access level
+- narrow the return type
+- do not throw exceptions that were declared in the parent class
+- add new exceptions that are inheritors of the parent, or those that inherit from RuntimeException"""
+source_hash = "70550256552c47f711e3231ea17fb1d1e3f1c21f3f5c2cb012f9e4447429b89e"
+
+[[questions]]
+id = 28
+question = "What does the final modifier mean? What can it be applied to?"
+answer = """
+- `final` for the class - prohibits inheritance
+- `final` for a primitive - prohibits changing the value after assignment
+- `final` for a reference variable - prohibits changing a reference to an object
+- `final` for an array - prohibits changing the reference to the array (but you can change the elements inside)
+- `final` for a method - prohibits overriding this method in class descendants"""
+source_hash = "65408996408bcb1c855f0d7f90f778125b1b53f353835bda48207bb16d232143"
+
+[[questions]]
+id = 29
+question = "What are abstract classes?"
+answer = """
+An abstract class is a class that cannot be instantiated (an instance of this class cannot be created). It is used to highlight common logic (abstraction) and reuse it in descendants.
+
+**Can there be an abstract class without abstract methods?**
+Yes it can
+
+**Can abstract classes have constructors? What are they for?**
+Yes, they can, if they are needed for the subclasses"""
+source_hash = "e6f2244318fa9fb1c2b7f83c103c30fdfc7d8f0f8cece14827bcf96feeb3024b"
+
+[[questions]]
+id = 30
+question = "What are interfaces?"
+answer = """
+An interface is a special abstract type that describes the behavior (contract) that classes must implement
+- Interface methods - public abstract
+- Fields - public static final
+
+---
+***What default/default modifiers do fields and interface methods have?***
+
+Default methods are methods in the interface that have a body and are marked `default`. Classes that implement such an interface may not override the method and use the code from the interface.
+
+Starting with Java 8, interfaces are allowed to host implementations of default methods `default` and static methods `static`.
+
+By default, all methods in the interface actually have the `public` modifier. However, starting with Java 9, we can also define methods with the `private` modifier in an interface. They can be static or non-static, but must have an implementation (i.e., a method body).
+
+The interface can also contain fields. In this case they are automatically public `public`, static `static` and immutable `final`.
+
+---
+***Can one interface be inherited from another? From the other two?***
+
+Yes
+
+---
+***Why do we need interface markers?***
+
+Marker interfaces are interfaces without methods used to provide meta information about a class.
+
+**Examples:**
+
+`Serializable` - indicates that the object can be serialized.  
+`Cloneable` - allows the creation of copies of an object via clone().  
+
+**Pros:**  
+✅ Easy to implement.  
+✅ Used in the standard Java library (Serializable, Cloneable).  
+✅ Allows you to use instanceof for type checking.  
+
+**Cons:**  
+❌ Implicit logic - it's hard to understand what the interface is doing.  
+❌ Difficult to maintain if new functionality needs to be added.  
+❌ You cannot control the correct use (for example, Cloneable does not guarantee the correct implementation of clone()).
+
+---
+***Pros and cons of default methods***
+
+**`default` methods** allow you to add method implementations to interfaces without having to change existing class implementations.
+
+**Example:**
+
+```java
+interface Animal {
+    default void makeSound() {
+        System.out.println("Some sound...");
+    }
+}
+class Dog implements Animal {}
+public class Main {
+    public static void main(String[] args) {
+        Dog dog = new Dog();
+        dog.makeSound(); // Will display "Some sound..."
+    }
+}
+```
+
+**Pros:**  
+✅ Allows you to add new methods to interfaces without breaking existing code.  
+✅ Reduce code duplication in classes that implement the interface.  
+✅ You can provide a basic implementation of the method.
+
+**Cons:**  
+❌ Can complicate the class hierarchy if used too actively.  
+❌ `default` method conflicts if several interfaces contain a method with the same signature.    
+❌ Violates the Single Responsibility Principle (SRP) because the interface begins to contain logic.
+
+---
+***Pros and cons of multiple implementation***
+
+Multiple implementation means that a class can implement multiple interfaces.
+
+**Example:**
+
+```java
+interface A {
+    default void show() {
+        System.out.println("A");
+    }
+}
+interface B {
+    default void show() {
+        System.out.println("B");
+    }
+}
+class C implements A, B {
+    @Override
+    public void show() {  // Resolving the conflict
+        A.super.show();
+    }
+}
+```
+
+**Pros:**  
+✅ Avoids problems associated with multiple inheritance (diamond problem).  
+✅ Code reuse via `default` methods.  
+✅ Flexibility - you can combine the behavior of different interfaces.
+
+**Cons:**  
+❌ `default` method conflicts if several interfaces contain a method with the same signature.  
+❌ It may be difficult to debug and support the code.  
+❌ You cannot use `super` to call the interface constructor.
+
+"""
+source_hash = "3726a1d901acc374489a70c062bfe640174ab1b7e508c652c2e50abfeac2ca46"
+
+[[questions]]
+id = 31
+question = "How do interfaces and abstract classes differ?"
+answer = """
+- Abstract classes are used when there is an “is a” relationship, and the interface can be implemented by classes that are not at all related to each other
+- You can inherit only one class, but implement as many interfaces as you like
+
+| **Criterion**                          | **Abstract class**                                           | **Interface**                                                                                   |
+| ------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **When to use**                | If there is common logic that subclasses can override | To define contracts that implement classes                                            |
+| **Default access modifiers** | `protected`, `default`                                          | All methods `public`                                                                             |
+| **Availability of constructor**              | Yes                                                              | No                                                                                             |
+| **Inheritance/Implementation**           | A class can inherit only one abstract class           | A class can implement multiple interfaces                                                   |
+| **Methods with implementation**              | May contain methods with implementation                            | May contain `default` and `static` (with Java 8), and with Java 9<br>and `private` methods with implementation |
+"""
+source_hash = "ebb56b50357a8dc62e4394ab3e7063f07513321e2305668710f45c66ada190ab"
+
+[[questions]]
+id = 32
+question = "In what order do constructors and initialization blocks run across a class hierarchy?"
+answer = """
+1. Static blocks on the parent
+2. Static block at the subclass
+3. Non-static block on parent
+4. Parent constructor
+5. Non-static blocks at the subclass
+6. Subclass constructor
+
+"""
+source_hash = "57aa5338253cc0f1eff177af46d91c471ed997250f06ababd31656c125da6546"
+
+[[questions]]
+id = 33
+question = "What are initialization blocks, and why are they used?"
+answer = """
+There are static and non-static initialization blocks.  
+**Static initialization block** is used to initialize the static data of a class. It is executed only once when the class is loaded into memory.  
+**Non-static initialization block**, also known as an instance initialization block, is used to initialize instance variables of a class. It is executed every time a new instance of the class is created.
+
+"""
+source_hash = "ca632f54856daa257b616bcc8115333423d73d2045bb20a8ca75860b9c502ba0"
+
+[[questions]]
+id = 34
+question = "What methods does Object provide?"
+answer = """
+Object is the base class for all objects in Java. Any class one way or another inherits from `Object`, and, accordingly, inherits its methods (11 pieces):
+- `equals()` - determines whether one object is equal to another.
+- `hashCode()` - Returns the hash code associated with the caller.
+- `toString()` - returns a character string describing the object.
+- `getClass()` - Gets the class of the object at runtime.
+- `clone()` - creates a new object, no different from the one being cloned.
+- `finalize()` - called before deleting an unused object.
+
+As well as methods for multithreading:
+- `notify()` - Resumes execution of the thread waiting for the caller.
+- `notifyAll()` - Resumes execution of all threads waiting on the caller.
+- `wait()`, `wait(long timeout)`, `wait(long timeout, int nanos)` - awaits another thread of execution.
+
+---
+***finalize() method***
+
+`finalize()` is a method in the `Object` class that is called before the object is destroyed by the garbage collector (GC). Labeled as `@Deprecated` with Java 9 with the possibility of further removal.
+
+**Modern alternative:**  
+Java 9+: use `Cleaner` or `try-with-resources`.
+
+"""
+source_hash = "4d7cb091db16c79eda8bb337b5c835a74311a2c3b31f058a67eb62a9199f1b9a"
+
+[[questions]]
+id = 35
+question = "What is serialization and why is it needed?"
+answer = "Serialization is a mechanism for converting objects into a byte string. In Java, it is implemented through the Serializable token interface. Needed to compactly save the state of an object, transmit it over a network, and read this state"
+source_hash = "eac7225bad791801d9830cddd66409ec36403e558842fe6631c41a5c8da6ee88"
+
+[[questions]]
+id = 36
+question = "What are the main differences between Java versions?"
+answer = """
+- **Java 8** - lambda expressions, Stream API, Optional API, new Date and Time API, `default` methods in interfaces
+- **Java 9** - modular system (JPMS), improvements to Stream API and methods `Optional.ifPresentOrElse`, factory methods for collections (`List.of`)
+- **Java 10** - local typing (`var`), GC improvements, API for creating immutable collections (`List.copyOf, Set.copyOf, Map.copyOf`)
+- **Java 11** - support for `var` in lambdas, new HTTP client
+- **Java 17** - `record`, `sealed` classes, improvements in GC and performance, pattern matching for `instanceof`
+- **Java 21** - virtual threads, pattern matching for `switch`, support for sealed hierarchies for `record`, improvements in GC
+- **Java 23** - `flexible constructor`, javadoc comments in markdown format, ZGC improvements
+- **Java 25** - JIT improvements, `scoped values` instead of `ThreadLocal`, `structurred concurrency`, `stable value` instead of singleton"""
+source_hash = "b4e72b64f8490ba6b9e60e5afb08b1040ca11b9fa2c17cdc565c90f5eb1da9d5"
+
+[[questions]]
+id = 37
+question = "Can an abstract class be final?"
+answer = "No, because The essence of this class is to carry out the general logic of successors; you cannot create an instance of an abstract class."
+source_hash = "27b70b2dc8c7c91cd504dd66a1f774689426bef00b40a1fd2c66f5ce7c2cc10e"
+
+[[questions]]
+id = 38
+question = "How does the Integer cache work?"
+answer = "Integer Pool is an area of memory in a heap designed to cache Integers in the range -128 to 127 to reduce the number of objects created (similar to String Pool)"
+source_hash = "d84b7bf36dbac269c77c9c33636e9fa8adf85e19b860960f2d2f45dfa173bb36"
+
+[[questions]]
+id = 39
+question = "What types of class loaders exist?"
+answer = """
+- **Bootstrap ClassLoader**: Loads standard libraries (eg `rt.jar`).
+- **Extension ClassLoader**: Loads additional libraries (`ext`).
+- **System ClassLoader**: Loads classes from the classpath.
+- **Custom ClassLoader**: Custom class loaders.
+
+"""
+source_hash = "30c83f9de64aaf7cc81cc16c5b95c8b382c0cac64d25ad3e0891be0dcf0d0ce9"
+
+[[questions]]
+id = 40
+question = "What are records, and how are they used in Java 17?"
+answer = """
+**Record** is a compact immutable class declaration convenient for storing data.
+
+- **Advantages**:
+    - Automatic creation of constructor, getters (methods are named without the get prefix), `equals`, `hashCode`, `toString`.
+    - Immutability of fields.
+
+```java
+public record Point(int x, int y) {}
+Point p = new Point(1, 2);
+System.out.println(p.x()); // 1
+```
+
+"""
+source_hash = "51e3b2374c72040f94a52fac2205885df8a881c16fe714e1371f5dee1c03400c"
+
+[[questions]]
+id = 41
+question = "What is an anonymous class?"
+answer = """
+An anonymous class is a class without a name, the implementation of which is described in-place at the time of creation
+```java
+Runnable r = new Runnable() {
+    @Override
+    public void run() {
+        System.out.println("Hello!");
+    }
+};
+```
+
+**Requirements for variables referenced inside an anonymous class**
+Variables used inside an anonymous class must be **effectively final** (not changed after initialization)
+"""
+source_hash = "8acc72fd4b808cd133db410b35e36725b91481fdfa5c58b81db231b1e2112e60"
+
+[[questions]]
+id = 42
+question = "What does the JIT compiler do?"
+answer = "JIT (Just-In-Time) compiler converts bytecode into machine code for particularly hot (frequently called) parts of the code during program execution to increase performance"
+source_hash = "9bf04c9a0cacbef7d8fd7b447a6f4a95a49c3b5f58b21f8142fd538b8b664571"
+
+[[questions]]
+id = 43
+question = "What does JVM warm-up mean?"
+answer = """
+Warming up the JVM is the optimization of the application in the first minutes of its launch. JIT analyzes executable code and applies optimizations such as inlining or eliminating unnecessary checks, `escape` analysis (checking for local method objects with the ability to place them on the stack rather than on the heap)
+https://docs.oracle.com/en/java/javase/25/vm/java-virtual-machine-guide.pdf"""
+source_hash = "d2563a4cd2865b69542af45d72674c827ddeddffe57ef6943143c1e3ceaa7926"
+
+[[questions]]
+id = 44
+question = "break vs continue in a loop"
+answer = """
+break - exit from the loop
+continue - immediate transition to the next iteration"""
+source_hash = "ccb0da620372da0fabc829f6ee79dc6ccab4e138bb8a8faa8187c21ec3745359"
+
+[[questions]]
+id = 45
+question = "What is an annotation? Why is it needed? How to create your own annotation?"
+answer = """
+An annotation is a mechanism for marking classes, methods and fields with additional information for the compiler, development tools and frameworks
+
+**Basic Annotations in Java**  
+
+|Annotation|Description|
+|---|---|
+|`@Override`|Checks that a method overrides a superclass method.|
+|`@Deprecated`|Marks a method/class as obsolete so that it will not be used in the future.|
+|`@SuppressWarnings`|Suppresses certain compiler warnings.|
+|`@FunctionalInterface`|Indicates that the interface is functional (with one abstract method).|
+|`@SafeVarargs`|Suppresses warnings about unsafe operations with variable-length arguments (varargs).|
+|`@Native`|Used for constants intended to interact with native code.|
+
+**Annotation metadata (`Retention`, `Target`)**  
+When we create our annotation, it is important to understand how it will be used. This is specified using **meta annotations**:
+
+|Annotation|Description|
+|---|---|
+|`@Retention`|Determines at what lifecycle stage the annotation is available (SOURCE, CLASS, RUNTIME).|
+|`@Target`|Indicates what the annotation can be applied to (methods, fields, classes, etc.).|
+|`@Documented`|Includes annotation in Javadoc.|
+|`@Inherited`|Whether the annotation is inherited by subclasses.|
+|`@Repeatable`|Allows you to apply the same annotation multiple times.|
+
+**How to create your own annotation?**
+```java
+import java.lang.annotation.*;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface MyAnnotation {
+    String value();
+    int count() default 1;
+}
+
+class Example {
+    @MyAnnotation(value = "Hello", count = 3)
+    public void test() {
+        System.out.println("Method with annotation");
+    }
+}
+```
+
+**Reading annotation using reflection**
+```java
+import java.lang.reflect.Method;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        Method method = Example.class.getMethod("test");
+        MyAnnotation annotation = method.getAnnotation(MyAnnotation.class);
+        System.out.println("value: " + annotation.value());  // "Hello"
+        System.out.println("count: " + annotation.count());  // 3
+    }
+}
+```
+
+**Where are annotations used in real projects?**
+Lombok, JUnit, Spring
+"""
+source_hash = "422ce2d9738c790fda3ec9e3fdf21806629ae93a15258e679f101e62b3a5dda6"
+
+[[questions]]
+id = 46
+question = "Method overriding and overloading"
+answer = """
+**Method overriding** is the replacement of the implementation of a method of a parent class in a descendant class. Rules
+- the method must have exactly the same name, return type, and arguments;
+- a method in a parent class should not be private;
+- must occur in the inherited class;
+- annotation `@Override` is recommended (not required, but helps to avoid errors).
+
+**Method overloading** is the creation of several methods in a class with the same name but different signatures. Rules:
+- the method names are the same;
+- the difference is in the number, types, or order of arguments (any combination of these methods);
+- the return type can be anything, but is not used to differentiate overloading."""
+source_hash = "80b398e4345c790d90221f1ecfd764bf4c6daae25b5d07d34f7a76273002ca98"
+
+[[questions]]
+id = 47
+question = "How does ClassLoader work in Java?"
+answer = """
+ClassLoader is a special JVM component designed to load classes into memory during program execution. Loads classes, respecting the hierarchy and the principle of delegation.
+
+Bootloader hierarchy:
+1. Bootstrap - loads base classes (`java.lang.*`, `java.util.*`)
+2. Platform (Extension to Java 9) - loads platform modules
+3. Application/System - loads classes from classpath
+4. Custom - implementation dependent
+
+The principle of delegation - before loading a class, the loader contacts its superior in the hierarchy and asks if it has already loaded such a class, so as not to load the class twice."""
+source_hash = "ac75d85240ce9f4846ec1caa2f64bcf49545687647c13ec97bdf0a69de73cb71"
+
+[[questions]]
+id = 48
+question = "How do equals() and == differ?"
+answer = """
+The `==` operator compares references to objects.
+The `equals()` method compares objects by content if overridden correctly, because by default (inherited from `Object`) the method implementation is reduced to
+```java
+public boolean equals(Object obj) {  
+\treturn (this == obj);  
+}
+```"""
+source_hash = "294f091c8073a9390942a17a6347627022f2a2586d2c64fb843514b6adcf5b30"

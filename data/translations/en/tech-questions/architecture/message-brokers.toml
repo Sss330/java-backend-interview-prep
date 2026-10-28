@@ -1,0 +1,414 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 19
+title = "Message Brokers"
+popularity = 45.34
+
+[[questions]]
+id = 1
+question = "Pros and cons of message brokers"
+answer = """
+**Pros**
+- Asynchronous - services can run independently of each other
+- Scalability - easily increase the number of consumers
+- Reliability - messages are not lost due to resend and confirmation mechanisms
+- Load sharing - consumers can process messages in parallel
+
+**Cons**
+- Difficult to set up - requires correct configuration to work effectively
+- Latency - adding a broker increases the delay in message delivery
+- Infrastructure support - effort required for monitoring and administration
+"""
+source_hash = "4ba7b4def83acce8ba207699188af28f3d2be0fe58d84e1f0a886486ceb74e3d"
+
+[[questions]]
+id = 2
+question = "How do Kafka and RabbitMQ differ?"
+answer = """
+
+| **Criterion**            | **Kafka**                                                             | **RabbitMQ**                                                                            |
+| ----------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **Exchange model**       | Publish-subscribe (pub-sub)                                         | Point-to-point, publish-subscribe                                       |
+| **Message storage**  | Messages are stored on disk until the retention period expires               | Deleted after reading (default)                                                |
+| **Message processing** | Pull model, consumers request messages                        | Push model, messages are “pushed” to consumers when they are ready to accept them        |
+| **Performance**  | Higher                                                                  | Below                                                                                    |
+| **Scalability**    | Easily scales horizontally due to distributed architecture | Scalability is limited compared to Kafka, although clustering can be used |
+"""
+source_hash = "df14bc9a207e5118f58d1c26d5c4a4c81d59a99ad894e71e5d0e3a82891e461c"
+
+[[questions]]
+id = 3
+question = "What is a topic in Kafka?"
+answer = "Topic in Kafka - Topic is a named stream of records, logically divided into partitions. Each partition is an ordered append-only log"
+source_hash = "6c3a5a25b5e45d88be99ad6d07bf558e88949309d7273eecc3a7163efcd31d31"
+
+[[questions]]
+id = 4
+question = "What are producers and consumers?"
+answer = """
+**Producer** is a client that publishes records to Kafka topics.
+
+**Consumer** is a client that reads records from Kafka topics.
+
+**What will increase the number of consumers give?**
+If consumers are in the same Consumer Group, partitions are distributed between them. This allows you to process different partitions in parallel.
+
+Within a regular Consumer Group, one partition is assigned to no more than one consumer at a time.
+
+For example, topic contains 4 partitions:
+- 1 consumer → reads 4 partitions
+- 2 consumers → approximately 2 partitions each
+- 4 consumers → 1 partition each
+- 5 consumers → one consumer will be left without partition and will be idle
+
+Partitions are distributed according to the selected assignment strategy, for example `RangeAssignor`, `RoundRobinAssignor`, `StickyAssignor` or `CooperativeStickyAssignor`.
+
+**Round Robin is not a universal default strategy.**"""
+source_hash = "68959f356890706fa583038f669c2a757b75eec140a274af4d333002d6f007cc"
+
+[[questions]]
+id = 5
+question = "What is a partition in Kafka?"
+answer = """
+Partition (partition, partition) - topic partition, FIFO type data structure without the ability to delete an element when reading.
+
+**What is partition divided into?**
+The partition is **not divided** further and contains records/messages.
+
+The entry/message in the partition is:
+- **_(optional)_ Key** - key used to distribute the message among partitions, does not have to be unique
+- **Value** - data/information
+- **(optional) Headers** - headers used to transmit metadata that, for one reason or another, cannot be included in the key-value
+- **Timestamp** - timestamp (created or added to the partition, depending on the settings)
+"""
+source_hash = "f1ec741f44c192f09c15d5d8ddbabef1048842ba8f553627bef80bfb23032ece"
+
+[[questions]]
+id = 6
+question = "How are messages distributed across Kafka partitions?"
+answer = """
+The producer determines which partition to send the message to using the following approaches:
+1. Explicit indication of the partition - the producer can explicitly indicate which partition to send the message to
+2. Partition selection based on algorithm (without explicit indication)
+\t- If the message contains a key, Kafka uses hashing of the key to select a partition. This ensures that all messages with the same key will end up in the same partition
+\t- If the key and explicit indication of the partition are missing, the Sticky Partitioning strategy is used - all messages are written to one partition until `batch.size` is reached (batch size in bytes, default is 16384)
+    
+    *Note: A common misconception is that the **default** Kafka producer distributes messages into partitions using the Round-Robin strategy. However, as of version 2.4 this is not the case ([documentation](https://kafka.apache.org/43/configuration/producer-configs/#producerconfigs_partitioner.class)). You can select the Round-Robin strategy using an explicit indication* 
+\t```yaml
+\tspring:
+\t  kafka:
+\t    producer:
+\t      properties:
+\t        partitioner.class:
+\t\t        org.apache.kafka.clients.producer.RoundRobinPartitioner
+\t```
+3. **Custom algorithm** - the producer can implement custom logic for distributing messages into partitions (by implementing the `Partitioner` interface)
+"""
+source_hash = "663c249201e4ab564c13c6a85f212ec986f2a8cfec90b0c5b94c0b326206a061"
+
+[[questions]]
+id = 7
+question = "Delivery guarantees in Kafka"
+answer = """
+- **At least once** - the message will be delivered at least once (maybe more)
+- **At most once** - the message will be delivered at most once (may not be delivered at all)
+- **Exactly once** - the message will be delivered exactly once. This is the most stringent level of guarantee and requires consistency between producer and consumer to avoid duplicate messages.
+
+[Hab. Philosophical reflections on the topic exactly once](https://habr.com/ru/companies/badoo/articles/333046/)
+"""
+source_hash = "20300c9802e659db74db063ecaef556f0538558927206fdff12cb2eb4ce2a72b"
+
+[[questions]]
+id = 8
+question = "What messaging patterns are used with queues?"
+answer = """
+- **Point-to-Point (P2P)** - one producer, one consumer. The message is read by one consumer and removed from the queue
+- **Publish-Subscribe (Pub/Sub)** - one producer sends a message to several subscribers through exchanges
+- **Work Queue** - several consumers process messages from one queue, distributing the load
+- **Dead Letter Queue (DLQ)** - queue for messages that could not be processed
+- **Priority Queue** - messages are processed depending on their priority
+"""
+source_hash = "db7ba801cab9d4fd156f6f077b22c9cd179422055c47c4a86ed6df20603b0c2b"
+
+[[questions]]
+id = 9
+question = "What are the main Kafka components?"
+answer = """
+Apache Kafka is a distributed stream processing system consisting of several key components
+- **Producer** (producer) - sends data to Kafka
+- **Consumer** (consumer) - receives data from Kafka
+- **Topic** (topic) - a logical entity that divides data into channels
+- **Partitions** (partitions) - topic partitions that divide data for distributed storage and parallel processing. Partitions make it possible to store data on different brokers
+- **Broker** (broker) - the server responsible for storing data in Kafka
+- **Consumer Group** (consumer group) is an association of consumers who process data from one topic in parallel. Each consumer in the group processes different partitions of the topic, which improves concurrency and performance
+- **Controller** - one of the brokers that manages the cluster metadata and is responsible for redistributing partitions in case of failure
+- **ZooKeeper** is a coordinator, used to manage and coordinate brokers and maintain system metadata. In new versions of Kafka (since 3.7), KRaft (Kafka Raft) is used instead. Zookeper has been removed from version 4.0
+"""
+source_hash = "bbd72412c7f00e0687c93433f4271c0555f27b16ed4ce60a864a4a8d4cfb83b7"
+
+[[questions]]
+id = 10
+question = "What is a Kafka consumer group?"
+answer = """
+Consumer Group is a mechanism for grouping consumers working on the same topic to:
+- load distribution - partitions are divided between consumers of the group, each reads data only from their own partitions
+- flexibility - you can increase the number of consumers in a group to speed up data processing
+"""
+source_hash = "27ed302346d42344d8326392616540632f7dd3e1b2cf6fbe593ea4ef23f640be"
+
+[[questions]]
+id = 11
+question = "What does a Kafka cluster consist of?"
+answer = """
+Kafka cluster is a distributed system for transmitting, storing and processing messages. Its main components:
+
+| Component                     | Description                                                                                                                                        |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Brokers**         | Servers that store data and process requests from producers and consumers. Each broker has a unique ID. |
+| **Topics**           | Logical categories for messages. Messages within the topic are distributed into partitions.                                              |
+| **Partitions**      | Logical division of the topic for scalability. Messages within a partition are ordered; order between partitions is not guaranteed.                      |
+| **Replicas**        | Copies of partitions stored on other brokers for fault tolerance.                                                                           |
+| **Controller**   | One of the brokers that manages the cluster's metadata and is responsible for redistributing partitions in case of failure.                              |
+| **Producers** | Clients who publish messages to topics.                                                                                                  |
+| **Consumers**   | Clients that read messages from topics, processing data depending on the task.                                                       |
+| **Consumer Group**            | A group of consumers that jointly process messages from the same topic, sharing the load.                                              |
+| **Zookeeper / KRaft**         | Coordination service for managing cluster metadata and broker state (Zookeeper is being replaced by KRaft in new versions of Kafka).             |
+
+"""
+source_hash = "a42019ef6726120aff78a6317defb58643bc1f8ea32b13950649a8aad8eb0da1"
+
+[[questions]]
+id = 12
+question = "Message brokers vs. REST"
+answer = """
+
+| **Characteristics**      | **Message brokers (Kafka, RabbitMQ)**                       | **REST API**                                    |
+| ----------------------- | ------------------------------------------------------------- | ----------------------------------------------- |
+| **Communication model** | Asynchronous (queues, topics)                                 | Synchronous (request-response)                       |
+| **Baud Rate**   | High, optimized for working with large volumes of data | Depends on the performance of the HTTP server      |
+| **Delivery reliability** | Supports acknowledgment (ACK), message relay      | Typically does not provide relay mechanisms |
+| **Scalability**    | High, thanks to horizontal scaling of brokers   | Requires separate scaling solutions   |
+| **Data processing**    | Flexible, suitable for streaming data processing               | Suitable for CRUD operations                      |
+| **Difficulty of setting** | Requires installation and infrastructure management                | Easier to deploy, uses standard HTTP   |
+"""
+source_hash = "b40d6bd7adf6fd164dc53434028511d4cc99edeb357476cab95814abe3425907"
+
+[[questions]]
+id = 13
+question = "Pull and push models, what's the difference?"
+answer = """
+**Pull model (“pull”)** - the client requests data from the server (or broker). Example - consumers in Kafka request data from brokers
+**Advantages:**
+- the client controls the processing speed, which is especially important under high load.
+- Easily process data at the client level
+**Disadvantages:**
+- there may be a delay if the client rarely requests data
+- requires constant data request
+
+**Push** - the server sends data to the client as it arrives.
+Example: WebSocket, Firebase Cloud Messaging.
+**Advantages:**
+- lower latency - data is sent to the client immediately
+- useful for real time (eg notifications)
+**Disadvantages:**
+- the client may be overloaded with a large flow of data
+- flow control is on the server
+"""
+source_hash = "f387ba84eed73d0ffd6ddd35210edb6ad0d09aa8c989b6cad9bf080a97c72d55"
+
+[[questions]]
+id = 14
+question = "How can you prevent duplicate processing and message loss when using Kafka?"
+answer = """
+Idempotency in Kafka means that the same message will not be written multiple times, even if the producer resends it due to failures
+
+**Mechanisms for ensuring idempotency:**
+1. **Preventing duplicate messages - enabling idempotency in the producer:**
+    The `enable.idempotence` parameter in the producer configuration allows Kafka to track duplicate messages using the unique producer ID (**Producer ID**) and message sequence number (**Sequence Number**)
+    ```java
+    Properties props = new Properties();
+    props.put("enable.idempotence", "true");
+    ```
+2. **Loss Prevention:**
+    - **Retry at the producer level** - in the producer configuration, by default, re-sending messages is enabled in the event of no confirmation from the broker (`acks`)
+    - **Replication and level** **acknowledgments** - setting `acks` to `"all"` guarantees that the message is written to all ISR (InSync Replica) replicas
+
+"""
+source_hash = "ec74a088af8cc3c94f3d787f8147f76f4657e13c4bceeee76b010f6b088d053c"
+
+[[questions]]
+id = 15
+question = "How does Kafka preserve message ordering?"
+answer = """
+Messages in one partition are recorded sequentially. Kafka ensures that the consumer receives them in the same order in which they were written.
+Kafka does not guarantee the order of messages between different partitions of a topic, since each partition is processed independently
+
+"""
+source_hash = "98c61a9049368b34e232ed779936e52b6dc6aa86ccea0a1c8decf440d3417282"
+
+[[questions]]
+id = 16
+question = "How can you batch messages in Kafka?"
+answer = """
+- Use one batch
+- Use partition key (key)
+- Use a custom partitioning method
+    - Implement your own `Partitioner` to set the distribution logic
+        ```java
+        public class CustomPartitioner implements Partitioner {
+            @Override
+            public int partition(String topic, 
+\t\t\t\t\t\t            Object key, 
+\t\t\t\t\t\t            byte[] keyBytes, 
+\t\t\t\t\t\t            Object value, 
+\t\t\t\t\t\t            byte[] valueBytes, Cluster cluster) {
+                // Custom partition selection logic
+                return somePartitionIndex;
+            }
+        }
+        ```
+    - Register it in the configuration:
+\t\t```yaml
+\t\tspring:
+\t\t  kafka:
+\t\t    producer:
+\t\t      properties:
+\t\t        partitioner.class:
+\t\t\t        org.apache.kafka.clients.producer.RoundRobinPartitioner
+\t\t```
+- Use direct indication of the partition number when sending
+\t```java
+\tproducer.send(new ProducerRecord<>("topic", 0, null, "value"));
+\t```
+"""
+source_hash = "40451f4cd8fdc6a2e8acf7f602b75ca7983944502d7e13bcdd556879ba348d3b"
+
+[[questions]]
+id = 17
+question = "How does round-robin assignment work?"
+answer = """
+**Round Robin** is a data distribution strategy in which messages are evenly sent to different partitions of the topic
+
+**Logic:**
+1) The producer sends the first message to the first available batch
+2) The next message is sent to the next partition, and so on
+3) After reaching the last partition, the cycle repeats from the first partition
+
+**Example:**
+The topic has 3 parts:
+```
+Partition 0: Msg1, Msg4
+Partition 1: Msg2, Msg5
+Partition 2: Msg3, Msg6
+```
+"""
+source_hash = "4d8dc390a948031d5ce93be1adbf2516848e113c5bde0e1f144650f41a532157"
+
+[[questions]]
+id = 18
+question = "How do acknowledgments work in Kafka?"
+answer = """
+Acknowledgment (acks) is a mechanism for acknowledging that a message is written to Kafka. The producer receives confirmation from the broker after recording the message
+
+**acks types:**
+- **acks = 0:**
+    - the manufacturer is not waiting for confirmation
+    - the fastest, but unreliable strategy (messages may be lost)
+- **acks = 1:**
+    - the producer is waiting for confirmation from the replica leader
+    - a message is considered delivered if the leader writes it to the log
+    - Possible loss of messages if the leader fails before the replicas are synchronized
+- **acks = all (or -1):**
+    - the producer waits for confirmation from all ISR replicas, including the leader
+    - maximum reliability - messages are not lost if at least one replica is available
+    - suitable for critical data
+"""
+source_hash = "de5d1092408f012053bb3de1eca4c0e55461bc2f76f1620e452c4004b76b6737"
+
+[[questions]]
+id = 19
+question = "What is an offset in Kafka?"
+answer = """
+Offset is a unique identifier for a post within a partition. It represents the offset (index from 0) of the message in the broker log
+
+**Usage:**
+- consumers use offset to keep track of which messages have already been processed
+- offset is stored in Kafka (by default in a special topic `__consumer_offsets`) or in the client
+
+**Types of control:**
+- Automatic control (auto commit) - Kafka itself updates the offset after reading the message, configured by the `enable.auto.commit=true` parameter
+- Manual commit - the consumer himself updates the offset after successful message processing, used for greater reliability
+\t```java
+\t\tconsumer.commitSync(); // Update offset synchronously
+\t\tconsumer.commitAsync(); // Update offset asynchronously
+\t```
+"""
+source_hash = "d9d95adda615acc2e2f81a93189ca01ed786dd5ba688fdc82734c9b9b7e8575a"
+
+[[questions]]
+id = 20
+question = "How can you reread data from Kafka?"
+answer = """
+1. **Reset offset Consumer Group** - you can reset offset back and read messages again.
+    
+
+```bash
+kafka-consumer-groups --bootstrap-server localhost:9092 \\
+--group my-group \\
+--topic my-topic \\
+--reset-offsets --to-earliest --execute
+```
+
+2. **Use new Consumer Group** - the new group does not have a saved offset, so you can start reading from the beginning with:
+    
+
+```yaml
+spring:
+  kafka:
+    consumer:
+      group-id: new-group
+      auto-offset-reset: earliest
+```
+
+3. **Read from specific offset**
+    
+
+```java
+consumer.seek(
+    new TopicPartition("test-topic", 0),
+    42
+);
+```
+
+Important: `enable.auto.commit=false` only disables automatic saving of offset and does not in itself mean re-reading messages.
+"""
+source_hash = "2070c9e432a09be35fce51fa9975b91db745b779091688ee5bf1ad8979087b48"
+
+[[questions]]
+id = 21
+question = "What is a dead-letter queue (DLQ) topic?"
+answer = """
+Dead Letter Queue (DLQ) is a separate Kafka topic where error messages are sent
+
+**Why do you need DLQ?**
+- If the consumer cannot process the message (for example, a deserialization error)
+- To avoid blocking the processing of other messages
+- To try processing again later
+
+**How to set up DLQ?**
+- **Manually send messages to DLQ**
+\t```java
+\ttry {
+\t    processMessage(record);
+\t} catch (Exception e) {
+\t    ProducerRecord<String, String> dlqRecord =
+\t        new ProducerRecord<>("dlq-topic", record.key(), record.value());
+\t    kafkaProducer.send(dlqRecord);
+\t}
+\t```
+- **Use Kafka Connect DLQ** - if you are using Kafka Connect, you can configure DLQ automatically:
+\t```properties
+\t\terrors.deadletterqueue.topic.name=dlq-topic
+\t\terrors.deadletterqueue.context.headers.enable=true
+\t```"""
+source_hash = "cbc1026ac5c661c0957fc30c8e9ca020992b02db131474a217fbd2a499f58adb"

@@ -1,0 +1,132 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 5
+title = "Exceptions"
+popularity = 27.95
+
+[[questions]]
+id = 1
+question = "Describe the Java exception hierarchy."
+answer = """
+{{< figure src="/java-backend-interview-prep/exception_hierarchy.png" title="Exceptions" >}}
+
+**Class Throwable** - common ancestor for all exceptions"""
+source_hash = "443bf4dc5b0ccb7d7e3ba5e280d91ba631ae1a62271388c1a4e280d41b16d9eb"
+
+[[questions]]
+id = 2
+question = "What are Error and Exception?"
+answer = """
+Exception - program execution exceptions
+Error - JVM errors, the programmer should not handle them using try-catch"""
+source_hash = "42659f8cd544a6d6193a65ac14112ce6f29f87f008f8b55f0a3c3553c8b161bc"
+
+[[questions]]
+id = 3
+question = "What is the difference between checked and unchecked exceptions?"
+answer = """
+Checked exceptions must be caught or declared with `throws`; the compiler enforces this requirement. They are subclasses of `Exception` other than `RuntimeException` and its subclasses.
+
+Unchecked exceptions (`RuntimeException`, `Error`, and their subclasses) are not subject to the catch-or-declare requirement.
+"""
+source_hash = "df944a2cb7eb6c48a106b8fe12572d6b6aaa07cee23b4e0da153eac06a139061"
+
+[[questions]]
+id = 4
+question = "What does the throws keyword mean?"
+answer = "The `throws` keyword indicates that the method can throw an exception of the specified types. Passes exception handling to a higher-level method."
+source_hash = "a12775d6c984bc7c38362b802b1a0beececea44284adc2aefe102aae0eaa9fa8"
+
+[[questions]]
+id = 5
+question = "How do you create a custom exception?"
+answer = "Inherit from RuntimeException (recommended, but you can also from Exception), override methods if necessary"
+source_hash = "0372cfa45d0433625792fe56ed6b2013ec88d242e0cff9267dbee3b137b5c352"
+
+[[questions]]
+id = 6
+question = "How does exception handling with try, catch, and finally work in Java?"
+answer = """
+**try** block - a block containing code that may throw an exception when executed
+Block **catch** - a block that “catches” exceptions thrown in **try** if its type matches the expected one
+A **finally** block is a block that is executed after the **try** and **catch** blocks, regardless of whether an exception was thrown. For example, to free some resource"""
+source_hash = "648465642b6f7e64724b12efe7ea912ca577e1e7f51b1498546e12b7a252acb3"
+
+[[questions]]
+id = 7
+question = "Is it possible to use a try-finally block (without catch)?"
+answer = "Yes, in this case, after `try` `finally` will be executed"
+source_hash = "3c3610df09ba61de0c46b5430b52b5b9bfe40ae42489e94c447566675f8deb9e"
+
+[[questions]]
+id = 8
+question = "Can one catch block catch multiple exceptions at once?"
+answer = "Yes"
+source_hash = "88e83c471c8f211c749125de5c7324536ee4e6e286452a2f6cd96492b4f58632"
+
+[[questions]]
+id = 9
+question = "Is the finally block always executed? Are there situations where a finally block will not be executed?"
+answer = "Yes, except when the program or JVM terminates. `finally` may fail if `System.exit(0)` is called in block `try`"
+source_hash = "e0494ba58e166896922f70fa6ff14d567c3c5017b3c4e8e7d73740863f85a142"
+
+[[questions]]
+id = 10
+question = "In what order should exceptions be handled in catch blocks?"
+answer = "Catch more specific exception types before their supertypes. Otherwise, a broader catch block would make a later, more specific block unreachable, causing a compilation error."
+source_hash = "c174bb36e2a56fba81aa262c846807d9f8ddcd174290761a64d6e28371266e89"
+
+[[questions]]
+id = 11
+question = "How does try-with-resources work?"
+answer = "This is a mechanism that automatically closes the resource declared within the parentheses `try()`. As a resource, you can use any object whose class implements the `AutoCloseable` or `Closeable` interface (Scanner, for example)"
+source_hash = "bc793199219acc092dc66769b93b66af3dc49e19bd354a84f23d8955fe0fc7e0"
+
+[[questions]]
+id = 12
+question = "How do you diagnose OutOfMemoryError and fix a memory leak?"
+answer = """
+Error `OutOfMemoryError` occurs when the JVM cannot allocate enough memory to execute the program. This could be due to memory leaks, incorrect configuration, or large amounts of data. Here's a step-by-step process to identify and fix the cause:
+1. Take a memory dump
+2. Analyze the dump and find the causes of leaks. Typical sources:
+    - unreleased resources
+    - overflowing collections
+    - static references (including static collections)
+    - unsubscribed listeners
+3. Eliminate causes
+"""
+source_hash = "f43d986f7d6a237f4c954396be2591e48b94c53f1b6bda6043e32efad8b09504"
+
+[[questions]]
+id = 13
+question = "@SneakyThrows in Lombok"
+answer = """
+`@SneakyThrows` lets Lombok generate code that throws a checked exception without declaring it in the method's `throws` clause or writing a `try-catch` block manually. It does not handle, wrap, or convert that exception into `RuntimeException`; the original exception is propagated. See the [Lombok documentation](https://projectlombok.org/features/SneakyThrows).
+
+```java
+@SneakyThrows
+public void riskyMethod() {
+    throw new IOException("Exception example"); // No need to declare throws IOException
+}
+```
+"""
+source_hash = "708e62046c17f73b141a8a7dca5ba161f5a60e54ca029151781e4629a64ac47c"
+
+[[questions]]
+id = 14
+question = "StackOverflowError vs OutOfMemoryError"
+answer = """
+`StackOverflowError` - thrown when the stack overflows (there is not enough memory on the stack). Usually occurs during recursions. You can solve it through the `-Xss` JVM parameter, but as a rule, the problem is in recursion, and that needs to be solved.
+
+`OutOfMemoryError` - thrown when the JVM cannot allocate enough memory on the heap to create a new object. Possible reasons:
+- creating a very large array or object
+- memory leaks (uncleaned object references)
+- excessive creation of objects without deleting them
+- an insufficient maximum heap size configured by `-Xmx` (the default depends on the JVM and environment)
+Solutions:
+- use memory profilers for analysis (`VisualVM`, `MAT`)
+- delete unnecessary objects (`list.clear()`, `null` references)
+- increase JVM memory limit (`-Xmx1024m`)
+- optimize memory management (use `WeakReference`, `SoftReference`)
+"""
+source_hash = "2d8297e058bbff5909f53df3e445d408cc8d3683504d76ec569aa5d5ec2f8ec2"

@@ -1,0 +1,119 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 6
+title = "Generics"
+popularity = 13.98
+
+[[questions]]
+id = 1
+question = "What are generics? What are they for?"
+answer = """
+Generics are parameterized types in Java
+- What is this? Allows you to create classes, interfaces and methods with types specified as parameters
+- Why are they needed? Allows you to use one class for different data types (`List<String>`, `List<Integer>`)
+
+A set of [recommendations](https://docs.oracle.com/javase/tutorial/java/generics/types.html) from Oracle on when to use which notations in generics:
+- **E** - element, for elements of parameterized collections;
+- **K** - key, for keys of map structures;
+- **V** - value, for values of map structures;
+- **N** - number, for numbers;
+- **T** - type, to denote the type of parameter in arbitrary classes;
+- **S, U, V** and so on - are used when there are several parameters in a generic class."""
+source_hash = "9d95d8c6a1bcac641049c08f4429b171d204afb5f272b62424c9fdc2767c4091"
+
+[[questions]]
+id = 2
+question = "What are raw types?"
+answer = "Raw types are generic classes without specifying a type (`List` without <>)"
+source_hash = "15b25c64e5e6ad9662612dd288b1a50a3c1a58ab4dfc8d16f88e550ded4a4ba9"
+
+[[questions]]
+id = 3
+question = "What is a wildcard?"
+answer = """
+Wildcard (symbol `?`) is used to denote an undefined type in generics
+"""
+source_hash = "0996cd64844b5809d1fb2d95e58ebe09958ab37dc688afc6e09a1f9561673b59"
+
+[[questions]]
+id = 4
+question = "Explain the PECS principle."
+answer = """
+Producer Extends, Consumer - Super:
+- if we declared a wildcard with `extends`, then this is a **producer**. Values can be read as the upper-bound type; non-null values generally cannot be added safely
+- if we declared a wildcard with `super`, then this is **consumer**. Values of the lower-bound type can be added; retrieved values can only be assumed to be Object.
+
+To combine both possibilities, you must use a specific type rather than a wildcard.
+
+{{< figure src="/java-backend-interview-prep/pecs.png" title="" >}}
+
+An alternative option is to use the wildcard capture pattern.
+In the example below, to reverse a collection with a wildcard, we create a generic method called `rev`. It is declared with a variable of type `T`. This method takes a list of types `T` and we can make a set. When calling the `reverse(List<?> list)` method, a list of some objects (for example, strings or integers) is passed as an argument. If we can capture the type of these objects and assign it to a variable of type `X`, we can conclude that `T` is `X`.
+```java
+public static void reverse(List<?> list) {
+  rev(list);
+}
+
+private static <T> void rev(List<T> list) {
+        List<T> tmp = new ArrayList<>(list);
+        for (int i = 0; i < list.size(); i++) {
+    list.set(i, tmp.get(list.size()-i-1));
+        }
+}
+```
+"""
+source_hash = "85d44e607f089f19341877d7ede1bf5c35bd76bffff788021ac0f7902f087e43"
+
+[[questions]]
+id = 5
+question = "What is Optional, and how is it used?"
+answer = """
+Optional is a wrapper class. It helps avoid null errors
+
+**What does `Optional.flatMap()` do?**
+`Optional.flatMap()` is used to work with nested `Optional` objects, helping to avoid double wrapping, i.e. removes nesting: turns `Optional<Optional<T>>` into `Optional<T>`
+```java
+Optional<String> getNestedValue(Optional<Optional<String>> nestedOpt) {
+    return nestedOpt.flatMap(opt -> opt);
+}
+```
+Use `map` if the function returns the object you want, or `flatMap` if the function returns the `Optional` object
+"""
+source_hash = "bc165f44b0422c43ba8bc7b45bdd15a85af522bd2ebef2d4d5e505f8d5e9814e"
+
+[[questions]]
+id = 6
+question = "What is type erasure in Java generics?"
+answer = """
+The JVM does not store information about parameterized types at runtime. All operations with generics are converted into operations with “raw types” at the compilation stage (type erasure)
+
+**What is type erasure?**
+Type Erasure is a process in which information about generics is removed at compile time. The JVM only sees the raw type
+
+**Generics. Is it possible to get the type at runtime?**
+In general, no. Java uses Type Erasure, which means that information about parameterized types is removed after compilation. At runtime, the JVM only works with “raw types”
+
+**Exception:** It is possible to preserve type information using reflection or through the use of wrapper classes
+
+Example with `TypeToken`:
+```java
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
+
+Type type = new TypeToken<List<String>>(){}.getType();
+System.out.println(type); // java.util.List<java.lang.String>
+```
+
+Table of terms on the topic
+
+| **Term**                                  | **Meaning**                                                                                                              |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Generic types               | Generic class or generic interface with one or more parameters in the header                                        |
+| Parameterized types | A use of a generic type with actual type arguments. For the generic type `List<E>`, the parameterized type will be, for example, `List<Integer>`                    |
+| type parameter              | Used when declaring generic types. For List`<E>` E is a type parameter                                              |
+| type argument               | An object type that can be used instead of a type parameter. For example, for List`<Integer>` `Integer` is a type argument |
+| Wildcard                                    | Indicated by the symbol "?" - unknown type                                                                                  |
+| Limited wildcard (bounded wildcard)    | Bounded from above `<? extends Citrus>` from below - `<? super Orange>`                                                         |
+| Raw type                        | The name of the generic type without type arguments. For `List<E>` the raw type is `List`                                                  |
+| Type parameter                      | `<T>`, `<E>`, etc. in the declaration of classes, interfaces, methods                                                                   |"""
+source_hash = "10175821813985d9c6bce03a70979ac0dca5ae586ea013cae4a025bd5622a26a"

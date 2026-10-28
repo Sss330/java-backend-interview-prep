@@ -1,0 +1,25 @@
+{{/* Both locales share source IDs, popularity figures, ordering, and anchors. */}}
+{{ $source := index .page.Site.Data (split .path "/") }}
+{{ $localized := $source }}
+{{ if eq .page.Language.Lang "en" }}
+  {{ $localized = index .page.Site.Data.translations.en (split .path "/") }}
+  {{ if not $localized }}
+    {{ errorf "Missing English question category: %s" .path }}
+  {{ else }}
+    {{ if ne (len $source.questions) (len $localized.questions) }}
+      {{ errorf "English question count differs from the source: %s" .path }}
+    {{ end }}
+    {{ range $source.questions }}
+      {{ $matches := where $localized.questions "id" .id }}
+      {{ if ne (len $matches) 1 }}
+        {{ errorf "Expected one English translation for %s, question %d" $.path .id }}
+      {{ else }}
+        {{ $translation := index $matches 0 }}
+        {{ if ne $translation.source_hash (sha256 (printf "%s\n%s" .question .answer)) }}
+          {{ errorf "English translation needs updating: %s, question %d" $.path .id }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return (dict "source" $source "localized" $localized) }}

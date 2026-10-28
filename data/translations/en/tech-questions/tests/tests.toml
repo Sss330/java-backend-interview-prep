@@ -1,0 +1,305 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 20
+title = "Testing"
+popularity = 10.56
+
+[[questions]]
+id = 1
+question = "Which tools and frameworks are used to write tests?"
+answer = """
+Unit tests - mostly JUnit
+Mock tests - Mockito, WireMock
+Integration - Testcontainers, Spring Test
+UI tests - Selenium
+Performance tests - JMeter"""
+source_hash = "09f68e482288898710acdf8dfcfd43749202e942bce9f39412debb862fc12382"
+
+[[questions]]
+id = 2
+question = "How do mocks and spies differ?"
+answer = """
+
+| **Criterion**             | **Mock**                                                                             | **Spy**                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| **Description**             | Completely imitates the behavior of an object. You set expected responses to method calls | A real object, but with the ability to “spy” on method calls                   |
+| **Approach**               | Replaces an object, only interaction is tested (behavior verification)           | A real object is used, but you can override the results of calls to its methods |
+| **When to use**   | When it is necessary to completely isolate the object under test from a dependency             | When you want to test a real object, but also trace calls to its methods  |
+| **Types of substitutions**          | You specify return values for all object methods                            | The object's real methods are executed unless they are overridden.                   |
+| **Use example** | Checking interaction with an external dependency, such as a database               | Testing the behavior of a specific object method while staying close to the real logic   |
+"""
+source_hash = "c110e0e5d27f890fb485b73ec4a0ccf5682cfdfbd6ac94ddadf926284c6d39fc"
+
+[[questions]]
+id = 3
+question = "What are parameterized tests?"
+answer = """
+Parameterized tests allow you to run the same test with different input data. This is convenient for testing the behavior of a method on different sets of values
+```java
+@ParameterizedTest
+@ValueSource(ints = {1, 2, 3, 4, 5})
+void testWithParameters(int number) {
+    assertTrue(number > 0);
+}
+```
+
+**Source types in parameterized tests (JUnit 5)**
+- `@ValueSource` - transmits fixed data sets (array of values)
+- `@CsvSource` - transmits data in CSV format
+- `@CsvFileSource` - loads data from a CSV file
+- `@MethodSource` - uses a method to provide a data set
+- `@EnumSource` - transfers enums values
+"""
+source_hash = "b0e5cef3f7f0ad473a423cd197479e231460f7b0831a662c6ece1464b6904903"
+
+[[questions]]
+id = 4
+question = "What are unit tests, and why are they useful?"
+answer = """
+Unit testing, also known as modular testing, is testing individual components (modules, classes, methods) of an application in isolation from the rest of the system
+
+Unit test goals:
+- check the correct operation of each module
+- localize errors at the method and class level
+- simplify code refactoring (helps not to break old logic when changes occur)
+"""
+source_hash = "da2988a1dc388ea3d1a488deb06118bc3d3ba1c6538472c907caf4c38a489df6"
+
+[[questions]]
+id = 5
+question = "Unit tests vs integration tests"
+answer = """
+
+| **Criterion**            | **Unit tests**            | **Integration tests**                         |
+| ----------------------- | ------------------------- | ------------------------------------------------ |
+| **Test object** | Individual methods, classes  | Component Interaction                       |
+| **Dependencies**         | Replaced with mock objects | Real services are used (DB, API)          |
+| **Execution speed** | Fast (milliseconds)     | Slowly (seconds or more)                      |
+| **Example**              | `Calculator.add(2, 3)`    | Spring service with access to the database + Testcontainers |"""
+source_hash = "4ab2ab2c0d892a078bd605bd5c83f44c8f2650399ba2a220ff92dc0c1b29bb0c"
+
+[[questions]]
+id = 6
+question = "What is a mock, and how does it work?"
+answer = """
+A Mock is a placeholder object for the real thing. Allows you to simulate the desired behavior of the replaced object. Mock doesn't perform any logic, it just returns predefined values.
+
+The main purpose of Mock is to test code in isolation from real objects and/or dependencies (for example, a database or external API)
+
+**Example of using Mock (Mockito)**
+Let's say we have a service that depends on a repository to fetch data. Instead of connecting to a real database, we replace the repository with a mock object that will simply return predefined data
+```java
+public class UserService {
+    private UserRepository repository;
+
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
+
+    public String getUserName(int id) {
+        return repository.findNameById(id);  // Looking for username by id
+    }
+}
+
+@Test
+public void testMock() {
+    // We create mock-object
+    UserRepository mockRepo = mock(UserRepository.class);
+
+    // Specifying behavior mock-object
+    when(mockRepo.findNameById(1)).thenReturn("Alice");
+
+    // We use mock-object in service
+    UserService service = new UserService(mockRepo);
+
+    // Checking the result
+    assertEquals("Alice", service.getUserName(1));
+}
+```
+
+In this example, we override `UserRepository` with a **mock object** and tell it to return `"Alice"` when the `findNameById(1)` method is called
+"""
+source_hash = "6cbde13c50de14687af87448ee936c6e50f1821e012d04f4ef7539d5611d956e"
+
+[[questions]]
+id = 7
+question = "What is a spy, and how does it work?"
+answer = """
+Spy is an object that behaves like a real object, but allows you to change the behavior of some methods or check whether methods have been called
+
+**How does Spy work?**
+- Unlike Mock, where you have complete control over the behavior, Spy allows you to test both the actual logic and override the method if necessary
+- allows you to check whether a specific method was called on an object and the number of calls during the test execution
+
+**Example of using Spy (Mockito)**
+Let's say we have an object that interacts with a real collection and we only need to change one method to test it
+```java
+@Test  
+public void testSpy() {  
+    // Create a real object  
+    List<String> list = new ArrayList<>();  
+  
+    // We create spy-object for this list  
+    List<String> spyList = spy(list);  
+  
+    // Adding an element to a real list  
+    spyList.add("Hello");  
+  
+    // Overriding the method size(), so that he always returns 100  
+    when(spyList.size()).thenReturn(100);  
+  
+    // Checking the result  
+    assertEquals(100, spyList.size());      // We changed the size  
+    assertEquals("Hello", spyList.get(0));  // But the addition remained real  
+    
+    // We check that the method add volunteered exactly 1 times  
+    verify(spyList, times(1)).add(anyString());  
+}
+```
+"""
+source_hash = "8b1de8d9cf2cf0f9215eca32871133e66893658e8ecda33419d19d55a65bc32e"
+
+[[questions]]
+id = 8
+question = "How are test results verified?"
+answer = """
+**Checking Assertions**
+JUnit
+```java
+assertEquals(5, calculator.add(2, 3)); // Checking that the result 5
+assertTrue(user.isActive()); // Checking that the user is active
+```
+
+AssertJ
+```java
+// Checking numbers
+assertThat(calculator.add(2, 3)).isEqualTo(5)
+\t\t\t\t\t\t\t\t.isGreaterThan(0)
+\t\t\t\t\t\t\t    .isLessThan(20);
+
+// Check boolean
+assertThat(user.isActive()).isTrue();
+
+// Checking strings
+String message = "Hello, AssertJ!";
+assertThat(message).isNotEmpty()
+                   .startsWith("Hello")
+                   .contains("AssertJ")
+                   .endsWith("!");
+                   
+// Checking the size and contents of the list
+assertThat(names).hasSize(3)
+                 .contains("Alice", "Charlie")
+                 .doesNotContain("David")
+                 .startsWith("Alice")
+                 .endsWith("Charlie");
+```
+
+**Exception checking**
+JUnit 5
+```java
+assertThrows(IllegalArgumentException.class, () -> service.findUser(-1));
+```
+
+AssertJ
+```java
+assertThatThrownBy(() -> service.findUser(-1))
+\t\t\t\t\t.isInstanceOf(IllegalArgumentException.class)
+          .hasMessageContaining("Invalid");
+```
+
+**Test Calls Mock (Mockito)**
+Let's make sure that the `findNameById(1)` method was called exactly 1 time
+```java
+verify(mockRepo, times(1)).findNameById(1);
+```
+"""
+source_hash = "d605c775dbbe3991154c4947ca04e70ec65dd77b5030cd07b670c596f947cabe"
+
+[[questions]]
+id = 9
+question = "What are the main testing annotations?"
+answer = """
+Basic JUnit 5 Annotations
+
+| Abstract            | Purpose                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `@Test`              | Designates a method as a test method                                                      |
+| `@BeforeEach`        | The method is executed **before each** test                                          |
+| `@AfterEach`         | The method is executed **after each** test                                          |
+| `@BeforeAll`         | Executed **once before all tests** (must be `static`)                |
+| `@AfterAll`          | Executed **once after all tests** (should be `static`)                  |
+| `@DisplayName`       | Assigns a convenient name to the test and is displayed in reports                                |
+| `@Disabled`          | Disables the test (temporarily skips)                                               |
+| `@Nested`            | Allows you to group tests into nested classes                                   |
+| `@Tag`               | Marks a test with a specific tag (convenient for filtering)                           |
+| `@ParameterizedTest` | Used for **parameterized tests** (with different inputs)                  |
+| `@Order`             | Order of execution of test methods                                                |
+| `@TestMethodOrder`   | Strategy for determining the running sequence of test methods for the entire class |
+
+```java
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;  
+import org.junit.jupiter.params.provider.ValueSource;
+
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)  
+public class UserServiceTest {  
+  
+    @BeforeAll  
+    static void initAll() {  
+        System.out.println("Before all tests");  
+    }  
+  
+    @BeforeEach  
+    void init() {  
+        System.out.println("Before each test");  
+    }  
+  
+    @Order(3)  
+    @Test  
+    @DisplayName("Verifying user registration")  
+    void testUserRegistration() {  
+        Assertions.assertEquals(2, 1 + 1);  
+    }  
+  
+    @Order(1)  
+    @Test  
+    @Disabled("Temporarily disabled")  
+    void disabledTest() {  
+        Assertions.fail("This test will fail");  
+    }  
+  
+    @Order(2)  
+    @ParameterizedTest  
+    @ValueSource(strings = {"admin", "user", "guest"})  
+    void testRoles(String role) {  
+        Assertions.assertTrue(role.length() > 0);  
+    }  
+  
+    @Nested  
+    class NestedTestClass{  
+        @Test  
+        @Tag("any")  
+        void nestedTest() {  
+            Assertions.assertTrue("1" == "1");  
+        }  
+    }  
+  
+    @AfterEach  
+    void tearDown() {  
+        System.out.println("After each test");  
+    }  
+  
+    @AfterAll  
+    static void tearDownAll() {  
+        System.out.println("After all tests");  
+    }  
+}
+```
+
+Display after startup:
+
+{{< figure src="/java-backend-interview-prep/junit-test-run.png" title="" >}}
+"""
+source_hash = "59bd0bb71f77d26366ab8dc0171d4e97e87878d2f64ec98ec9093fdf3e521bf5"

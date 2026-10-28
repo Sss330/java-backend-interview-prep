@@ -1,0 +1,88 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 7
+title = "Functional Interfaces"
+popularity = 14.91
+
+[[questions]]
+id = 1
+question = "What is a functional interface?"
+answer = """
+A functional interface is an interface with one abstract method. May also contain any number of static and default methods
+"""
+source_hash = "05d681de1b4b962a3793831846dafc77048174c6f4defe0f9bb45892a7388f86"
+
+[[questions]]
+id = 2
+question = "What is the @FunctionalInterface annotation for?"
+answer = """
+To ensure that the interface is functional. It will prevent you from creating another abstract method
+"""
+source_hash = "fba1d78a80430a754d7726994f9d53ad44ed1eac94d807031d88db2145236319"
+
+[[questions]]
+id = 3
+question = "Which built-in functional interfaces do you know?"
+answer = """
+- `Predicate<T>` - accepts an object of type T, checks whether some condition is met and returns a result of type boolean
+- `BiPredicate<T, U>` - accepts two objects of types T and U, checks whether some condition is met and returns a boolean result
+- `Consumer<T>` - accepts an object, performs some actions, but returns nothing
+- `BiConsumer<T, U>` - accepts two objects of types T and U, performs some actions, returns nothing
+- `Supplier<T>` - does not take any arguments, but returns some object T
+- `Function<T, R>` - takes an argument T, performs some operations on it and returns a result of type R. Often used to cast an argument T to type R
+- `BiFunction<T, U, R>` - takes two arguments of type T and U, performs some operations on them and returns a result of type R
+- `UnaryOperator<T>` - takes an object T as a parameter, performs some operations on it and returns the result of the operations as an object of the same type
+- `BinaryOperator<T>` - takes two arguments of type T, performs some operations on them and returns an object of the same type
+"""
+source_hash = "bced082b33c3e9d02b75ba97d35212f81d60a826a2a5299df216e5fef41eb35d"
+
+[[questions]]
+id = 4
+question = "What is a method reference?"
+answer = """
+A method reference is a shorthand for lambda expressions that allows you to reference an existing method and use it as a functional interface
+"""
+source_hash = "b8ceb95805a1d4ba29277968a3e056de969c6788bc1a51c5917da6b2c19f1015"
+
+[[questions]]
+id = 5
+question = "What is a lambda expression, and what can be used instead?"
+answer = """
+A lambda expression is a shorthand form for an anonymous class that implements a functional interface.
+
+**What can replace it?**
+1. An anonymous class
+2. A regular class that implements an interface
+3. Method reference
+
+**Anonymous class vs lambda**
+These are two ways to implement interfaces or create compact code in Java. They have similarities, but differ in usage, syntax and some limitations
+**Anonymous class** is a local class without a name that is declared and created at the same time
+**Lambda** is a shorthand way of declaring an implementation of a functional interface
+
+|**Criterion**|**Anonymous class**|**Lambda expression**|
+|---|---|---|
+|**Syntax**|More bulky|Short and concise|
+|**Compatibility**|Any interface or class|Functional interface only|
+|**Using `this`**|Refers to an instance of an anonymous class|Refers to an instance of an external class|
+|**Multi-method interfaces**|You can override multiple methods|Not supported (only one method)|
+|**Variable support**|Can contain its own variables and methods|Cannot contain custom methods or fields|
+|**Performance**|More resource intensive (creates a new class)|Optimized JVM (does not create a new class object)|
+"""
+source_hash = "26a87b67bf7fd561ddabdc02233edb19ff060bb366c015c224ec8b1a2f448db8"
+
+[[questions]]
+id = 6
+question = "What does the Function interface do?"
+answer = """
+`java.util.function.Function` is a built-in function interface added in Java SE 8.
+
+Takes a value as an argument of one type and returns another value. Often used to convert one value to another:
+
+```java
+@FunctionalInterface
+public interface Function<T, R> {
+    R apply(T t);
+}
+```"""
+source_hash = "19a5bcee8ae0ce7c83f11d0bde40bc0a76a2a122c8f0329b3569a273a009ee36"

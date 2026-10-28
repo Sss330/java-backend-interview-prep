@@ -1,0 +1,52 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 13
+title = "Database Migrations"
+popularity = 4.35
+
+[[questions]]
+id = 1
+question = "What is Liquibase, and what is it used for?"
+answer = "Liqubase is a database migration management tool. Allows you to version changes in the database, track them and automatically apply them during updates"
+source_hash = "fae0eab3a9fd362231c70ad6efb1664b2c35f68f10d069eddac7160af1e188e2"
+
+[[questions]]
+id = 2
+question = "What records does Liquibase create when applying migrations?"
+answer = """
+Liquibase automatically creates several service tables (during the first migration) and uses them to track the current state of the database schema and applied migrations
+
+**DATABASECHANGELOG** - stores information about completed migrations (changelog files).
+
+|**Field**|**Description**|
+|---|---|
+|ID|Unique change identifier|
+|AUTHOR|Migration Author|
+|FILENAME|Path to the migration file (for example, `changelog.xml`)|
+|DATEEXECUTED|Change execution date|
+|ORDEREXECUTED|How to make changes|
+|MD5SUM|Hash of change contents for verification|
+
+**DATABASECHANGELOGLOCK** - prevents different processes from executing migrations at the same time
+
+|**Field**|**Description**|
+|---|---|
+|ID|Lock ID (usually `1`)|
+|LOCKED|Flag (`TRUE` or `FALSE`) indicating whether the lock is occupied|
+|LOCKGRANTED|Lock grant time|
+|LOCKEDBY|Information about the process that holds the lock|
+"""
+source_hash = "2ea00d7123ca7e2a11b4a32acd80cef757d3266e42b32c62f3fe6748545106f0"
+
+[[questions]]
+id = 3
+question = "Why do we need migration tools?"
+answer = """
+Migration tools (Liquibase, Flyway) are needed to easily manage migrations. Main goals:
+1. **automation of updates** - automatic application of database changes (creating tables, adding columns, indexes, etc.)
+2. **rollback changes** - ability to cancel applied migrations in case of errors
+3. **track changes** - allows you to keep a history of all changes to the database (versioning)
+4. **security** - tools prevent two processes from executing migrations simultaneously (via locks)
+5. **consistency** - changes are guaranteed to be applied equally in all environments (local, test, production)
+6. **make collaboration easier** - developers can sync their changes through centralized migration files"""
+source_hash = "b24211e64ab287cacc14e05e2c18cd829666b4430e8837431c6fc5f860102e4d"

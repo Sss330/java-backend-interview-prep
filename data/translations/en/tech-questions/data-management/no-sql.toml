@@ -1,0 +1,84 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 12
+title = "NoSQL"
+popularity = 4.66
+
+[[questions]]
+id = 1
+question = "What types of NoSQL databases exist?"
+answer = """
+
+| **Type**                       | **Example**      | **Features**                                               | **When to use**                     |
+| ----------------------------- | --------------- | ------------------------------------------------------------- | ------------------------------------------ |
+| Document-oriented                   | MongoDB         | JSON documents, flexible structure                              | Dynamic, unstructured data   |
+| Key-value                 | Redis, DynamoDB | The fastest possible access                                    | Cache, data with unique keys          |
+| Column <br>(wide-column) | Cassandra       | Storing columns inside other columns, combining them into groups | Analytics, big data processing        |
+| Search engines                     | Elasticsearch   | Inverted index, in fact a document database                      | Full text search, log search       |
+| Graph                      | Neo4j           | Nodes and connections                                                  | Modeling complex relationships between data |
+"""
+source_hash = "58c7004f02b448caa22c9967d8a3606db5bb17f266eefcc822a21fff956628ee"
+
+[[questions]]
+id = 2
+question = "What is Redis used for?"
+answer = """
+Redis is a high-performance NoSQL database that runs in-memory, providing minimal latency. The main purpose of Redis is to store data in the form of key-value
+"""
+source_hash = "4b509f0e73a47a0d338c7d836164f45a94f9ac8f3a61f548effb38df70243bcd"
+
+[[questions]]
+id = 3
+question = "What is a cache?"
+answer = """
+[Article about cache on Habré](https://habr.com/ru/articles/734660/)
+
+**Cache** is a temporary storage of data created to speed up re-access to it
+
+**Advantages**
+- **Acceleration** - data is retrieved from the cache faster than from the main storage
+- **Resource saving** - reducing the load on the database server
+- **Reduced latency** - quick access to frequently used data
+
+**Example**
+Caching the result of an SQL query:
+1. user makes a query to the database
+2. the result is saved in Redis
+3. repeated request returns data from Redis cache
+
+**Approaches to setting up cache invalidation**
+Cache invalidation is necessary to ensure that the data in the cache is current. There are several basic approaches:
+
+**1. Time-to-Live (TTL)**
+Sets the lifetime of data in the cache. After this time has expired, the data is deleted automatically
+
+**Advantages**:
+- Easy setup, minimal system load
+
+**Disadvantages**:
+- It is possible to work with outdated data before the TTL expires
+
+Setting the lifetime to 60 seconds:
+```java
+redis.set(key, value, 60);
+```
+
+**2. Manual Invalidation**
+Cache invalidation is performed explicitly, for example when updating data in the main database
+
+**Advantages**
+- Full control over the process
+
+**Disadvantages**
+- Human error is possible - forgetting to delete data from the cache
+
+Deleting a key after changing a record in the database:
+```java
+redis.del("user:123");
+```
+
+**3. Invalidation by event**
+Data is invalidated when some event occurs - usually this is a data update at the source (**write through** and **write aside** caching strategies).
+Also, the time of the last data modification can be used as an event for data invalidation
+"""
+source_hash = "504f4ca7b54ff724d0c1a4517d01b30fdd7cf2f716a2ae57e2b77cb9d372a28a"

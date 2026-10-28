@@ -1,0 +1,6 @@
+<nav class="site-language-switcher" aria-label="{{ if eq .Language.Lang "en" }}Language{{ else }}Язык{{ end }}" data-language-switcher data-current-language="{{ .Language.Lang }}">
+  <span>Язык / Language:</span>
+  {{ range .AllTranslations }}
+    <a href="{{ .RelPermalink }}?lang={{ .Language.Lang }}" lang="{{ .Language.Lang }}" hreflang="{{ .Language.Lang }}" data-language-link="{{ .Language.Lang }}" {{ if eq .Language.Lang $.Language.Lang }}aria-current="true"{{ end }}>{{ .Language.LanguageName }}</a>
+  {{ end }}
+</nav>

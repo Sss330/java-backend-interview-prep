@@ -1,0 +1,821 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 14
+title = "ORM"
+popularity = 41.3
+
+[[questions]]
+id = 1
+question = "What are Hibernate, JPA, JDBC, and ORM?"
+answer = """
+ **ORM (Object-Relational Mapping)** - the concept of converting relational database entities into objects and back (in relation to object-oriented programming languages)
+  **JPA (Java Persistence API)** - specification describing the concept of ORM for Java
+  **Hibernate** is one of the JPA implementations
+  **JDBC (Java DataBase Connectivity)** - standard for interaction between a Java application and a database
+"""
+source_hash = "8130274c28d73258bac8dc2862f46cb4aa3915548fcb71191397c71ddb7c9cd2"
+
+[[questions]]
+id = 2
+question = "Pros and cons of ORM"
+answer = """
+**Pros:**
+- **Speed up application development**
+- **Ease of development:**
+    - allows business methods to access Java classes rather than the database
+    - Entities are based on business problems, not on the database structure
+- **Portable** - ORM can work with various RDBMS, making it more portable than SQL
+- **Transaction Management**
+
+**Cons:**
+- **Difficult to learn** - The ORM paradigm is non-trivial and may be counterintuitive for new developers with SQL experience
+- **Potential Performance Loss** - Automatically generating SQL queries may be less optimal than writing queries manually
+- **Does not handle complex queries well** - ORM does not handle very complex SQL queries well, such as complex aggregate functions or multi-level JOINs
+"""
+source_hash = "7defb8addf37a81e45f4705d9d53e2320e78b9539824b3c8566106c1a823e6c1"
+
+[[questions]]
+id = 3
+question = "What is an entity, and how do you define one?"
+answer = """
+Entity is a class that represents a table in a relational database. To create it, the following conditions must be met:
+- Class is not nested, interface, `enum`, or `final`
+- Annotation `@Entity` above the class
+- Constructor without parameters
+- At least one field with annotation `@Id`
+- The class must be a POJO (all fields are private + getters and setters to them)
+*Note: Multiple @Id annotations in an Entity can only be used if a composite primary key is used*
+"""
+source_hash = "1fce09e7e21717d66a2d66b8af7065e021960c452b9d0d9bd674f172e5be5c0f"
+
+[[questions]]
+id = 4
+question = "Can an entity inherit from a non-entity class?"
+answer = "Yes"
+source_hash = "1df67fe979f5899c16a89f65c1c9a28c47ba3adcb4d812ba249d5e44678c4632"
+
+[[questions]]
+id = 5
+question = "Can an entity inherit from another entity?"
+answer = "Yes"
+source_hash = "6a6e9565c1864902d1eee0e6f30c16cb9e1648f9413ae20e2d9acc93f7a448fa"
+
+[[questions]]
+id = 6
+question = "Why are final classes unsuitable as JPA entities?"
+answer = """
+Because Hibernate makes a proxy through inheritance from the entity class, `final` directly prevents this.
+"""
+source_hash = "75da1d0d4215c3258bbe15599a5b9f432bff7d71cbc09f275b2f3af21ea55185"
+
+[[questions]]
+id = 7
+question = "What is a proxy, and what is it used for?"
+answer = """
+**Hibernate Proxy** is a proxy object that inherits from the target class and is used to lazily load entities. This means that Hibernate creates a proxy object instead of the real object from the database, and the real data is only loaded the first time it is accessed. This helps optimize performance by loading data only when it is actually needed
+
+**Mechanism**
+Hibernate creates a subclass of the requested class or interface implementation that overrides methods to ensure that data is loaded only when they are called.
+```java
+Session session = sessionFactory.openSession();
+User user = session.get(User.class, 1); // Full object
+User lazyUser = session.load(User.class, 2); // Proxy-object
+```
+- In the case of `session.get()`, the object is loaded immediately.
+- When using `session.load()`, the object is replaced by a Proxy before the data is actually accessed.
+"""
+source_hash = "55d5b0eda64f95e3e96224b8e268c43628d3e4945b097407d59ad99e245331a0"
+
+[[questions]]
+id = 8
+question = "FetchType"
+answer = """
+`LAZY` - proxies will be inserted instead of such fields, and they themselves will be loaded the first time you access them
+`EAGER` (greedy) - related entities are loaded immediately along with the main entity
+
+`@OneToMany` `@ManyToMany` is used by default `FetchType.LAZY`
+`@ManyToOne` `@OneToOne` `FetchType.EAGER` is used by default
+"""
+source_hash = "10a120ddaadd0f2fa4441631f8d182301b7ff060356cdd77dede624175223cd3"
+
+[[questions]]
+id = 9
+question = "Describe the entity lifecycle."
+answer = """
+In Hibernate, an entity can be in one of four states:
+- Transient
+- Persistent
+- Detached
+- Removed
+
+{{< figure src="/java-backend-interview-prep/hibernate_entity_life_cycle.png" title="" >}}
+
+**Transient (new)**
+The entity has just been created using the new operator, but has not yet been saved to the database
+```java
+User user = new User(); // the object is not yet associated with the database
+user.setName("John");
+```
+
+**Persistent/managed (save, persist, update, get)**
+When an object is saved to the database via an EntityManager or Session, it becomes persistent. In this state, Hibernate keeps track of the object. Any changes to the object are automatically synchronized with the database
+```java
+Session session = sessionFactory.openSession();
+session.beginTransaction();
+session.save(user); // the object is now able persistent
+```
+
+**Detached (session closed)**
+When the session is closed, the object goes into the detached state. It is still associated with the data in the database, but is no longer synchronized with it
+```java
+session.close(); //  the object can be used, but changes will not be saved to the database
+```
+
+**Removed (delete(obj))**
+When an entity is removed from the database, it goes into the removed state. In this state, the object still exists in memory, but has already been removed from the database
+```java
+session.delete();
+```
+
+"""
+source_hash = "de1fac2368d503393360b0a31d383b5a705249bf0d485e5494c729c6f03f8a05"
+
+[[questions]]
+id = 10
+question = "Caching"
+answer = """
+**Level 1 cache**
+- This cache is always enabled and operates at the `Session` level (each session has its own cache and cannot be accessed from another session)
+- The cache stores only entities whose status is `persistent`
+- Tracked entities (`persistent`) are stored in a map, where the key is the entity ID, and the value is the entity objects themselves
+- For repeated queries, Hibernate uses cached data instead of running a new database query
+- When the session is closed, the cache is deleted
+
+**Level 2 cache**
+- This is an additional cache that must be enabled manually
+- Operates at level `SessionFactory`
+- Used to cache data between sessions, allowing reuse of data already loaded from the database
+- Once `SessionFactory` is closed, all cache associated with it is deleted
+
+**Level 3 cache**
+- Caches query results at the SQL query level (caches sample results)
+"""
+source_hash = "1e7cf7d20aa16a607c0d6c0027ad919e795de36e0532a444098d4207120e5e43"
+
+[[questions]]
+id = 11
+question = "HQL and JPQL"
+answer = """
+**JPQL (Java Persistence Query Language)** is an object-oriented query language of the JPA specification that is supported by all implementations, very similar to SQL, but uses entity names instead of table names
+**HQL (Hibernate Query Language)** - JPQL implementation from Hibernate
+"""
+source_hash = "4e57aa943526883a2f59fdbd00e7db5c9f9f85296c52f57f65d0841de3700cac"
+
+[[questions]]
+id = 12
+question = "How do EntityManager, EntityManagerFactory, Session, and SessionFactory relate?"
+answer = """
+**EntityManager** - entity manager, defined by the JPA specification, **Session** from Hibernate - a variant of its implementation
+**EntityManagerFactory** - JPA manager factory, **SessionFactory** - Hibernate implementation
+"""
+source_hash = "4327c974dea8ebf845444ee976c0f36ac7fd0fdb0108b96029533ebb124bb8ec"
+
+[[questions]]
+id = 13
+question = "What is the N+1 query problem, and how can it be solved?"
+answer = """
+This is a problem that occurs when lazy loading an entity from the database, when instead of one query including the main entity and all dependent entities, there is one query for the main entity and N queries for dependent entities
+
+**Example:**
+There are two related entities: User and Order. Each user can have many orders
+
+Let's say you need to get a list of all users and their orders. The N+1 problem occurs when, instead of making one database query to get all users and their orders, the application first makes 1 query to get all users, and then makes N additional queries - one for each user to get their orders
+```java
+@Entity
+public class User {
+    @Id
+    private Long id;
+    private String name;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Order> orders;
+}
+
+@Entity
+public class Order {
+    @Id
+    private Long id;
+    private String item;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+}
+```
+
+---
+ **How to Avoid the N+1 Problem**
+- JOIN FETCH. This is a way to tell Hibernate to load related data along with the main data (like a regular JOIN). Nuances:
+    - It is necessary to use `DISTINCT` to avoid duplicates (due to JOIN, a Cartesian product will occur with the collection - for each related entity, a main entity will be added)
+    - Doesn't work with pagination (`setFirstResult`, `setMaxResults`) if using `JOIN FETCH` with a collection
+```java
+@Query("SELECT DISTINCT u FROM User u JOIN FETCH u.orders")
+List<User> findAllUsersWithOrders();
+```
+
+- Use EntityGraph. We specify what data to load in specific requests without changing the entity (as is the case with greedy loading)
+```java
+@EntityGraph(attributePaths = {"orders"})
+List<User> findAll();
+```
+
+- Use **`FetchMode.SUBSELECT`** - loads all collections in one subquery on the first request
+    ```java
+        @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+        @Fetch(FetchMode.SUBSELECT)
+        private List<Order> orders;
+    ```
+        Broadcast on
+```sql
+SELECT * FROM order WHERE user_id IN (SELECT id FROM user) 
+```
+
+- Use batch loading - `@BatchSize` allows you to load related entities in batches
+        ```java
+    private List<Book> books;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @BatchSize(size = 50)
+    private List<Order> orders;
+    ```
+    For 100 orders, Hibernate will execute 2 queries:
+```
+    SELECT * FROM order WHERE user_id IN (?, ?, ..., ?) // 50 ID
+    SELECT * FROM order WHERE user_id IN (?, ?, ..., ?) // Remaining 50 ID
+```
+
+- Use `FetchType.EAGER` instead of `FetchType.LAZY`
+"""
+source_hash = "0b2e4d87332d6053df09596afa606a05a4e5c8893241f27a6d2bf556614d72a0"
+
+[[questions]]
+id = 14
+question = "What is an entity graph?"
+answer = """
+Entity Graph is a mechanism in JPA that allows you to control your data loading strategy by determining which related entities should be loaded immediately (eager) and which should be loaded lazily (lazy). This gives flexibility in choosing fields to load depending on the request
+
+**How to create?**
+Created by the `@NamedEntityGraph` annotation at the entity level or dynamically via the API
+
+**What's under the hood?**
+Entity Graphs work at the SQL query level, adding the necessary JOINs and selecting the necessary fields
+
+**Use of graph name**
+```java
+EntityManager entityManager = ...;
+
+Map<String, Object> properties = new HashMap<>();
+properties.put("javax.persistence.loadgraph", entityManager.getEntityGraph("User.withRoles"));
+
+User user = entityManager.find(User.class, 1L, properties);
+```
+
+**Using a dynamic graph**
+```java
+EntityManager entityManager = ...;
+
+EntityGraph<User> entityGraph = entityManager.createEntityGraph(User.class);
+entityGraph.addAttributeNodes("roles");
+
+Map<String, Object> properties = new HashMap<>();
+properties.put("javax.persistence.loadgraph", entityGraph);
+
+User user = entityManager.find(User.class, 1L, properties);
+```
+
+**Usage in Spring Data JPA**
+```java
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    @EntityGraph(attributePaths = {"roles"})
+    User findByName(String name);
+}
+```"""
+source_hash = "a939c8f4f07230a830f18d2353adbe4c25ec75d2d85885c9f9ad56cc5cad1846"
+
+[[questions]]
+id = 15
+question = "How do Statement, PreparedStatement, and CallableStatement differ?"
+answer = """
+- Statement is an object that is used to form simple SQL queries. Vulnerable to SQL injections
+- PreparedStatement - extends Statement, adds:
+    - protection against SQL injections
+    - possibility of dynamically inserting parameters
+    - caching, which speeds up queries
+- CallableStatement - extends PreparedStatement, needed to call stored procedures
+"""
+source_hash = "285aab1e5cb5701f385c60f71e8a27cbaa837decbe2d36aa1ddd7e04cd434f97"
+
+[[questions]]
+id = 16
+question = "Relationships between tables in ORM"
+answer = """
+1. OneToOne - one instance of an entity can be associated with at most one instance of another entity
+2. OneToMany - one entity can refer to many entities
+3. ManyToOne - multiple entities can refer to one entity
+4. ManyToMany - many entities can refer to many entities. 
+   - **Bidirectional** (using MappedBy) - a link to the relationship is established for all entities, i.e. in entity 1 there will be a link to entity 2 and vice versa. Entity 1 will be the owner of this relationship (important when cascading deletes) 
+   - **Unidirectional** - the link to the connection is established only on one side
+
+**How is OneToMany communication implemented?**
+One object of one entity corresponds to many objects of another entity
+```java
+@Entity
+public class Department {
+    @Id @GeneratedValue
+    private Long id;
+
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
+    private List<Employee> employees;
+}
+
+@Entity
+public class Employee {
+    @Id @GeneratedValue
+    private Long id;
+
+    @ManyToOne
+    private Department department;
+}
+```
+
+**How is ManyToOne communication implemented?**
+A set of objects of one entity corresponds to one object of another entity
+```java
+@Entity
+public class Employee {
+    @Id @GeneratedValue
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+}
+
+@Entity
+public class Department {
+    @Id @GeneratedValue
+    private Long id;
+}
+```
+
+**How is ManyToMany communication implemented?**
+To implement this type of connection, an intermediate table is created to store the identifiers of both entities
+
+**Example**: Teachers can teach multiple subjects, each subject can be taught by multiple teachers
+```java
+@Entity
+public class Student {
+    @Id @GeneratedValue
+    private Long id;
+
+    @ManyToMany
+    @JoinTable(
+        name = "student_course",
+        joinColumns = @JoinColumn(name = "student_id"),
+        inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    private List<Course> courses;
+}
+
+@Entity
+public class Course {
+    @Id @GeneratedValue
+    private Long id;
+
+    @ManyToMany(mappedBy = "courses")
+    private List<Student> students;
+}
+```
+
+|**Communication type**|**Essence**|**Relationship example**|**Features**|**Implementation in database**|
+|---|---|---|---|---|
+|OneToOne|One to one|Passport and owner|Every entity is connected to one other entity|One of the objects contains a foreign key|
+|OneToMany|One to many|Department and employees|One entity is related to multiple entities of another entity|One foreign key on the “many” side|
+|ManyToOne|Many to one|Employees and department|Inverse relation to `OneToMany`|Foreign key on the “many” side|
+|ManyToMany|many to many|Students and courses|A set of objects of one entity corresponds to a set of another|Intermediate table|
+
+**OneToMany: difference between List and Set**
+
+|**Characteristics**|`List`|`Set`|
+|---|---|---|
+|Uniqueness|Allows duplicates|Guarantees the uniqueness of elements|
+|Order|Preserves the order of adding|Doesn't guarantee order|
+|Productivity|Slower when checking availability|Faster when checking availability|
+|Implementation used|`ArrayList` or `LinkedList`|Usually `HashSet` or `TreeSet`|
+
+**What is `Cascade`?**
+`Cascade` in JPA defines what to do with dependent objects when the main object changes.
+
+**Example:**
+```java
+@Entity
+class Parent {
+    @Id @GeneratedValue
+    private Long id;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<Child> children;
+}
+
+@Entity
+class Child {
+    @Id @GeneratedValue
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Parent parent;
+}
+```
+If you delete `Parent`, then all `Child` objects will also be deleted.
+
+|**Type**|**Description**|
+|---|---|
+|`ALL`|Applies all types of cascade (`PERSIST`, `REMOVE`, `MERGE`, `REFRESH`, `DETACH`)|
+|`PERSIST`|Automatically saves dependent entities|
+|`REMOVE`|Removes dependent entities|
+|`MERGE`|Updates dependent entities|
+|`REFRESH`|Overwrites dependent entities from the database|
+|`DETACH`|Removes dependent entities from the context (but not from the database)|
+
+**Pros:**
+- Simplifies working with dependent objects
+- Automates `save()` and `delete()`
+- Reduces the number of `EntityManager` calls
+
+**Cons:**
+- May unexpectedly delete important data (`REMOVE` without checking)
+- `ALL` may result in unexpected cascading operations
+- Can overload the database if there are too many dependencies
+"""
+source_hash = "1f447a649e46117b66885747214d99267283e373997bec8cc01d8020e139a669"
+
+[[questions]]
+id = 17
+question = "LazyInitializationException"
+answer = """
+This happens when an object was loaded with lazy loading, but its data tries to be used after the session is closed
+
+```java
+public void printAuthorBooks(Long authorId) {
+    Session session = sessionFactory.openSession();
+    Author author = session.get(Author.class, authorId);
+    session.close();
+
+    // Trying to access a lazy collection after the session is closed
+    System.out.println(author.getBooks());  // May cause LazyInitializationException
+}
+```
+
+How to solve?
+- JOIN FETCH. This is a way to tell Hibernate to load related data along with the main data (like a regular JOIN)
+- Use EntityGraph. We specify what data to load in specific requests without changing the entity (as is the case with greedy loading)
+"""
+source_hash = "8a2f62543dc9be60d0c47240c45cca7c22eea3cbe9e2ee1af5f1402ad7263f82"
+
+[[questions]]
+id = 18
+question = "What is SQL injection?"
+answer = """
+This is a type of vulnerability that allows attackers to modify database queries by inserting code into the query parameters that changes the behavior of the original SQL query.
+```sql
+SELECT * FROM users WHERE username = 'user' OR '1'='1';
+```
+
+Consequences of SQL injections
+- Login without checking login and password
+- Ability to delete important data from the database
+- Ability to change data in the database
+- Access to confidential information
+
+How to avoid:
+- Use PreparedStatement
+- Use Hibernate
+"""
+source_hash = "9325dd92189f35711fb7669c69a524672b9deb2cf9d50c8829585f82f362516c"
+
+[[questions]]
+id = 19
+question = "What problems can arise when using JOIN FETCH?"
+answer = """
+**Problem**
+Data duplication. When loading a main entity with its related entities, the results may contain duplicates
+
+**Solution**
+- Use DISTINCT to avoid duplicates
+```sql
+SELECT DISTINCT o FROM Order o JOIN FETCH o.items
+```
+- Use Set to store related elements
+"""
+source_hash = "eb827732c5731a64837e7f87092f0fb8f74827d47dd40bd58e9ada64988cdc1b"
+
+[[questions]]
+id = 20
+question = "How can Hibernate SQL queries be logged?"
+answer = """
+Hibernate provides detailed logs through the `org.hibernate.SQL` category. This helps you track generated SQL queries, parameters, and transaction execution. Enabling logs can help debug performance or query issues, but can slow down execution when there are a large number of queries.
+
+```java
+log4j.logger.org.hibernate.SQL=DEBUG
+log4j.logger.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+```"""
+source_hash = "7436e55d0039fa856e3eaaa66ac3c4088a6319605d1128765e41d21357f4ab19"
+
+[[questions]]
+id = 21
+question = "What does the @Query annotation do?"
+answer = """
+Annotation `@Query` - an annotation from Spring Data JPA, installed above the repository method (JpaRepository), - allows you to write a JPQL or SQL query.
+
+**JPQL queries** (Java Persistence Query Language)
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Usage JPQL for data sampling
+    @Query("SELECT u FROM User u WHERE u.name = :name")
+    List<User> findByName(@Param("name") String name);
+}
+```
+
+**Native SQL queries**
+```java
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Usage SQL-request
+    @Query(value = "SELECT * FROM users WHERE name = :name", nativeQuery = true)
+    List<User> findByNameNative(@Param("name") String name);
+}
+```
+
+**Parameters in requests**
+```java
+@Query("SELECT u FROM User u WHERE u.name = :name")
+List<User> findByName(@Param("name") String name);
+```
+"""
+source_hash = "8dc2b4e88530b255fb9098099c647a139b0d2c090cf739bcd178f63e19e54f5d"
+
+[[questions]]
+id = 22
+question = "How does Hibernate generate SQL queries?"
+answer = """
+Hibernate generates SQL queries to perform operations on entities based on configuration and annotations, such as `@Entity`, `@OneToMany`, `@ManyToOne`, and others.
+
+Basic SQL queries include `INSERT`, `SELECT`, `UPDATE`, `DELETE`. Hibernate also supports the use of JPQL for entity-level queries and native SQL queries to perform specific operations
+1. Hibernate analyzes the entity metamodel to understand how objects map to tables
+2. The type of operation (CRUD) determines what SQL query to generate
+3. The database dialect specifies the SQL syntax
+4. Queries are built taking into account annotations (`@Lazy`, `@Eager`) and the API used (JPQL, Criteria or Native SQL)
+5. Hibernate optimizes SQL queries based on relationships, lazy loading, and caching
+"""
+source_hash = "3f3b1f49b5b6a9c226214fe180b5e81cc47a40b3c0d750ac6994ffe2d876f801"
+
+[[questions]]
+id = 23
+question = "What does the persistence context store, and how long are entities retained?"
+answer = """
+**Persistence Context** is a Hibernate mechanism that manages the state of entities within a Session. It tracks changes to entities and synchronizes them with the database. Persistence Context can be thought of as a first-level cache that exists for the life of the session.
+
+The Persistence Context stores:
+1. **Managed Entities**:
+    - these are objects that were loaded in the current session (for example, using `session.get()`, `session.load()`, or through requests `HQL`, `Criteria API`)
+    - Hibernate tracks changes to these objects and automatically syncs them to the database when a transaction is committed
+2. **Entities added for saving**:
+    - objects that were added to the Persistence Context using `session.save()`, `session.persist()`, or `session.update()`
+3. **Entities marked for deletion**:
+    - objects that were marked for deletion using `session.delete()`
+4. **Snapshots**:
+    - Hibernate saves snapshots of the state of entities at the time they are loaded. These snapshots are used to detect changes to objects and generate corresponding SQL queries when synchronizing with the database
+5. **Entity IDs**:
+    - Persistence Context stores the IDs of all managed entities to quickly find them in the cache
+
+**How long is an object stored in the Psersistence Context?**
+- Until the end of the session
+- Before explicit removal (`evict` or `clear`)
+- Before the object enters the `detached` state
+"""
+source_hash = "7cd6af509177cbf09ded1f0b19fc9265245cfbaa38e344608e8fa4de8133d163"
+
+[[questions]]
+id = 24
+question = "Hibernate and Lombok"
+answer = """
+**`@Data` annotation problem in Hibernate**
+`@Data` generates:  
+ - getters and setters
+ - `toString()`  
+ - `equals()` and `hashCode()`
+
+ **Problem `toString()`**
+If an entity with `@Data` has `@OneToMany(fetch = FetchType.LAZY)`, then Hibernate will create a proxy object and Lombok will generate `toString()` with all fields involved, resulting in `LazyInitializationException`
+```java
+@Entity
+@Data
+public class User {
+    @Id @GeneratedValue
+    private Long id;
+    private String name;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Order> orders;
+}
+
+User user = session.get(User.class, 1L);
+System.out.println(user); // ❌ LazyInitializationException
+```
+
+**Solution:**  
+Use `@ToString.Exclude`
+```java
+@Entity
+@Data
+public class User {
+    @Id @GeneratedValue
+    private Long id;
+    private String name;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Order> orders;
+}
+```
+
+ **Problem with `equals()` and `hashCode()`**
+Lombok generates these methods involving all fields, including `@OneToMany`, which can lead to infinite recursion
+
+**Solution:** 
+Use `@EqualsAndHashCode(onlyExplicitlyIncluded = true)` or `@EqualsAndHashCode.Exclude`
+```java
+@Entity
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class User {
+    @Id @GeneratedValue
+    @EqualsAndHashCode.Include
+    private Long id;
+
+    private String name;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Order> orders;
+}
+```"""
+source_hash = "14dbbe11b2ba875f49a0226b389643e2672922bc7f70732b36a9268173791d31"
+
+[[questions]]
+id = 25
+question = "How are queries executed with JPA?"
+answer = """
+- basic methods of the `JpaRepository` interface (`save()`, `findAll()`, etc.)
+- magic methods - generating queries by method name (`findAllByXOrderByZ`, etc.), `JpaReposiory` extends `QueryByExample`
+- `@Query` with JPQL/HQL
+- `@Query` with `native=true`"""
+source_hash = "b09fe40b878f2e45e0c645efa6dd8fe1467ad2a3e8ea640a24648ab34350132d"
+
+[[questions]]
+id = 26
+question = "What inheritance mapping strategies does Hibernate support?"
+answer = """
+**`SINGLE_TABLE` (One table per hierarchy)**
+One table for the entire hierarchy. All entities with all their descendants are recorded in one table, where an additional column is defined to identify the entity type. The main disadvantage is that all fields will be created in the table, which are unique for some entities and empty for others
+
+```java
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
+public abstract class Vehicle {
+    @Id @GeneratedValue
+    private Long id;
+    private String manufacturer;
+    // getters/setters...
+}
+
+@Entity
+@DiscriminatorValue("CAR")
+public class Car extends Vehicle {
+    private int seatingCapacity;
+    // getters/setters...
+}
+
+@Entity
+@DiscriminatorValue("TRUCK")
+public class Truck extends Vehicle {
+    private double payloadCapacity;
+    // getters/setters...
+}
+```
+
+**Pros**: 
+- single table, simple query (without `JOIN`)
+- high reading performance
+**Cons**: 
+- many nullable columns (for fields of all subclasses)
+- the table grows “width”
+
+**`TABLE_PER_CLASS` (Separate table for each class)**
+Each entity class stores data in its own table, but only the unique fields and primary key, and all inherited fields are written to the tables of the ancestor class. 
+
+```java
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Vehicle {
+    @Id @GeneratedValue
+    private Long id;
+    private String manufacturer;
+}
+
+@Entity
+public class Car extends Vehicle {
+    private int seatingCapacity;
+}
+
+@Entity
+public class Truck extends Vehicle {
+    private double payloadCapacity;
+}
+```
+
+**Pros**: 
+- no extra nullable fields, “pure” object-relational composition model
+**Cons**: 
+- `UNION` queries when selecting all `Vehicle`
+- support for auto-increment is more difficult (not in all DBMSs)
+
+
+**`JOINED` (According to tables with `JOIN`)**
+The root class is stored in one table, each subclass is stored in its own, and the subclass table contains an FK field for the root
+```java
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Vehicle {
+    @Id @GeneratedValue
+    private Long id;
+    private String manufacturer;
+}
+
+@Entity
+@Table(name = "car")
+public class Car extends Vehicle {
+    private int seatingCapacity;
+}
+
+@Entity
+@Table(name = "truck")
+public class Truck extends Vehicle {
+    private double payloadCapacity;
+}
+```
+
+**Pros**: 
+- there are no nullable fields, the structure is relationally “pure”, easy to expand and modify.
+**Cons**: 
+- poor support for polymorphism
+- `JOIN`‑s when loading subclasses 
+- slightly lower sampling performance
+
+
+4. **`@MappedSuperclass` (Not a table-superclass)**
+An annotated superclass is not an entity and does not receive its own table; its fields will inherit the subclass tables. It is used when common fields and methods need to be “distributed” to several entities, but the hierarchy itself is not stored.
+```java
+@MappedSuperclass
+public abstract class BaseEntity {
+    @Id @GeneratedValue
+    private Long id;
+    private LocalDateTime createdAt;
+}
+
+@Entity
+public class User extends BaseEntity {
+    private String username;
+    private String email;
+}
+
+@Entity
+public class Product extends BaseEntity {
+    private String name;
+    private BigDecimal price;
+}
+```
+
+When to choose which strategy
+
+| Strategy           | Suitable for…                                       | Key Benefits                      |
+| ------------------- | --------------------------------------------------- | ------------------------------------------ |
+| `SINGLE_TABLE`      | Fast read operations, small hierarchy         | No `JOIN`, simple queries              |
+| `TABLE_PER_CLASS`   | Many different subclasses with unique fields        | Pure ORM model, no `null`              |
+| `JOINED`            | Clear data normalization, frequent schema updates | No extra columns, flexibility               |
+| `@MappedSuperclass` | Common fields for different entities without a super table   | Reusing code without affecting the DBMS |
+"""
+source_hash = "6542ba905fb5ed02b5495a6d434da14c2a1d613e327f757d25086e7a4d0cebe8"

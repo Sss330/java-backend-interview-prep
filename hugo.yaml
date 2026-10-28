@@ -1,6 +1,30 @@
 baseURL: https://zhukovsd.github.io/java-backend-interview-prep/
 title: IT Ментор | Java методичка
 languageCode: ru
+defaultContentLanguage: ru
+defaultContentLanguageInSubdir: false
+languages:
+  ru:
+    languageName: Русский
+    languageCode: ru
+    weight: 1
+    title: IT Ментор | Java методичка
+  en:
+    languageName: English
+    languageCode: en
+    weight: 2
+    title: IT Mentor | Java Interview Guide
+    menu:
+      after:
+        - name: Telegram channel
+          url: https://t.me/zhukovsd_it_mentor
+          weight: 10
+        - name: Telegram chat
+          url: https://t.me/zhukovsd_it_chat
+          weight: 20
+        - name: YouTube
+          url: https://www.youtube.com/@zhukovsd_it_mentor
+          weight: 30
 theme : hugo-book
 enableGitInfo: true
 

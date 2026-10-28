@@ -1,0 +1,17 @@
+{{/* Data-file shortcodes are not expanded by markdownify. Render figures
+     explicitly so diagrams work in both locales and at any hosting base path. */}}
+{{ $separator := "\nTECH_ANSWER_FIGURE_BREAK\n" }}
+{{ $text := replaceRE `(\{\{< figure[^>]*>\}\})` (printf "%s$1%s" $separator $separator) . }}
+{{ range split $text $separator }}
+  {{ if hasPrefix . "{{< figure" }}
+    {{ $src := replaceRE `.*src="([^"]*)".*` "$1" . }}
+    {{ $title := replaceRE `.*title="([^"]*)".*` "$1" . }}
+    {{ $src = strings.TrimPrefix "/java-backend-interview-prep/" $src | relURL }}
+    <figure>
+      <img src="{{ $src }}" alt="{{ $title }}">
+      {{ with $title }}<figcaption>{{ . }}</figcaption>{{ end }}
+    </figure>
+  {{ else }}
+    {{ . | markdownify }}
+  {{ end }}
+{{ end }}

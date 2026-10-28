@@ -1,0 +1,139 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 21
+title = "Deployment"
+popularity = 9.32
+
+[[questions]]
+id = 1
+question = "What is CI/CD?"
+answer = """
+CI/CD (continuous integration - continuous delivery/deployment) - a set of tools and practices for automating application testing and deployment
+CI - automation of testing and integration of code into a common branch. For example, tests and vulnerability analysis are launched for each pull/merge request
+CD - automation of the process of delivery and deployment of applications to various environments (dev, staging, production) after successful testing
+"""
+source_hash = "240659e3056bfddb3a771ecafd12d8dc402487225926afa7b7ad7e72ac1a75d3"
+
+[[questions]]
+id = 2
+question = "How does Docker work, and what does a Docker image contain?"
+answer = """
+The Docker image consists of:
+- base layer (e.g. alpine, ubuntu)
+- a set of filesystem layers that include installed packages, dependencies, and configurations
+- manifest (metadata) describing its layers and dependencies
+"""
+source_hash = "43a330adbf2d472c4ceace423d003f7b767d77ecf623714c5f7801080249ca24"
+
+[[questions]]
+id = 3
+question = "What is a Docker image layer, and which instructions create layers?"
+answer = """
+A Docker image layer is an immutable part of the image that contains changes relative to the previous layer. Layers are cached and reused.
+
+Create a new layer: `RUN`, `COPY`, `ADD`."""
+source_hash = "9a5c54ab0f740d40df1c7809e5a86c33636023b52eed8081f8d0e47fc3399c63"
+
+[[questions]]
+id = 4
+question = "What is Docker Compose?"
+answer = """
+*Docker Compose* is a tool for running and managing multiple Docker containers described in a single file `docker-compose.yml`. It allows you to easily manage dependent services (eg web server, database) in one environment.
+
+---
+***Difference between Docker File and Docker Compose***
+
+**Dockerfile** and **Docker Compose** are Docker tools, but they serve different purposes:
+
+1. **Dockerfile**
+    
+    - This is the file where you describe how to build a container image (template).
+    - With its help, you can specify which programs to install, which files to add, and which command to run when the container starts.
+    - Used to create **one image**.
+    - *Example*:  
+        You want to run an application in Java. In the Dockerfile, you specify that the desired version of the JDK be downloaded, your code copied, and the application launched.
+2. **Docker Compose**
+    
+    - It is a tool for managing multiple containers.
+    - In the `docker-compose.yml` file, you describe how different containers will interact: what ports to open, what networks to use, what data to store.
+    - Used for **orchestration of multiple services**.
+    - *Example*:  
+        Your Java application uses a database. In Compose, you specify how to run the application and database containers at the same time, and configure their connection.
+
+**Key Difference:**
+
+- **Dockerfile** is needed to create an image of a single container.
+- **Docker Compose** - for managing and running multiple related containers.
+
+"""
+source_hash = "80cba45a6f7f1eb09e6860a24684fd50e4d17623d68ac8990b84d257186aadcb"
+
+[[questions]]
+id = 5
+question = "How do Dockerfile ARG and ENV differ?"
+answer = """
+- `ARG` - parameters that are passed during image build. Available only during Docker image creation and not saved in the container
+- `ENV` - environment variables that are set in the container and can be used by applications running in the container
+"""
+source_hash = "2de16323f2478d0ffd54a85f9ef332bdfa1d193c81cafbf30a730bf92c4f1c66"
+
+[[questions]]
+id = 6
+question = "How do CMD and ENTRYPOINT differ?"
+answer = """
+`CMD` - defines the default command that is executed when the container starts. Can be overridden at startup (`docker run`)
+`ENTRYPOINT` - specifies a fixed command that will always be executed. Arguments can be passed via `CMD` or the command line. Can be overridden via the `--entrypoint` flag
+
+[Article on Habré about CMD and ENTRYPOINT in Dockerfile](https://habr.com/ru/companies/nixys/articles/830830/)
+"""
+source_hash = "295ac5938e05647d49a4d3e6b5e059bdb8e8ffc9509033ba6d0b78e763194079"
+
+[[questions]]
+id = 7
+question = "Differences between containerization and virtualization"
+answer = """
+Virtualization is emulation at the hardware level. Each virtual machine is an independent machine with its own OS
+
+Containerization is the separation of applications at the operating system level. Containers use the same OS kernel and are isolated from each other
+"""
+source_hash = "d726a75b9a0641a717228666d614d2b7ab1099295641abee79237189f2fa8919"
+
+[[questions]]
+id = 8
+question = "How do you operate and monitor a service in production?"
+answer = """
+Supporting a service in production includes ensuring its availability, performance and reliability
+
+**General approaches:**
+1. **Monitoring and logging**
+    - **Prometheus** - metrics collection
+    - **Grafana** - visualization of metrics, setting up alerts
+    - **ELK Stack (Elasticsearch, Logstash, Kibana)** - analysis and storage of logs
+    - **Datadog / New Relic** - for complete application and infrastructure monitoring
+2. **Failure Management**
+    - Setting up an alert system (for example, via **PagerDuty** or **Grafana**)
+    - Automating service restarts using **Docker Restart Policies** or **Kubernetes Deployment Strategies**
+3. **Recovery Plans**
+    - Setting up backup (database, configurations)
+    - Development of disaster recovery scenarios
+4. **Scalability**
+    - Horizontal scaling using **Kubernetes**, **Docker Swarm** or cloud solutions (AWS ECS, Azure AKS, Google GKE)
+    - Using **autoscaling** to add resources during peak load times
+5. **CI/CD integration**
+    - Automatic update deployment with pre-testing
+    - Configuring rollback stages in case of failure
+6. **Health Checks**
+    - Setting up a service health check (for example, HTTP `/health` endpoint)
+    - Built-in Docker or Kubernetes mechanisms for container monitoring
+
+**Service monitoring example**
+1. **Monitoring metrics**
+    - Configuring **Prometheus** to collect data on requests, CPU load and memory usage
+    - Visualization of dashboards in **Grafana**
+2. **Logging**
+    - Service logs are collected via **Fluentd** or **Filebeat** and sent to **Elasticsearch**
+3. **Alerts**
+    - Setting up alerts via **Slack** or **PagerDuty** for notifications of failures or anomalies
+4. **Status checks**
+    - Adding a `/health` endpoint that returns status 200 if the service is working correctly"""
+source_hash = "0422f9e02550b27d2c3602a0d4f9d37031bf13e02746bc20094f2e3ecbd94259"

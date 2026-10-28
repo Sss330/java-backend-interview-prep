@@ -1,0 +1,681 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 4
+title = "Collections"
+popularity = 54.04
+
+[[questions]]
+id = 1
+question = "Describe the Java collections hierarchy."
+answer = """
+**Collection** and **Map** are the two main interface families in the Java Collections Framework. `Collection` extends `Iterable`; its main subinterfaces include `List`, `Queue`, and `Set`. `Map` is a separate interface for key-value mappings.
+
+Methods declared by `Iterable`:
+- `iterator`, `forEach`, `spliterator`
+
+Additional methods on `Collection`:
+- `size`, `isEmpty`, `contains`
+- `equals`, `hashCode`
+- `add`, `remove`, `clear`, `toArray`, `stream`, and others
+
+Methods on `Map`:
+- `size`, `isEmpty`, `containsKey`, `containsValue`
+- `equals`, `hashCode`
+- `put`, `get`, `remove`, `clear`
+- `keySet`, `values`, `entrySet`, `forEach`, and others
+"""
+source_hash = "e27eae895a27a9616ebebf25cb8b5bf21a547d2d88c2adc7a4e334f3932c902f"
+
+[[questions]]
+id = 2
+question = "What is ArrayList?"
+answer = """
+`ArrayList` is a list backed by a dynamically growing array. Its elements are stored in an array internally.
+"""
+source_hash = "67dd5bc067bd2060dcbdebb478f60638f1fcfbeee28b89c5b8333a484bbad530"
+
+[[questions]]
+id = 3
+question = "What is the default array capacity of an ArrayList?"
+answer = """
+The default capacity is **10**. In modern OpenJDK implementations, the no-argument constructor initially uses an empty array and allocates space for 10 elements when the first element is added. Capacity is different from size: a new list has size 0.
+
+**Can you specify the initial capacity?**
+
+Yes, through the constructor:
+
+```java
+List<String> list = new ArrayList<>(15);
+```
+"""
+source_hash = "3e38cd2327ad91b66d82abb6acfe14cc57c2599a81567a5c39b246e6adaa584e"
+
+[[questions]]
+id = 4
+question = "What happens internally when you add or remove an ArrayList element at the beginning, middle, or end?"
+answer = """
+**Adding at the end:**
+1. Check whether the backing array has enough capacity. If it does not, allocate a larger array and copy the existing elements. OpenJDK typically grows the capacity by about 1.5 times; the exact growth policy is an implementation detail.
+2. Store the new element after the last existing element.
+
+**Adding at the beginning or in the middle:**
+1. Grow the backing array if necessary.
+2. Shift the elements from the insertion index one position to the right, then store the new element at that index.
+
+Array copying and shifting use `System.arraycopy()` (directly or through helper methods). Appending may require one copy when the array grows; inserting elsewhere also requires shifting elements.
+
+**Removing an element:**
+- At the beginning or in the middle: shift the following elements one position to the left and clear the unused last slot.
+- At the end: clear the last occupied slot. No shifting is needed.
+"""
+source_hash = "9260cea8fbd21cdc20375c3fb1fab0dbb07969e27772934b014a143ea3bbd053"
+
+[[questions]]
+id = 5
+question = "What are the time complexities of ArrayList operations?"
+answer = """
+**Insertion**
+
+| Position | Typical / amortized cost | Worst case | Explanation |
+| --- | --- | --- | --- |
+| Beginning | O(n) | O(n) | Shift all existing elements to the right |
+| Middle | O(n) | O(n) | Shift the elements after the insertion point |
+| End | O(1) amortized | O(n) | Growing the array requires copying its contents |
+
+**Removal by index**
+
+| Position | Typical cost | Worst case | Explanation |
+| --- | --- | --- | --- |
+| Beginning | O(n) | O(n) | Shift the remaining elements to the left |
+| Middle | O(n) | O(n) | Shift the elements after the removed element |
+| End | O(1) | O(1) | Clear the last slot without shifting |
+
+**Access and search**
+
+| Operation | Typical cost | Worst case | Explanation |
+| --- | --- | --- | --- |
+| Access by index | O(1) | O(1) | Direct array access |
+| Search by value | O(n) | O(n) | Scan the elements in sequence |
+
+`ArrayList.contains()` takes **O(n)** time because it searches linearly, comparing elements until it finds a match or reaches the end.
+"""
+source_hash = "be89ffc23cdce49d8dfb3bc5cd5bf7b95306e57fbfe030c5024da640aecdec48"
+
+[[questions]]
+id = 6
+question = "What is LinkedList?"
+answer = """
+A linked list stores elements in nodes. Each node contains a value and a reference to the next node, or references to both neighboring nodes, depending on whether the list is singly or doubly linked. Java's `LinkedList` is **doubly linked**.
+"""
+source_hash = "905909cf75fbeb0a6e1558218a633af350f20abbcd8ef359ad65b247ee8c37fd"
+
+[[questions]]
+id = 7
+question = "What happens internally when you add or remove a LinkedList element at the beginning, middle, or end?"
+answer = """
+`LinkedList` has an internal static `Node` class representing a list element. Its `first` and `last` fields reference the first and last nodes. Each node has `prev` and `next` references.
+
+Insertion creates a node and updates its neighbors' references. Removal reconnects the neighboring nodes and clears the removed node's references. Operations at either end also update `first` or `last` as needed. For an operation by index in the middle, the list must first be traversed to find the node.
+"""
+source_hash = "42cb4878b89dcc5b7ca3df7f696dff3e56fecf6f2717b389f4d58cd69d97a53f"
+
+[[questions]]
+id = 8
+question = "What are the time complexities of LinkedList operations?"
+answer = """
+Elements form a chain of nodes. Each node holds its value and references to the previous and next nodes.
+
+**Insertion and removal by position**
+
+| Position | Insertion | Removal | Explanation |
+| --- | --- | --- | --- |
+| Beginning | O(1) | O(1) | Update the first node and neighboring links |
+| Middle, by index | O(n) | O(n) | Traverse to the position, then update links |
+| End | O(1) | O(1) | Update the last node and neighboring links |
+
+Once an iterator is already at the required position, inserting or removing through it takes O(1).
+
+**Access and search**
+
+| Operation | Typical and worst-case cost | Explanation |
+| --- | --- | --- |
+| Access the first element | O(1) | Use the `first` reference |
+| Access the last element | O(1) | Use the `last` reference |
+| Access an arbitrary index | O(n) | Traverse from whichever end is closer |
+| Search by value | O(n) | Scan nodes until a match is found |
+"""
+source_hash = "26113a698fe33033fbc9617e22f1198e836e5b711c3cca98a5288b8dc162a670"
+
+[[questions]]
+id = 9
+question = "ArrayList vs. LinkedList"
+answer = """
+| Criterion | ArrayList | LinkedList |
+| --- | --- | --- |
+| Storage | An array of element references | Nodes linked by references |
+| Append | O(1) amortized; O(n) when growing | O(1) |
+| Insert at the beginning | O(n), because elements shift | O(1) |
+| Insert in the middle by index | O(n), because elements shift | O(n) to find the position, then O(1) to link |
+| Remove | O(n), or O(1) at the end | O(n) to find a node; O(1) to unlink a known node |
+| Access by index | O(1) | O(n) |
+| Search by value | O(n) | O(n) |
+| Memory overhead | Backing array, including unused capacity | A node and neighboring references per element |
+
+**When should you use each?**
+
+- **ArrayList** is useful for fast indexed access and efficient appends. It has no per-element node allocation, but insertion or removal away from the end requires shifting elements.
+- **LinkedList** can insert or remove in constant time at the ends, or through an iterator already at the desired position. Indexed access requires traversal, and nodes add memory overhead.
+
+Frequent insertions alone do not make `LinkedList` the better choice: finding the insertion point still costs time. `ArrayList` is generally a good default for lists, and `ArrayDeque` is often suitable for queues and stacks. Measure the operations that matter for your workload.
+"""
+source_hash = "f742231af23ad4016aa952e782ba5fba95442dd8113941a28056cc32f19c08d2"
+
+[[questions]]
+id = 10
+question = "How fast is insertion into ArrayList and LinkedList?"
+answer = """
+Insertion at an arbitrary index is **O(n)** for both. `ArrayList` shifts elements and may need to grow its backing array. `LinkedList` traverses to the insertion position, then updates links in O(1).
+
+Appending to `ArrayList` is **O(1) amortized**. Inserting at either end of `LinkedList` is **O(1)**.
+"""
+source_hash = "99dc233998a3d508c1d100ed13c30962cf7db4865c916120c6fcb084efae51a7"
+
+[[questions]]
+id = 11
+question = "What is TreeMap?"
+answer = """
+`TreeMap` implements `NavigableMap`, which extends `SortedMap`. It stores key-value pairs in a **red-black tree**, ordered by the keys' natural ordering or by a comparator supplied to the constructor.
+
+Key lookup and uniqueness use `compareTo()` or the comparator, rather than hash codes. A comparison result of zero means the keys are treated as the same key. The ordering should be consistent with `equals()`.
+"""
+source_hash = "f684e954ea0c175214f9d542455557ac083834cca7ebea798f11afbfa6c26e94"
+
+[[questions]]
+id = 12
+question = "What are the time complexities of TreeMap operations?"
+answer = """
+`get()`, `put()`, `remove()`, and `containsKey()` take **O(log n)** because the red-black tree remains balanced. Searching by value with `containsValue()` and traversing all entries take **O(n)**.
+"""
+source_hash = "ad2e95324a629dfbd3665c65b2f8671f884d4f50d6698955b560de425d077818"
+
+[[questions]]
+id = 13
+question = "How does TreeMap work internally?"
+answer = """
+`TreeMap` uses a **red-black tree**. Its balancing rules include:
+1. Every node is either red or black.
+2. The root is black, and null leaves are treated as black.
+3. A red node cannot have a red child.
+4. Every path from a node to a descendant null leaf contains the same number of black nodes.
+
+Rotations and recoloring maintain these properties after insertions and removals.
+"""
+source_hash = "c455af4cfa9284a2fdd9137f6a4877b202fdfd9aaeed90d184489205d860a11f"
+
+[[questions]]
+id = 14
+question = "What is HashMap?"
+answer = """
+`HashMap` stores **key-value pairs**. Keys are unique; values may be repeated. Internally, it uses an array of buckets, whose entries can form a linked list or a red-black tree when collisions are frequent.
+
+In modern OpenJDK implementations, treeification uses a threshold of 8 and requires a table capacity of at least 64; smaller tables are resized instead. Conversion back to a list depends on the removal or resize path, with a threshold of 6 used during resize splitting.
+
+`HashMap` permits one `null` key and any number of `null` values. It does not guarantee iteration order.
+"""
+source_hash = "268f242ac6782fec39b30412ffc9096bc6dab6c8a8ea101ba26a03728ccfa3ec"
+
+[[questions]]
+id = 15
+question = "How does HashMap work internally?"
+answer = """
+A **bucket** is a slot in the backing array. Entries assigned to the same bucket are organized as a linked list or, when appropriate, a balanced tree.
+
+**How many buckets are created initially?**
+
+The default initial capacity is **16**. Modern OpenJDK allocates the table lazily on first insertion.
+
+**When does the number of buckets increase?**
+
+- When the number of mappings exceeds the load threshold.
+- When treeification is requested but the table has fewer than 64 buckets.
+
+```text
+threshold = capacity * loadFactor
+```
+
+The default load factor is **0.75**. Resizing normally doubles the table capacity.
+
+**How is the bucket index calculated?**
+
+```java
+bucketIndex = hash & (capacity - 1);
+```
+
+- `hash` is the spread hash derived from the key's `hashCode()`; for a non-null key, OpenJDK uses `h ^ (h >>> 16)`.
+- `capacity` is the table length, maintained as a power of two.
+- `bucketIndex` identifies the slot for the entry.
+
+The bit mask efficiently maps the hash to an index in a power-of-two table.
+"""
+source_hash = "2eb8a616cf49b17ff8e9aa31b1d53b3569b95e0fe9993305ac7886c7e012c472"
+
+[[questions]]
+id = 16
+question = "What is a bucket, and how is it structured internally?"
+answer = """
+A **bucket** is a slot in a `HashMap`'s backing array used to locate key-value entries. The key's hash determines the bucket index.
+
+- The hash function derives a hash from the key.
+- The bucket array stores references to entries.
+- A bucket can be empty, contain one entry, or contain multiple entries linked together or organized as a tree.
+
+```text
+HashMap (bucket array)
+|
++-- Bucket[0] -> null
++-- Bucket[1] -> Entry(key1, value1) -> Entry(key2, value2)
++-- Bucket[2] -> Entry(key3, value3)
++-- ...
+```
+
+Different keys assigned to the same bucket cause a **collision**. Their full hash codes do not have to be identical.
+
+**When does a bucket become a tree?**
+
+Modern OpenJDK can convert a long collision chain into a red-black tree. The treeification threshold is 8, and the table must have at least 64 buckets; otherwise it grows the table first.
+
+```text
+Bucket[5] -> Red-black tree
+            +-- Entry(keyA, valueA)
+            +-- Entry(keyB, valueB)
+            +-- ...
+```
+
+```java
+Map<String, String> map = new HashMap<>();
+map.put("apple", "green");
+map.put("banana", "yellow");
+```
+
+Each key is hashed and mapped to a bucket. Different keys may end up in the same bucket.
+
+| Term | Meaning |
+| --- | --- |
+| Bucket | Array slot holding entries mapped to the same index |
+| Collision | Different keys map to the same bucket |
+| Entry | An object containing a key and value |
+| Tree bin | An optimization for heavily populated buckets |
+"""
+source_hash = "fd28edc4d03b6458252e55eefb3d64e36a2f3a3815c2c1bc0652b8f4f39f881d"
+
+[[questions]]
+id = 17
+question = "What are the time complexities of HashMap operations?"
+answer = """
+| Operation | Expected cost | Worst case | Explanation |
+| --- | --- | --- | --- |
+| `put()` | O(1) amortized | O(n) | Collisions or resizing can increase the cost |
+| `remove()` | O(1) | O(n) | A badly distributed bucket may require a long search |
+| `get()` | O(1) | O(n) | Good hash distribution gives fast lookup |
+| `containsKey()` | O(1) | O(n) | Similar to lookup by key |
+| `containsValue()` | O(n + capacity) | O(n + capacity) | May scan the whole table |
+| Iteration | O(n + capacity) | O(n + capacity) | Visit the bucket array and its entries |
+
+Here `n` is the number of mappings. When capacity is proportional to size, full scans are usually described as O(n). Tree bins improve collision performance, often to O(log n), but arbitrary colliding keys do not provide an unconditional logarithmic bound.
+"""
+source_hash = "8a37bf4f532cf1de03fb7fbaf07263a0685087dce4428acde4fb1bf8810f79a8"
+
+[[questions]]
+id = 18
+question = "How is an entry added to a HashMap?"
+answer = """
+1. Compute the key's hash and bucket index.
+2. If the bucket is empty, add the entry.
+3. Otherwise, search its linked list or red-black tree:
+   - Compare hashes, then keys using `==` or `equals()`.
+   - If the key already exists, replace its value.
+   - If there is no matching key, add a new entry.
+4. After insertion:
+   - A long chain may be converted into a red-black tree.
+   - If `size > threshold`, resize the table to increase the number of buckets.
+
+**Note:** tree bins use `HashMap.TreeNode`; they are not `TreeMap` instances.
+"""
+source_hash = "feefea17e9e09bd98687da554a1be3f15fa2900782cd9cdeb0a5dc2d0b5d92ca"
+
+[[questions]]
+id = 19
+question = "Will HashMap work if every inserted key has the same hashCode()?"
+answer = """
+Yes, provided the keys obey the `equals()` and `hashCode()` contract. Equality checks distinguish keys even when their hashes match. All entries go into the same bucket, so performance degrades. Modern implementations may turn that bucket into a tree, but good hash distribution is still important.
+"""
+source_hash = "c97d15850602703884407cf94f7069c43c47fe0a5a349456b989d0ef2927c30a"
+
+[[questions]]
+id = 20
+question = "What should you know about HashMap keys?"
+answer = """
+**Why are immutable keys preferred?**
+
+The state used by `equals()` and `hashCode()` remains stable. Changing that state after insertion can make a key impossible to find in the bucket where it was originally stored.
+
+**Can a custom object be used as a key?**
+
+Yes. Implement consistent `equals()` and `hashCode()` methods when keys should use value equality. Equal objects must have equal hash codes.
+
+**Why is String a popular key type?**
+
+1. It is immutable.
+2. It has well-defined `equals()` and `hashCode()` implementations.
+"""
+source_hash = "3aaf277a0d7ed85fde642c2813dd1bd5da56f65071552894875220d10e4e48af"
+
+[[questions]]
+id = 21
+question = "Can HashMap or TreeMap contain an entry with a null key?"
+answer = """
+**HashMap:** yes, but only one mapping can have a `null` key. Inserting it again replaces its value.
+
+**TreeMap:** natural ordering rejects `null` keys with `NullPointerException`. A custom comparator can allow them, for example one created with `Comparator.nullsFirst()` or `Comparator.nullsLast()`.
+"""
+source_hash = "3788b12bd9bd34cdf0f370c330a69ef4b64df3dadff4a1e3a39b7f7be3838af9"
+
+[[questions]]
+id = 22
+question = "What is HashSet?"
+answer = """
+`HashSet` implements `Set` and stores unique elements. Internally it uses a `HashMap`, with set elements as keys and a shared placeholder object as the value.
+"""
+source_hash = "f222a4861cc8b735b78942c8d713d33a10c4fb26866513b0a4d0c86611a0fe75"
+
+[[questions]]
+id = 23
+question = "How are HashSet and HashMap related?"
+answer = """
+`HashSet` uses a `HashMap` to store its elements as map keys.
+"""
+source_hash = "e2a7b9c17c8b31db15f7f9d09a51bcbb313b427a440f42a81c3c4c9fd7949e68"
+
+[[questions]]
+id = 24
+question = "How does HashSet work internally?"
+answer = """
+**How many buckets are created initially?**
+
+The backing map has a default initial capacity of **16**, allocated lazily in modern OpenJDK.
+
+**When does the number of buckets increase?**
+
+The backing map normally doubles its capacity when the number of elements exceeds `capacity * loadFactor`. The default load factor is **0.75**. This threshold concerns the number of entries, not the percentage of nonempty buckets. Heavy collisions can also trigger resizing before treeification.
+"""
+source_hash = "ecba83b0d9e850d9a21426fe1e588cd38e457df7c9de63471c4bd90d45f94152"
+
+[[questions]]
+id = 25
+question = "What are the time complexities of HashSet operations?"
+answer = """
+`add()`, `remove()`, and `contains()` have expected **O(1)** cost with well-distributed hashes (`add()` is amortized across resizes). Their worst-case cost can be **O(n)**. These properties follow from the backing `HashMap`.
+"""
+source_hash = "8638b452a1a6e4d6acb445379c3fd1ae2f412ab4fe76512ae567017126a06ada"
+
+[[questions]]
+id = 26
+question = "How is an object added to a HashSet?"
+answer = """
+`HashSet` delegates storage to `HashMap`: the object becomes a key, and a shared placeholder serves as the value.
+
+1. Compute the object's hash and bucket index.
+2. If the bucket is empty, add the object.
+3. Otherwise, search the bucket's linked list or tree, comparing hashes and equality.
+4. If an equal key already exists, the set stays unchanged and `add()` returns `false`.
+5. If no equal key exists, insert a new entry and return `true`.
+
+Treeification and resizing follow the backing map's rules. Its tree bins use `HashMap.TreeNode`, not `TreeMap`.
+"""
+source_hash = "65548e9c01c81895e439f87ad21cb76498e57b69d0a13172415839c900ad85e0"
+
+[[questions]]
+id = 27
+question = "Will HashSet work if every inserted element has the same hashCode()?"
+answer = """
+Yes, as long as equality and hashing obey their contract. However, all elements go into the same bucket, which can make lookups much slower. Equality checks still distinguish different elements, and modern implementations may use a tree for a large collision bucket.
+"""
+source_hash = "60a9ab476b00c28442f3a5cdc77629ce87d237d6cc6f321419a3cba2de391806"
+
+[[questions]]
+id = 28
+question = "What is TreeSet, and how does it work internally?"
+answer = """
+`TreeSet` stores unique elements in sorted order. Internally, it uses a `TreeMap`, with elements as keys and a placeholder as the value. Elements are ordered naturally or by a comparator supplied to the constructor.
+
+Basic lookup, insertion, and removal take **O(log n)**. Two elements are treated as duplicates when their comparison result is zero; adding such a duplicate leaves the set unchanged.
+"""
+source_hash = "3e53dadcd92bd167a98b1e1b356df8150b8ade700df5686f14570e13cb3e008c"
+
+[[questions]]
+id = 29
+question = "What is Queue?"
+answer = """
+`Queue` is an interface for holding elements before processing. Queues commonly follow **FIFO** (First In, First Out), but the ordering depends on the implementation. For example, `PriorityQueue` retrieves elements according to priority rather than insertion order.
+"""
+source_hash = "a07cccb0e74259978e6b3669c23d57915a083b659d97fe058bde425bfbd7ef6c"
+
+[[questions]]
+id = 30
+question = "What are the time complexities of Queue operations?"
+answer = """
+They depend on the implementation. For common linked or array-based queues, `offer()`, `poll()`, and `peek()` are O(1), with amortized O(1) insertion when an array grows. For `PriorityQueue`, `offer()` and `poll()` are **O(log n)**, while `peek()` is **O(1)**.
+"""
+source_hash = "735560802e1e27248cbfa97dad20c26cbd156bef5977da11be5e18c93b4423af"
+
+[[questions]]
+id = 31
+question = "Name the main Queue implementations."
+answer = """
+1. `PriorityQueue`
+2. `LinkedList` (through `Deque`)
+3. `ArrayDeque` (through `Deque`)
+"""
+source_hash = "08fb53c93366979bb7437cf6d54e40b867804d0d04045f6006831d4c491eb643"
+
+[[questions]]
+id = 32
+question = "What is Deque?"
+answer = """
+`Deque` means **double-ended queue**. Elements can be added, inspected, or removed at either end. It can therefore act as both a **FIFO** queue and a **LIFO** stack.
+
+**What does double-ended mean?**
+
+Both the front and the back of the queue support insertion and removal.
+"""
+source_hash = "4d341967bd0cdb7c29f429f8cdbba2dec6482c84b935bebc4b31417715a727ad"
+
+[[questions]]
+id = 33
+question = "Name the main Deque implementations."
+answer = """
+1. `LinkedList`
+2. `ArrayDeque`
+"""
+source_hash = "6111049c9dacfeeeeff5ef4d64e8dca0b4db4776143e9062d56022d95a3492b8"
+
+[[questions]]
+id = 34
+question = "What are the time complexities of Deque operations?"
+answer = """
+For `LinkedList`, insertion and removal at either end take **O(1)**. For `ArrayDeque`, these operations take **O(1) amortized**, because insertion may grow the array. Searching for or removing an arbitrary value takes **O(n)**. The `Deque` interface itself does not prescribe one implementation or complexity.
+"""
+source_hash = "3c69784e26db20f34770063f74309144c53d9d4264a05b4a20998139804921ac"
+
+[[questions]]
+id = 35
+question = "Which collection supports LIFO and FIFO ordering?"
+answer = """
+`ArrayDeque` supports both:
+- **LIFO (stack):** use `push()` and `pop()` at the same end.
+- **FIFO (queue):** use `offer()` at the back and `poll()` at the front.
+"""
+source_hash = "caee3f2106380c0c69b0e4ae3436e8d0718e1a9a96e16e671ec6a4bb163cb29f"
+
+[[questions]]
+id = 36
+question = "HashMap vs. TreeMap"
+answer = """
+| Criterion | HashMap | TreeMap |
+| --- | --- | --- |
+| Data structure | Hash table | Red-black tree |
+| `put()` / `get()` | Expected O(1), with amortized insertion | O(log n) |
+| Ordering | No guaranteed iteration order | Sorted by key |
+| Null keys | Allows one | Requires a comparator that supports null |
+| Use cases | Fast lookup by key | Sorted keys, range queries, and navigation |
+"""
+source_hash = "fab003f61d48ebdac8b5b7dcb59210faa1be5eaeb4ab0f2114cb4e9e82806efe"
+
+[[questions]]
+id = 37
+question = "How are Iterable and the enhanced for loop related?"
+answer = """
+`Iterable` defines `iterator()`, allowing an object to supply an iterator over its elements. For an `Iterable`, the enhanced `for` loop is syntactic sugar for iteration:
+
+```java
+List<String> list = List.of("a", "b", "c");
+
+// Enhanced for loop
+for (String item : list) {
+    System.out.println(item);
+}
+
+// Equivalent iterator-based loop
+Iterator<String> iterator = list.iterator();
+while (iterator.hasNext()) {
+    String item = iterator.next();
+    System.out.println(item);
+}
+```
+
+Enhanced `for` loops also support **arrays**, which do not implement `Iterable`.
+
+**Can you remove elements while iterating over a collection?**
+
+For an ordinary mutable collection with a fail-fast iterator, use the iterator's own `remove()` method when supported. Structural modification through the collection itself can cause `ConcurrentModificationException`.
+
+```java
+List<String> list = new ArrayList<>(List.of("a", "b", "c"));
+Iterator<String> iterator = list.iterator();
+
+while (iterator.hasNext()) {
+    String item = iterator.next();
+    if ("b".equals(item)) {
+        iterator.remove(); // Remove through the iterator
+    }
+}
+
+System.out.println(list); // [a, c]
+```
+
+Avoid changing the list directly while its iterator is in use:
+
+```java
+for (String item : list) {
+    if ("a".equals(item)) {
+        list.remove(item); // Can trigger ConcurrentModificationException
+    }
+}
+```
+
+**Fail-fast vs. snapshot and weakly consistent iterators**
+
+Fail-fast iterators, such as those of `ArrayList`, `HashSet`, and `HashMap`, detect structural modifications on a best-effort basis, often by tracking `modCount`. They help detect bugs; they do not make a collection thread-safe. The exception can also occur within a single thread.
+
+The informal term **fail-safe** often refers to iterators that tolerate concurrent modifications, but these do not all work in the same way:
+
+- `CopyOnWriteArrayList` iterators traverse a snapshot. Later writes do not change that snapshot, and the iterator does not support removal.
+- `ConcurrentHashMap` iterators are weakly consistent. They may reflect updates made during iteration, do not require a full snapshot, and do not throw `ConcurrentModificationException`.
+
+| Criterion | Fail-fast | Snapshot / weakly consistent |
+| --- | --- | --- |
+| Examples | ArrayList, HashSet, HashMap | CopyOnWriteArrayList, ConcurrentHashMap |
+| Concurrent structural changes | May throw ConcurrentModificationException | Tolerated according to implementation semantics |
+| Mechanism | Detect unexpected structural changes | Traverse a snapshot or tolerate concurrent updates |
+| Performance | Depends on collection and workload | Copy-on-write makes writes expensive; concurrent maps use a different strategy |
+
+Choose a collection according to the required concurrency guarantees and read/write workload.
+"""
+source_hash = "6bcb281c92c5bd919bd3087d2ca01326d85396bac999f610070fd2abcfbb1b3e"
+
+[[questions]]
+id = 38
+question = "What are the Map implementations, and why is Map a separate interface?"
+answer = """
+`Map` stores **key-value pairs**, whereas `Collection` models individual elements. Its operations and uniqueness rules therefore require a separate interface.
+
+| Implementation | Characteristics |
+| --- | --- |
+| HashMap | Fast key lookup, no guaranteed order, permits a null key |
+| LinkedHashMap | Preserves insertion order by default; can use access order |
+| TreeMap | Sorts keys using a red-black tree |
+| ConcurrentHashMap | Thread-safe operations and weakly consistent iterators |
+| WeakHashMap | Weak references to keys allow entries to disappear after garbage collection |
+
+`WeakHashMap` can be useful for associations whose lifetime should follow their keys, but it is not a general-purpose cache policy.
+"""
+source_hash = "28cff723e4e8a2da43a1a19875b11897317e63ccf6658c904bf9ca48e5fd4f84"
+
+[[questions]]
+id = 39
+question = "Which collection should you use for unique, sorted values?"
+answer = """
+`TreeSet` stores elements in natural order or according to a supplied comparator. It treats elements as duplicates when their comparison result is zero.
+"""
+source_hash = "b2e406974d0bee0d3b915f5710d227411611d3438cfdf3093600a1a4d52e967c"
+
+[[questions]]
+id = 40
+question = "What is Hashtable?"
+answer = """
+`Hashtable` is a legacy hash-table implementation in `java.util` that stores key-value pairs.
+
+1. **Synchronization:** its methods are synchronized. Compound operations may still require additional coordination.
+2. **No null keys or values:** attempts to use them result in `NullPointerException`.
+3. **Modern alternatives:** `HashMap` is commonly used without concurrent access, and `ConcurrentHashMap` is commonly used for concurrent access.
+"""
+source_hash = "bef988968fdf80911e6e028a6136de0fb5de0f1f4b4fb6b0f0eb5cff7b71c3dd"
+
+[[questions]]
+id = 41
+question = "How do Arrays.asList() and List.of() differ?"
+answer = """
+| Criterion | Arrays.asList() | List.of() |
+| --- | --- | --- |
+| Mutability | Fixed size; elements can be replaced with set() | Unmodifiable; elements cannot be added, removed, or replaced |
+| Null elements | Allowed | Rejected |
+| Backing storage | Backed by the supplied array | Does not expose a mutable backing array |
+| Runtime type | Commonly java.util.Arrays$ArrayList | An internal unmodifiable list implementation; the exact class is not an API guarantee |
+| Unsupported operations | Size-changing operations throw UnsupportedOperationException | Mutating operations throw UnsupportedOperationException |
+| Use case | View an array as a list while allowing element replacement | Create an unmodifiable list |
+
+An unmodifiable list can still contain mutable objects; the restriction applies to the list itself.
+"""
+source_hash = "50f92d99423efd3da9a824966bd4dffe5211292b24bf3a999d2c3f2c9e587785"
+
+[[questions]]
+id = 42
+question = "What is LinkedHashMap?"
+answer = """
+`LinkedHashMap` combines a hash table with a doubly linked list of entries. By default, iteration follows insertion order. A constructor option enables access order, which can be used as the basis of an **LRU cache** when combined with an eviction policy, such as overriding `removeEldestEntry()`.
+"""
+source_hash = "36a596c49dc662ff1516cd3e0af9a07ec67d80be1f84f5a525f9960067361f50"
+
+[[questions]]
+id = 43
+question = "What are the time complexities of tree data structure operations?"
+answer = """
+| Operation | Unordered tree | Unbalanced binary search tree | Balanced binary search tree | B-tree |
+| --- | --- | --- | --- | --- |
+| Search | O(n) | O(h): average O(log n), worst O(n) | O(log n) | O(log n) |
+| Insert by key | Depends on placement rules; locating a position may take O(n) | O(h): average O(log n), worst O(n) | O(log n) | O(log n) |
+| Delete by key | Depends on representation; locating a node may take O(n) | O(h): average O(log n), worst O(n) | O(log n) | O(log n) |
+
+Here `h` is the tree height. The logarithmic average for an unbalanced BST assumes a suitable distribution of insertions; ordered insertions can produce a chain. A balanced tree maintains logarithmic height. B-tree bounds assume a fixed node capacity; their high branching factor reduces the number of node accesses.
+"""
+source_hash = "d3fa2c38009823e70497047f2007c4c8657b8e48b27e675b162312e4f35fd0ba"

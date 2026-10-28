@@ -1,0 +1,238 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 18
+title = "Microservices"
+popularity = 23.29
+
+[[questions]]
+id = 1
+question = "Monolithic vs. microservice architecture"
+answer = """
+- A *monolithic application* is developed and deployed as a single unit. Its components run together in one application, which can have multiple deployed instances.
+- A *microservice architecture* divides an application into independently deployable services, each responsible for a distinct business capability.
+
+---
+***Pros and cons of monoliths?***
+
+**Pros**:
+- Internal calls do not require inter-service communication infrastructure such as Kafka.
+- Transactions within a single database are simpler to coordinate.
+- Local calls avoid network communication overhead.
+- A single deployment unit is usually simpler to operate initially.
+- Local testing is easier to set up than an environment with many services.
+
+**Cons**:
+- A failure can affect the entire application instance.
+- Builds and test suites can become slow as the application grows.
+- As the load increases, you have to scale the entire application, even if the problem is only in one part of it
+- Adding features can require understanding tightly coupled components to avoid regressions.
+- It's difficult to add new technologies because everything is interconnected
+"""
+source_hash = "5b2414f33decacfd6847d2b2e8ccfd21118dc1cd16ebc6f55b4722ab99cfc898"
+
+[[questions]]
+id = 2
+question = "Pros and cons of microservices"
+answer = """
+**Pros**:
+- A developer can focus on one service without understanding the entire system.
+- It's easier to test a specific microservice
+- Fault isolation - unrelated services can continue operating when one service fails, provided dependencies are designed to tolerate failures.
+- It's easier to try new technologies by rewriting one service rather than the entire monolith
+- You can scale only those services that are under load, without touching the rest
+
+**Cons**:
+- Remote calls add network latency and serialization overhead.
+- Integration tests are more difficult because you need to check how all services interact together.
+- The barrier to entry for developers is higher than in a monolithic architecture (you need to understand message brokers) 
+- It is more difficult to work with transactions if they are in different microservices
+
+"""
+source_hash = "325e64afb554dad38de50de3f033f4788f800c0c345c74e27ad3cdffdca05a68"
+
+[[questions]]
+id = 3
+question = "Saga pattern in microservice architecture"
+answer = """
+Saga is a pattern for managing distributed transactions in microservices. It breaks a global transaction into a sequence of local transactions, each of which is executed within a single service.
+If a step fails, compensating actions undo the business effects of completed steps. This is not an atomic rollback of all databases.
+
+**Pros**
+- Flexibility - coordinates work without holding database locks across the entire distributed workflow.
+- Fault tolerance - in case of failures, you can perform a compensatory action instead of rolling back the entire transaction
+- Service independence - no need for a common database, each service can use its own storage
+- Suitable for long-running operations - local transactions can be completed asynchronously and spread over time
+
+**Cons**
+- Complexity of implementation - the order of steps and compensation actions must be carefully considered
+- Lack of atomicity - the results of intermediate steps are visible to other services, even if subsequent steps fail
+- Eventual consistency - data may be temporarily inconsistent while the saga is running.
+- Delays - asynchronous processes can increase transaction completion time
+- Coordination overhead - requires orchestration or event-driven choreography.
+
+**What are the ways to coordinate transactions in Saga?**
+- **Choreography** - microservices themselves exchange events with each other. Each service reacts to the events of the other and performs its local transaction, creating a new event for the next service
+- **Orchestration** - there is one “controlling” service that monitors the process. It tells each microservice what to do and monitors the success of each step
+
+**What types of transactions exist in Saga**
+- **Compensable** - a local transaction whose business effects can be reversed by a compensating action.
+- **Compensating** - an action that reverses the effects of a completed compensable step after a later failure.
+- **Pivot** - the point of no return, after which the workflow must complete its remaining steps.
+- **Retryable** - a step that can be retried safely after temporary failures.
+
+See the [Saga pattern documentation](https://learn.microsoft.com/en-us/azure/architecture/patterns/saga).
+"""
+source_hash = "54a3d2e8a3af02a1b99ae503c98c3590228182ead525d698d196dfc57b11fcb3"
+
+[[questions]]
+id = 4
+question = "CAP theorem"
+answer = """
+The CAP theorem (Brewer's theorem) states that, during a network partition, a distributed system cannot guarantee both strong consistency and availability for every request.
+- **Consistency** - operations behave as if they access one up-to-date copy of the data (linearizability).
+- **Availability** - every request to a non-failing node eventually receives a response, without requiring that it contain the latest write.
+- **Partition tolerance** - the system must cope with messages being lost or delayed between groups of nodes.
+
+The trade-off between consistency and availability is unavoidable while a partition persists; CAP is not simply a permanent choice of any two properties.
+"""
+source_hash = "528cab0c2c7b0aaa4d7a1633aa306ed94359c22f2afa67b484c3f564e2a371a5"
+
+[[questions]]
+id = 5
+question = "Circuit Breaker Pattern"
+answer = """
+A circuit breaker monitors calls to a dependency and temporarily stops forwarding them when failures exceed a threshold. This helps prevent cascading failures and gives the dependency time to recover. It has three states:
+- **Closed (circuit closed)** - everything is fine, requests go to the service
+- **Open (circuit open)** - if errors become too frequent, Circuit Breaker stops sending requests to the problematic service
+- **Half-Open** - After some time, Circuit Breaker allows multiple requests to the external service to pass through. If everything is fine, Circuit Breaker goes into a closed state. If not, it remains open.
+
+The name comes from an electrical circuit breaker: an open circuit stops current from flowing. The half-open state allows a limited number of trial requests to test recovery.
+"""
+source_hash = "6f97f9ff7c878d57e35295b19c152c496a74e4001739f23931d4159b7dd82d07"
+
+[[questions]]
+id = 6
+question = "API Gateway Pattern"
+answer = """
+API Gateway is a gateway for APIs. It analyzes requests and decides which microservice should process them. Can combine information from different microservices into one response, as well as: 
+- manage the load
+- cache responses (reduce response time)
+- integrate with Identity Providers
+"""
+source_hash = "6492d03cfabeea20813a691fcc57fc5d4b23d1d3342a30df26690673e76455ab"
+
+[[questions]]
+id = 7
+question = "HTTP vs. Kafka: how should microservices communicate, and why?"
+answer = """
+
+|**Criterion**|**HTTP**|**Kafka**|
+|---|---|---|
+|**Type of interaction**|Synchronous (request-response)|Asynchronous (publish and subscribe to events)|
+|**Data transmission reliability**|No built-in request re-delivery mechanism|Messages are persisted and delivered even when consumer failures occur|
+|**Performance**|Limited by the number of simultaneous requests and service availability|High performance when processing large volumes of messages|
+|**Difficulty of implementation**|Easy to implement using standard libraries and protocols|Additional configuration of brokers, topics and clients is required|
+|**Delays**|Minimal, since the response comes immediately after the request|There may be delays due to asynchronous message processing|
+|**Independence of services**|Services (sender and receiver) depend on each other's availability|Complete independence of services: the sender does not know about the state of the recipient|
+|**Scalability**|Limited by synchronous interaction and increasing number of clients|Scales well to handle high loads|
+|**Event support**|Not suitable for event-driven architecture|Designed to work with events (processing, storage, relaying)|
+|**Compatibility**|Supported by almost all programming languages and libraries|Requires support for Kafka clients for various languages|
+|**Crash Resistant**|If one service is unavailable, the request cannot be processed|Messages are kept in a queue until they are processed|
+
+**Use HTTP** if:
+- immediate confirmation of the result is needed (for example, authorization, command execution)
+- the system is simple and does not require complex message processing
+
+**Use Kafka** if:
+- high performance and scalability required
+- services must be independent and work asynchronously
+- Reliability of data transmission and minimization of the impact of failures are important
+
+The ideal approach is a hybrid use:
+- use HTTP for real-time interaction
+- for the event model and processing large amounts of data - Kafka
+
+"""
+source_hash = "53301012d0ce75bddafb4eb96cf49ea284782ba5f1d0879b1feb340bfa0f85a1"
+
+[[questions]]
+id = 8
+question = "What design patterns are used in microservice architectures?"
+answer = """
+
+| Pattern               | Category            | Brief description                                                                                          | When to use                                              |
+| --------------------- | -------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **API Gateway**       | Integration           | Single entry point, routing requests to microservices                                                | When to hide internal URLs and merge contracts     |
+| **Service Discovery** | Infrastructure       | Automatic registration and search for services in the cluster                                                    | With dynamic scaling and frequent restarts       |
+| **Circuit Breaker**   | Reliability           | Stops calls to an unavailable service and allows it to recover                                      | For fragile remote dependencies with variable availability |
+| **Retry**             | Reliability           | Retrying Failed Queries                                                           | In case of short-term network or infrastructure failures       |
+| **Bulkhead**          | Reliability           | Isolation of resources (thread pools, connections) for each service                                          | So that the failure of one functionality does not “flood” the entire service       |
+| **Saga**              | Transactions           | Managing distributed transactions through a sequence of local operations and compensation         | When you need data in several services with rollback of changes |
+| **CQRS**              | Data Modeling | Separation of commands (write) and requests (read) into different models and services                                    | For high read performance requirements          |
+| **Strangler Fig**     | Deployment        | Gradual transfer of functionality of the old system to microservices                                        | Migrate monolith to microservices step by step               |
+| **Sidecar**           | Infrastructure       | A neighboring process next to a service, providing cross-functional capabilities (logging, proxying) | For consistent routing, security, telemetry    |
+| **Ambassador**        | Infrastructure       | Proxy/agent acting as an “ambassador” of the service, carrying out external integration                             | When you need to move external dependencies outside the service boundaries   |
+"""
+source_hash = "248811947195bad46d5ab6dcff8f70c4e5fcbc8d112022b89c5f9e91f2483f54"
+
+[[questions]]
+id = 9
+question = "What is the Transactional Outbox pattern?"
+answer = """
+Transactional Outbox is a pattern that provides reliable delivery of events between services. It consists in the fact that business data and an event are written in one transaction to the database, and then a separate process publishes the event to the broker. This way we avoid desynchronization between the database and the queue.
+
+**The problem it solves**
+```java
+@Transactional
+public void placeOrder(Order order) {
+    orderRepository.save(order); // 1 Saved the order in the database
+    eventBus.publish(new OrderCreatedEvent(order)); // 2 Sent event to Kafka
+}
+```
+If a failure occurs between 1 and 2 (for example, the network is down, the broker is unavailable, the application is dead) - the order will be saved, but the event will not go away, and other services (for example, `payment-service`) will never know about it
+If, on the contrary, the message is gone and the transaction ends with a rollback, then the recipient will learn about an order that is not in the database.
+
+**Solution through pattern:**
+```java
+// we save the event in one transaction with the entity
+@Transactional  
+public void createOrder() {  
+  
+\torderRepository.save(order);   
+\toutboxRepository.save(
+\t\tnew OutboxEvent("OrderCreated",json(order))
+\t);  
+}
+
+// in the scheduler we read events with the required status and send them to the broker
+@Scheduled(fixedDelay = 1000)
+public void publish() {
+    var events = outboxRepository.findUnprocessed();
+    for (var event : events) {
+    
+        kafka.send(
+            event.type(),
+            event.payload()
+        );
+
+        event.markProcessed();
+        outboxRepository.save(event);
+    }
+}
+```
+An important nuance - if after sending to the broker the new status is not installed in the database (`outboxRepository.save(event)` does not work), then the next call will resend the same event, which means message deduplication must be carried out on the consumer (idempotency)
+
+**Advantages of the pattern**
+- **Atomicity** - data and event are recorded by one transaction
+- **Reliability** - you won’t lose events even if there’s a failure
+- **Simplicity** - everything is stored in one database
+- **Compatible with any broker** - Kafka, RabbitMQ, SQS, etc 
+- **Easy to debug** - you can see the outbox table
+
+**Disadvantages**
+- Table `outbox` is growing - needs to be cleaned
+- Events are not published instantly (you need to plan for a delay)
+- Need to watch out for idempotency on the consumer side
+
+*Enterprise systems often use ready-made CDC (Change Data Capture) systems, for example Debezium, which reads not a table in Postgresql, but a WAL log before sending it to Kafka.*"""
+source_hash = "60575c2db92ad3668a0594c5774150256941f34e47ea7212e0d6dc9942bede75"

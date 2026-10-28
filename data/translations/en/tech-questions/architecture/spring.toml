@@ -1,0 +1,1967 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 15
+title = "Spring"
+popularity = 77.64
+
+[[questions]]
+id = 1
+question = "Why use Spring, and why is it popular?"
+answer = "Spring is one of the most popular frameworks for developing Java applications. It is used due to its wide range of capabilities, flexibility and modularity"
+source_hash = "cfb22f5edd07ef7188fdc79a381313c676ff6a02038f8cc4a2c067daac342a54"
+
+[[questions]]
+id = 2
+question = "Inversion of Control"
+answer = """
+Inversion of control is a principle in which we transfer control of the creation and configuration of objects to a special Spring container
+"""
+source_hash = "960cc976ad56ffc502d5c28a25307dabd620d8cd15f3f89dfdaae8e4bdfaece0"
+
+[[questions]]
+id = 3
+question = "Dependency Injection"
+answer = """
+Dependency Injection is a mechanism for providing an object with its dependencies from the outside (instead of the object creating them itself). DI simplifies dependency management and makes code more modular, testable, and easily extensible
+
+**Dependency Injection vs dependency lookup**
+
+| **Criterion**              | **Dependency Injection**                                         | **Dependency Lookup**                                     |
+| ------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------- |
+| **Essence**                  | Dependencies are provided externally (by the container or framework)  | The object itself requests dependencies (usually from the context)    |
+| **Easy to test** | Easier to test, dependencies can be replaced with mock objects     | Requires mocking context or factory for tests      |
+| **Level of control**      | The container manages dependencies, the object does not create them          | The object decides how to obtain dependencies               |
+| **Example**                | Spring injects dependency via annotations or XML configuration | Manually calling the method<br>`ApplicationContext.getBean(...)` |
+
+The @Lookup annotation above a method allows you to use Dependency Lookup
+```java
+@Lookup
+public WeatherService getWeatherServiceBean() {
+\treturn null;
+}
+```
+
+Under the hood spring does
+```java
+@Lookup
+public WeatherService getWeatherServiceBean(){
+\treturn applicationbContext.getBean(WeatherService.class);
+}
+```
+
+**When is the setter injection method useful?**
+- Optional dependencies - a dependency is not required for the object to function and is only used in some scenarios
+- Dynamic dependency changing - when you need to change a dependency during program execution
+- Libraries or legacy code - for integration with code where the object creation process cannot be controlled
+"""
+source_hash = "872632befd9b7a9953809df81cf03b86faa211dfde9e129df4c7f74cfa507626"
+
+[[questions]]
+id = 4
+question = "What forms of dependency injection are available?"
+answer = """
+- Through the constructor
+- Via setter
+- Through the field
+
+| **Method**             | **Description**                                                               | **Pros**                                                                                     | **Cons**                                                                                                                                                   | **Usage Examples**                                    |
+| ---------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| **Through the constructor**  | Dependencies are passed when an object is created                                | - Immutability Guarantee - Mandatory dependencies are clearly visible - Highly testable | - Inconvenient for a large number of dependencies <br>- Not suitable for optional dependencies                                                                  | When dependencies are required and do not change after creation |
+| **Via setter**       | Dependencies are installed using a method after the object is created        | - Suitable for optional dependencies <br>- Dependencies can be changed at runtime          | - It is possible that an object is used without a dependency installed (NPE) <br>- Less explicit                                                        | When dependencies are optional or subject to change           |
+| **Through the fields** | Dependencies are injected directly into object fields, usually using annotations | - Minimum code - Easy to use frameworks (Spring, CDI)                        | - It is possible that an object is used without an installed dependency (NPE) <br>- More difficult to test <br>- Violation of the principle of explicit dependencies | Quick implementation in Spring via `@Autowired`                |
+"""
+source_hash = "eb72d8d2f2363b6d7a8ae9a081cb8972d2816fa3289193d0feb4e4975f1a73a0"
+
+[[questions]]
+id = 5
+question = "Why is constructor injection usually preferred?"
+answer = """
+- Immutability - dependencies are set once when the object is created, and cannot be changed (via final fields)
+- Mandatory dependencies - establishes a clear requirement that the object cannot exist without the passed dependencies
+- Testability - it’s easier to create mock objects for tests
+- Explicitness - it is clear what dependencies are required for the operation of the object
+"""
+source_hash = "322ee4d3a7aa350fef85833535427030268526ad78abb90251d6bbbc0f2aa8d0"
+
+[[questions]]
+id = 6
+question = "What does @Autowired do?"
+answer = """
+The `@Autowired` annotation requests dependency injection from Spring. It can be applied to:
+- a constructor
+- a method (including a setter)
+- a field
+
+A bean with a single constructor does not need `@Autowired` on that constructor.
+"""
+source_hash = "af343a4bcf0463bdefe46f2e6fe8805bbf0bf64c1189529f2e57b6828b110a48"
+
+[[questions]]
+id = 7
+question = "@Qualifier vs @Primary"
+answer = """
+The @Primary annotation specifies the preferred bean that Spring will choose by default among multiple candidates of the same type.
+
+The @Qualifier annotation allows you to explicitly specify which bean needs to be injected.
+
+| **Annotation** | **Description**                                            | **When to use**                                              | **Point of reference**                                                                                   |
+| ------------- | ------------------------------------------------------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `@Primary`    | Specifies the default bean when selecting among several  | When you need a bean that is used most often                    | Where the bean is declared                                                                              |
+| `@Qualifier`  | Explicitly indicates which bean to use among several | When you need to implement a specific bean, despite the presence of `@Primary` | At the location where the bean is introduced |
+"""
+source_hash = "9f4f203928d5b4b0a1ba6b3da9bfbb60ec2611d0da05a7c79bde0da0414d4820"
+
+[[questions]]
+id = 8
+question = "What is a Spring bean?"
+answer = """
+A Bean in Spring is an object managed by the Spring IoC container. This is the basic building block of the application that is registered and configured by the container
+
+---
+
+**@Bean annotation**
+
+The `@Bean` annotation is used to specify a method that returns an object (bean) and these beans can later be injected into other components. Used to explicitly declare a bean in the Java configuration (in a class labeled `@Configuration`)
+
+You can also use default methods to define beans. This allows you to create bean configurations by implementing interfaces with bean definitions
+```java
+public interface BaseConfig {
+    @Bean
+    default TransferServiceImpl transferService() {
+        return new TransferServiceImpl();
+    }
+}
+@Configuration
+public class AppConfig implements BaseConfig {
+}
+```
+
+---
+
+ **What is BeanDefinition?**
+
+BeanDefinition is metadata (bean description) indicating how a particular bean should be created, configured and managed
+It contains:
+- Bean class
+- Its scope
+- Dependencies
+- Initialization and destruction methods
+
+---
+
+**How does Spring create beans?**
+
+- **Read configuration** - Spring reads configuration from `@Configuration`, XML or annotations on classes
+- **Create BeanDefinition** - based on the configuration, Spring generates a **BeanDefinition** for each bean
+- **Bean initialization:**
+    - a constructor or factory method is called
+    - dependency injection is performed (via constructor, fields or setters)
+- **Setting up a bean** - post-processing via `BeanPostProcessor` (for example, to work with `@PostConstruct`)
+- **Adding to container** - the finished bean is placed in `ApplicationContext`
+
+---
+
+**How is the bean configured?**
+
+1. Annotations (`@Bean`, `@Component`, `@Value`, `@Scope`)
+2. XML configuration
+3. Java code (in class with `@Configuration`)
+4. Tools like `@PostConstruct` and `@PreDestroy` for life cycle management
+
+---
+
+**Can I insert a Bean into a static field?**
+
+No, Spring does not directly support dependency injection on static fields. The solution is to use a setter or call the context via `ApplicationContext`
+
+---
+
+**How to lazily initialize a bean?**
+
+Use annotation `@Lazy`
+"""
+source_hash = "176cfa78bc7056c9e81dc8b9e2b220a2ffd8b467b8e0da8e22652d44106e17b5"
+
+[[questions]]
+id = 9
+question = "What bean scopes does Spring support, including web scopes?"
+answer = """
+- Singleton
+    - For each bean, only one instance is created for the entire application context and reused wherever it is required
+    - Used by default
+    - The bean's life cycle begins when the context is loaded and ends when it terminates.
+- Prototype
+    - Each time a bean is requested, a new instance is created
+    - Beans with scope `prototype` are not destroyed by Spring, since they leave its control immediately after creation
+    - NOT STORED in the Spring context
+- Web scope:
+\t- request - one bean instance is created for each HTTP request
+\t- session - one bean instance is created for each HTTP session
+\t- application - one bean instance is created for the entire `ServletContext` (similar to a singleton, but for a web application)
+\t- websocket - one bean instance is created for each WebSocket session
+
+
+**How to create your own Scope**
+1. Implement the Scope interface
+```java
+public class CustomScope implements Scope {
+    private Map<String, Object> beans = new HashMap<>();
+
+    @Override
+    public Object get(String name, ObjectFactory<?> objectFactory) {
+        return beans.computeIfAbsent(name, k -> objectFactory.getObject());
+    }
+
+    @Override
+    public Object remove(String name) {
+        return beans.remove(name);
+    }
+    // other methods...
+}
+```
+
+2. Register it in context:
+```java
+@Bean
+public static CustomScopeConfigurer customScopeConfigurer() {
+    CustomScopeConfigurer configurer = new CustomScopeConfigurer();
+    configurer.addScope("customScope", new CustomScope());
+    return configurer;
+}
+```
+"""
+source_hash = "202a15aaf5324f2da63f0dd5f8f96a268b058b0a4187fa9a88c031befa38dbc1"
+
+[[questions]]
+id = 10
+question = "How can a singleton bean obtain a new prototype bean instance on each call?"
+answer = """
+1. **Implementation of `ObjectProvider` (or `ObjectFactory`)**
+```java
+@Component
+@Scope("singleton")
+public class MySingletonService {
+
+    private final ObjectProvider<MyPrototypeBean> prototypeProvider;
+
+    public MySingletonService(ObjectProvider<MyPrototypeBean> prototypeProvider) {
+        this.prototypeProvider = prototypeProvider;
+    }
+
+    public void doWork() {
+        // every call is a new bean
+        MyPrototypeBean prototype = prototypeProvider.getObject();
+        prototype.action();
+    }
+}
+```
+Pros:
+- simple, no need for AOP proxy  
+Cons:
+- depends on Spring API, harder to test out of context
+
+2. **`@Lookup`-method (injection method)**
+```java
+@Component
+@Scope("singleton")
+public abstract class MySingletonService {
+
+    public void doWork() {
+        MyPrototypeBean prototype = createPrototype();
+        prototype.action();
+    }
+
+    @Lookup
+    protected abstract MyPrototypeBean createPrototype();
+}
+
+@Component
+@Scope("prototype")
+public class MyPrototypeBean {
+    public void action() { … }
+}
+```
+Spring generates a subclass that overrides `createPrototype()` and calls `getBean(...)`
+Pros:
+- no explicit providers in the code   
+Cons:
+- less obvious, relies on subclass generation
+
+3. **Proxy bean (`proxyMode = TARGET_CLASS`)**
+```java
+@Component
+@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class MyPrototypeBean { … }
+
+@Component
+@Scope("singleton")
+public class MySingletonService {
+    private final MyPrototypeBean prototype;  // this is a proxy
+
+    public MySingletonService(MyPrototypeBean prototype) {
+        this.prototype = prototype;
+    }
+
+    public void doWork() {
+        prototype.action(); // each time the proxy is called, it will pick up a new instance
+    }
+}
+```
+Pros:
+- automatic proxying, code remains simple  
+Cons:
+- proxy wrapper, possible problems with method navigation, `instanceof`, need to proxy the class
+
+4. **Obtained from `ApplicationContext`**
+```java
+@Component
+public class MySingletonService {
+
+    @Autowired
+    private ApplicationContext ctx;
+
+    public void doWork() {
+        MyPrototypeBean prototype = ctx.getBean(MyPrototypeBean.class);
+        prototype.action();
+    }
+}
+```
+Pros:
+- universal method for any beans  
+Cons:
+- direct dependence on context, less clean code
+
+**Problems and nuances**
+1. **Implicit layer mixing** - Injecting context or provider into business code can make testing difficult
+2. **Multiple implementations** - if there are several `MyPrototypeBean` (for example, `FastPrototype`, `SlowPrototype`), you need to clarify:
+```java
+public MySingletonService(
+        @Qualifier("fastPrototypeBean") ObjectProvider<MyPrototypeBean> fastProvider) { … }
+```
+3. **Destroying prototype beans** - the container itself does not call `@PreDestroy` on prototype beans. If they have resources, you will have to clear them manually
+4. **Proxies and AOP** - when using `proxyMode`, methods marked `final` or `private` are not proxied. This may break logic
+5. **Serialization** - if a singleton bean is serialized, proxying references to the prototype bean can cause problems during deserialization
+"""
+source_hash = "c312cfc2bd29a1b5426af6f01647f5f90f7b860eb192fc81f3dada0d6fa76d9f"
+
+[[questions]]
+id = 11
+question = "Describe the Spring bean lifecycle and the classes involved."
+answer = """
+Spring manages the creation, initialization, and destruction of beans within the IoC container. This life cycle can be divided into several stages
+
+{{< figure src="/java-backend-interview-prep/spring_bean_lifecycle.png" title="" >}}
+
+1. **Parsing configurations, scanning annotations and creating BeanDefinition**
+    Spring (BeanDefinitionReader) looks for classes that are marked with annotations indicating that they are (or contain) beans. These annotations include:
+    `@Component`, `@Service`, `@Repository`, `@Controller`, `@Configuration`
+    Spring scans for classes in packages specified with the `@ComponentScan` annotation, or in the package containing a class with the `@SpringBootApplication` annotation. The found classes are parsed and a BeanDefinition is created for them
+    `BeanDefinition` is a special interface through which you can access the metadata of the future bean. Depending on the configuration, one or another configuration parsing mechanism will be used. All of them add up to `ConcurrentHashMap`, in which the key is the name of the bean, and the object itself is `BeanDefinition`. When the application starts, the IoC container will contain beans that have a Singleton scope, and the rest will be created when they are needed. First, all `@Configuration` are registered for further parsing
+
+2. **Configuring created BeanDefinition** 
+   It is possible to influence beans before they are created. For this, there is an interface `BeanFactoryPostProcessor`, by implementing which we get access to the created `BeanDefinition` and can change them using the `postProcessBeanFactory` method.
+
+3. **Instantiating beans** 
+   First, from the map with `BeanDefinition`s, the beans necessary to configure other beans are taken, and then the rest (recursive dependency resolution). The creation is carried out by `BeanFactory` (calls the constructors), but you can delegate this to a factory that implements the `FactoryBean` interface
+
+4. **Dependency Injection (via fields and setters)**
+5. **Setting up created beans** 
+   The beans have already been created, they can be further configured. The `BeanPostProcessor` interface allows you to get involved in the process of setting up beans before they get into the container. The context automatically detects beans that implement this interface and marks them. There are two methods
+    - `postProcessBeforeInitialization` is called before the init method
+    - `postProcessAfterInitialization` - after
+        
+    First, the `postProcessBeforeInitialization()` method of all available `BeanPostProcessor`s will work. Then, if available, the `init` method will be called.
+    In spring, if one of `BeanPostProcessor` changes something in the class (including adding proxying), he must do it at the stage after `init`. Therefore, `init` always works on the original method before proxying.
+        At the end the beans will pass through `postProcessAfterInitialization()`.
+        
+        _Note: if the bean implements_ `InitializingBean`_, then Spring will call the_ `afterPropertiesSet()` _method before the init method. The interface is not recommended for use as it is outdated_
+    
+6. **Beans have been created** At this stage they can be obtained using the `ApplicationContext.getBean()` method
+    
+7. Closing the context** 
+   When the context is closed, the bean is destroyed. If a bean has a `@PreDestroy` method, then it will be called before the bean is destroyed. If the destroyMethod method is defined in `@Bean`, then it will also be called
+"""
+source_hash = "3b512d496b203432ea473307d8a3eff1a251e8c8e01987cc8917b12c5690c551"
+
+[[questions]]
+id = 12
+question = "@ComponentScan"
+answer = """
+The `@ComponentScan` annotation tells Spring where to look for classes marked with the `@Component` annotation or its derivatives:
+`@RestController`, `@Controller`, `@Repository`, `@Service`, etc.
+"""
+source_hash = "e86960714d163052470b83a1c64d67e15f9927a43ddf00712c05abadde664fbe"
+
+[[questions]]
+id = 13
+question = "@Conditional in Spring"
+answer = """
+The `@Conditional` annotation in Spring is used to enable beans to be connected or configurations performed only when certain conditions are met. It allows you to flexibly control the behavior of the application, including or excluding certain components
+
+
+**@ConditionalOnBean**
+The `@ConditionalOnBean` annotation specifies that a bean or configuration should be registered in a context only if the specific bean already exists
+```java
+@Configuration
+public class MyConfig {
+
+    @Bean
+    public MyService myService() {
+        return new MyService();
+    }
+
+    @Bean
+    @ConditionalOnBean(MyService.class)
+    public DependentService dependentService() {
+        return new DependentService();
+    }
+```
+
+**@ConditionalOnProperty**
+The annotation `@ConditionalOnProperty` specifies that a bean or configuration should be registered in a context only if a certain property in the configuration file has the desired value
+```
+# application.properties
+feature.enabled=true
+```
+```java
+@Configuration
+public class MyConfig {
+
+    @Bean
+    @ConditionalOnProperty(prefix = "feature", name = "enabled", havingValue = "true", matchIfMissing = false)
+    public FeatureService featureService() {
+        return new FeatureService();
+    }
+}
+```
+"""
+source_hash = "f709383cfc60d43b185fb523c29105dc9265472a4f1fed2797e2197290b1d5de"
+
+[[questions]]
+id = 14
+question = "@Service, @Repository, @Component"
+answer = """
+
+| **Annotation**     | **Description**                                                                                    | Application                        | **Semantics**                                                                                                                                                                        |
+| ----------------- | ----------------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`@Component`**  | General annotation to indicate a bean that will be managed by a Spring container        | For regular beans                 | Can be used for any types of components. Typically used when there is no more precise type                                                                               |
+| **`@Service`**    | Specialization `@Component` indicating that the bean is a service layer              | For services                      | Used for classes that implement business logic. Essentially, this is a more semantic designation than `@Component`                                                                  |
+| **`@Repository`** | Specialization `@Component` indicating that the bean is a data access layer (DAO) | For classes that work with data | Used for classes that encapsulate data access logic (for example, via JDBC or JPA). The annotation can also enable DAO-specific exception handling |
+
+**Singleton anti-pattern. If we put @Service on a class, will it be a Singleton?**
+Yes. However, this is not an anti-pattern, since Spring manages lifecycle and dependency injection, which solves many of the problems inherent in a regular Singleton
+
+**@Bean vs @Component**
+
+| **Annotation** | Place of application                  | Application                                   |
+| ------------- | --------------------------------- | -------------------------------------------- |
+| `@Bean`       | Above the method in the configuration class | If necessary, configure the bean programmatically |
+| `@Component`  | Above class                       | For automatic scanning             |
+"""
+source_hash = "48c69b0ddd5f6051468dcf0bc3a5936c0af3833692a30804367923fa5ddbe9df"
+
+[[questions]]
+id = 15
+question = "@Controller and @RestController"
+answer = """
+`@Controller` is a basic version of the controller annotation from Spring Web MVC, mainly used for Server-Side Rendering. If you need to return data (for example, JSON), you need to add @ResponseBody to the method 
+`@RestController` is a combination of `@Controller` and `@ResponseBody`. Used in REST. Always returns data (such as JSON or XML) in the HTTP response body. No need to add `@ResponseBody` to every method
+"""
+source_hash = "733943b8d149068314bb473fc265a5a0f713008b06e6e58e20c8676170408226"
+
+[[questions]]
+id = 16
+question = "@ResponseBody vs ResponseEntity"
+answer = """
+`ResponseEntity` is a class whose instance contains both the response body and the HTTP status
+`@ResponseBody` - annotation indicates that the result of the method should be returned as the body of an HTTP response (JSON, XML)
+"""
+source_hash = "16d01627416ee285dc37ba2a0dc531ee4c8ade1b5a54187ecee0421ededeb9b8"
+
+[[questions]]
+id = 17
+question = "What is Spring MVC, and what problems does it solve?"
+answer = """
+Spring Web MVC is one of the frameworks within the Spring ecosystem. Designed for writing web applications using the Model-View-Controller architectural pattern. Solves the following problems
+- Clear separation of logic. Breaking down the logic according to MVC
+- Support for various template engines: JSP, Thymeleaf, etc.
+- Simplifies the processing of HTTP requests through controllers
+"""
+source_hash = "32a7beaaf856e5d6c12f77e437f0b7f0d9016195b8d0ee6c67df0e786ae3d4b0"
+
+[[questions]]
+id = 18
+question = "What is aspect-oriented programming (AOP)?"
+answer = """
+AOP (Aspect Oriented Programming) is a programming paradigm based on the idea of separating main and service functionality. Utility functionality is described in aspect classes and allows you to call it under certain conditions (before, after a method) without interfering with the main code
+"""
+source_hash = "ccb47e6cd598a8195f154b1d22f1f1b44f969ce5020c55ec67e5099f5794bf7e"
+
+[[questions]]
+id = 19
+question = "What is a circular dependency?"
+answer = """
+A circular dependency is a dependency in which two beans depend on each other and therefore Spring cannot initialize them. Solution:
+- annotation `@Lazy` for one of the beans
+- dependency injection via a setter on one of the beans
+\tSince version 2.6, Spring prohibits cyclic dependencies (and therefore such an implementation will not work without @Lazy), but this prohibition can be removed via
+\t`spring.main.allow-circular-references=true`
+- refactoring
+
+For example, there are 2 services
+```java
+@Service
+@RequiredArgsConstructor
+public class OrderService {    
+\tprivate final PaymentService paymentService;
+...
+
+}
+
+@Service
+@RequiredArgsConstructor
+public class PaymentService {    
+\tprivate final OrderService orderService;
+...
+}
+```
+
+To eliminate cyclic dependency, we design an intermediary service - CheckoutService
+```java
+@Service
+@RequiredArgsConstructor
+public class CheckoutService {
+
+    private final OrderService orderService;
+    private final PaymentService paymentService;
+
+    public CheckoutService(
+            OrderService orderService,
+            PaymentService paymentService) {
+
+        this.orderService = orderService;
+        this.paymentService = paymentService;
+    }
+
+    public void checkout() {
+        orderService.createOrder();
+        paymentService.processPayment();
+    }
+}
+
+@Service
+@RequiredArgsConstructor
+public class OrderService {    
+\tpublic void createOrder() {...}
+}
+
+@Service
+@RequiredArgsConstructor
+public class PaymentService {    
+\tpublic void processPayment() {...}
+}
+```"""
+source_hash = "31277d00eecf8deeb541b01531800c89745e094d00c804dca72a26ea15c58461"
+
+[[questions]]
+id = 20
+question = "What is Spring Boot?"
+answer = """
+*Spring Boot* is a Spring-based framework that makes it faster and easier to create production-ready applications. Key benefits:
+
+- Starters are ready-made sets of libraries (modules) that include all the necessary dependencies for working with specific technologies
+- Built-in server - In Spring Boot, the server is **built right into the application**. For example, when you add the `spring-boot-starter-web` starter, Spring Boot automatically includes Tomcat or Jetty
+- Automatic Configuration - Spring Boot uses an **automatic configuration** mechanism that analyzes what libraries are in your project and automatically configures the necessary components.
+- Simplified build - In regular Spring, to deploy an application, you need to build a WAR file and deploy it to the server. In Spring Boot, the application is compiled into an **executable JAR file**, which contains all the dependencies and the server.
+
+---
+***How Spring Boot works under the hood***
+
+1. **Auto Configuration**:
+    
+    - Spring Boot analyzes the classes and dependencies in your project and tries to configure the application so that it works out of the box.
+    - For example, if a project has a dependency on `spring-boot-starter-web`, then Spring Boot automatically configures `DispatcherServlet`, which handles HTTP requests.
+2. **Component Scan**:
+    
+    - When the application starts, Spring Boot scans packages for annotated classes (for example, with annotations `@Component`, `@Service`, `@Repository`, `@Controller`, etc.) to register the beans.
+    - This scan starts with a class annotated `@SpringBootApplication`, which is usually located at the root of the project. Packages and subpackages below this class will be scanned for components.
+3. **Built-in server**:
+    
+    - Spring Boot can use built-in servers such as Tomcat, Jetty or Undertow, allowing the application to run as a self-contained executable JAR or WAR file.
+4. **Initialization process**:
+    
+    - When the application starts, Spring Boot automatically launches and configures all the necessary components and dependencies. The entire initialization process is centralized and automated.
+5. **Main class with `@SpringBootApplication`**:
+    
+    - This class is the entry point to the application. It performs several tasks:
+        - Enables automatic configuration using `@EnableAutoConfiguration`.
+        - Allows scanning of components using `@ComponentScan`.
+        - Enables setting up Spring configuration using `@Configuration`.
+
+---
+***Where does Spring Boot look for beans?***
+
+1. **Main class with `@SpringBootApplication`**:
+    
+    - Spring Boot starts scanning packages from the class location annotated `@SpringBootApplication`.
+    - All classes in this package and its subpackages will be automatically processed for annotations to create beans (for example, `@Component`, `@Service`, `@Repository`, etc.).
+2. **Package with `@SpringBootApplication`**:
+    
+    - By default, Spring Boot scans only the current package and its subpackages. **It is therefore important** that the main class with the `@SpringBootApplication` annotation be at the root of the package to ensure that all components are found.
+3. **Additional scanning settings**:
+    
+    - You can explicitly specify which packages to scan using the `@ComponentScan` annotation:
+ 
+```java
+@SpringBootApplication
+@ComponentScan(basePackages = "com.example.myapp")
+public class MyApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+```
+        
+This is useful if the components are in a different package or if you want to limit the scan area.
+
+4. **Using profiles**:
+    
+    - If a project uses different profiles (for example, for different environments), Spring Boot will also look for components that match the active profile, provided they are annotated as `@Profile`."""
+source_hash = "9d6fc4d4fd327b2201079d8a2c625b96653d0aac99abb7c4c6f91660882f16b0"
+
+[[questions]]
+id = 21
+question = "Spring Boot vs Spring"
+answer = """
+- **Spring** is a core framework with full configuration and flexibility.
+- **Spring Boot** is an extension to Spring that makes development easier by automating configuration and allowing you to get your application up and running quickly with minimal configuration.
+
+|**Criterion**|**Spring**|**Spring Boot**|
+|---|---|---|
+|**Goal**|A powerful framework for creating Java applications.|Simplify development using Spring. Automation of configuration.|
+|**Configuration**|Requires manual XML or Java configuration.|Auto-configuration, minimal settings to start a project.|
+|**Launch**|You need to manually configure the web server (for example, Tomcat).|Built-in servers (Tomcat, Jetty, Undertow) for easy launch.|
+|**Flexibility**|Great flexibility, full customization of each component.|Less flexibility, but much faster and easier to start a project.|
+|**Difficulty**|Higher complexity of setup and configuration.|Simplified setup and configuration.|
+|**Usage**|Used when full customization and control is needed.|Used for quick start and ease of development.|
+|**Configuration files**|Uses XML or Java configuration to configure beans.|Uses application.properties or application.yml for configuration.|
+
+"""
+source_hash = "197314b3704d2ccbb06faf3920bb3efa363b960af640e9f4a03522da61c1f6f9"
+
+[[questions]]
+id = 22
+question = "Spring JDBC"
+answer = """
+Spring JDBC is a Spring module that makes it easy to interact with databases using JDBC (Java Database Connectivity). It offers a simplified approach to executing SQL queries, processing results, and managing resources
+"""
+source_hash = "f916c3d86ea37d2f53c86007a2438ec3f9c907d596160361a3376080fe2802a0"
+
+[[questions]]
+id = 23
+question = "Spring Data JPA"
+answer = """
+Spring Data JPA is a Spring module that makes working with JPA (Java Persistence API) easy and provides convenient ways to access data. Thanks to autoconfiguration, it allows developers to focus on business logic without worrying about low-level data access details
+"""
+source_hash = "4f148c902404700b62151bf4a1bef486792d7b79020ab6b6335abedbc0ebc229"
+
+[[questions]]
+id = 24
+question = "What is the default locking behavior in Spring?"
+answer = """
+Spring, by default, uses optimistic locking to manage concurrency on data access. This means that when updating entities, it is assumed that no conflicts will occur and changes are made to the database without locking
+"""
+source_hash = "12c5dae6ce4b84a64f6468bd6764e977048893779a57e6a2174594b109635ce7"
+
+[[questions]]
+id = 25
+question = "How does @Transactional work?"
+answer = """
+`@Transactional` is an annotation that allows you to automatically manage transactions. When a method is annotated `@Transactional`, Spring takes over the start, commit, or rollback of the transaction
+
+---
+***What can be annotated with @Transactional?***
+
+- Class. All his methods will become `@Transactional` 
+- Method
+
+---
+***Default propagation***
+
+Propagation.REQUIRED
+
+
+---
+***What methods of managing transactions in Spring do you know?***
+
+- The annotation `@Transactional`
+- TransactionManager
+- TransactionTemplate
+
+*TransactionManager* and *TransactionTemplate*
+
+- When precise control over transactions is required (for example, managing multiple transactions in a single thread)
+
+*@Transactional*
+
+- When you need simple transaction management
+- When a transaction does not require complex control logic
+
+---
+***@Transactional hang on private method?***
+
+If you put the `@Transactional` annotation on the `private` method, then no transaction will be created or applied because Spring uses a proxy mechanism to manage transactions.
+
+"""
+source_hash = "de20b1869f6fcc85ee6079850eec195c091df93865cdfea48331c8b10d0a3586"
+
+[[questions]]
+id = 26
+question = "What are the attributes of @Transactional?"
+answer = """
+
+| **Attribute**     | **Description**                                                                                 | **Default value** |
+| --------------- | -------------------------------------------------------------------------------------------- | ------------------------- |
+| `propagation`   | Determines whether to create a transaction (create a new one or use an existing one) | `REQUIRED`                |
+| `isolation`     | Transaction isolation level (how to manage concurrency)                            | `DEFAULT`                 |
+| `readOnly`      | Read-only (does not allow data to be modified)                                             | `false`                   |
+| `timeout`       | Maximum execution time (in seconds)                                                   | -1 (infinite)           |
+| `rollbackFor`   | Lists the exceptions under which rollback is made                                        | Empty                     |
+| `noRollbackFor` | Exceptions under which rollback is not performed                                                 | Empty                     |
+"""
+source_hash = "a0325f1df993aee97ae7e09997f90ee56ed8ad6e625daf4fdda78abd6094067d"
+
+[[questions]]
+id = 27
+question = "@Transactional propagation attribute"
+answer = """
+The `propagation` attribute determines whether to create a transaction (create a new one or use an already open one). Possible values:
+- **REQUIRED** - applied by default. When entering the `@Transactional` method, an existing transaction will be used or a new one will be created, if there is no 
+- **SUPPORTS** - the method will be executed within a transaction, if it exists. If it is not present, the method will be executed without a transaction
+- **MANDATORY** - requires an external transaction, otherwise it throws an exception
+- **REQUIRES_NEW** - a separate transaction is created for the internal method. While the internal method is executing, the external transaction is suspended. The result of executing the internal one will not affect the result of executing the external one.
+- **NOT_SUPPORTED** - The method is always executed outside of a transaction, even if there is a current transaction. The current transaction is suspended
+- **NEVER** - prohibits execution of a method in a transaction, throws an exception if a transaction exists
+- **NESTED** - creates a subtransaction inside the main transaction. This subtransaction can be rolled back separately from the main transaction, but is dependent on the successful completion of the main transaction. If the main transaction rolls back, the subtransaction will also roll back, even if it completed successfully
+"""
+source_hash = "eff550d83323d77600d408b56932e962539deda86aac1ae0d4273b886853cd17"
+
+[[questions]]
+id = 28
+question = "What happens when a method calls another @Transactional method in the same class?"
+answer = """
+If you call a method labeled `@Transactional` from another method of the same class, then the **transaction will not start or be honored** if the call is made directly. Because the call inside the class **does not go through the proxy** which is responsible for managing the transaction. Therefore, the annotation `@Transactional` will not be processed
+```java
+@Service
+public class MyService {
+
+    @Transactional
+    public void transactionalMethod() {
+        // The transaction is activated if the call is through a proxy
+    }
+
+    public void callTransactionalMethod() {
+        transactionalMethod(); // Direct call, transaction is NOT activated
+    }
+}
+```
+
+**How to fix?**
+1. **Use call through another bean**
+If a transactional method is called from another bean, the call will go through the proxy and the transaction will be activated
+```java
+@Service
+public class MyService {
+
+    @Transactional
+    public void transactionalMethod() {
+        // Transaction is activated
+    }
+}
+
+@Service
+public class AnotherService {
+
+    @Autowired
+    private MyService myService;
+
+    public void callMethod() {
+        myService.transactionalMethod(); // Call through proxy, transaction is activated
+    }
+}
+```
+
+2. **Use self-injection**
+A special case of the previous point is the implementation of a bean into itself
+```java
+@Service
+public class MyService {
+
+    @Autowired
+    private MyService self;
+
+    @Transactional
+    public void transactionalMethod() {
+        // Transaction is activated
+    }
+
+    public void callTransactionalMethod() {
+        self.transactionalMethod(); // Call through proxy, transaction is activated
+    }
+}
+```
+_Note: Since version 2.6, Spring Boot prohibits creating circular dependencies. For the above code to work, you need to set the_ `spring.main.allow-circular-references=true` property
+_In the case of implementation through a constructor, even this will not help. There are several alternative options for self-injection, one of them is receiving the bean through ApplicationContext_
+```java
+@Service
+public class MyService implements ApplicationContextAware {
+    private ApplicationContext context;
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
+
+    @Transactional
+    public void transactionalMethod() {
+        // Transaction is activated
+    }
+
+    public void callTransactionalMethod() {
+\t\t    // Call through proxy, transaction is activated
+\t\t    context.getBean(MyService.class).transactionalMethod() 
+    }
+}
+```
+"""
+source_hash = "017a531e281846fd1e6a6edd1c1b0a16568eb25bf4546a29112e63c15cc940cc"
+
+[[questions]]
+id = 29
+question = "How are changes to entities loaded in a @Transactional method persisted?"
+answer = """
+- `@Transactional` on the service guarantees that all changes to managed entities will be automatically saved upon commit (dirty checking)
+- There is no need to call `save()` for already loaded entities - only for new or detached ones (`merge()` under the hood)
+- `flush()` allows you to merge changes into the database ahead of schedule if an intermediate result is required (generated value, early check constraints)
+- To read, use `readOnly=true` - this speeds up execution
+- Monitor the correctness of the `propagation` and `isolation` attributes to avoid unexpected rollbacks and blocking
+"""
+source_hash = "2391fffe864fa19e40ee43dd153d4554668ee4e39534e8a5fdb6ccd1e43d6922"
+
+[[questions]]
+id = 30
+question = "How do exceptions affect @Transactional?"
+answer = """
+
+| Situation                                                                                                              | Will the transaction be rolled back?   | Reason                                              |
+| --------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------- |
+| Dropped by `RuntimeException`                                                                                          | Yes                           | Spring rollbacks by default                       |
+| Dropped by `Error`                                                                                                     | Yes                           | Regarded as a critical error                 |
+| Dropped `Checked Exception` (`Exception`, `IOException`, etc.)                                                      | No                          | Spring does NOT rollback checked exceptions by default |
+| Checked exception + `rollbackFor=Exception.class`                                                                     | Yes                           | You clearly indicated which exceptions to rollback for.      |
+| RuntimeException + noRollbackFor=RuntimeException.class                                                               | No                          | You have disabled rollback for this exception.          |
+| Exception caught (try/catch) and not forwarded                                                                 | No                          | Spring sees that the method completed “successfully”         |
+| Exception caught but `TransactionAspectSupport`<br>`.currentTransactionStatus()`<br>`.setRollbackOnly()` called | Yes                           | Manual rollback pointer                              |
+| Method private / final / static                                                                                        | @Transactional won't work | Proxy can't wrap method                       |
+| Calling a method inside the same class                                                                                    | @Transactional won't work | Self-invocation - no proxy is used             |
+| Method called via spring bean                                                                                        | Yes                           | Proxy intercepts the call                           |
+"""
+source_hash = "1b9fd63f304b57480816d06ff87408fd89ce847f73d7b6845fd32afbca9aa81f"
+
+[[questions]]
+id = 31
+question = "@Async"
+answer = """
+The `@Async` annotation is used in Spring to execute methods **asynchronously**, that is, in a separate thread, so as not to block the main thread of execution
+
+**Features:**
+- a method marked with the `@Async` annotation is executed in a separate thread
+- the return type can be `void`, `Future`, or `CompletableFuture`
+- works through a proxy, so calling such a method should occur in the bean, and not inside the class
+- asynchronous calls use a thread pool. The default pool is `SimpleAsyncTaskExecutor`, but you can specify your own `Executor` or `TaskExecutor` through a single annotation parameter
+"""
+source_hash = "d7f59d687b060a04a28aee82f52d82c1af9d7205526daa7020242ab312812b37"
+
+[[questions]]
+id = 32
+question = "What are Spring Boot starters, and what are their advantages and disadvantages?"
+answer = """
+Starters in Spring are ready-made sets of libraries (modules) that include all the necessary dependencies for working with specific technologies
+
+**Pros**:
+- simplified configuration
+- dependency version consistency
+- reduced development time
+- modularity
+- documentation and support
+**Cons**:
+- redundant dependencies
+- less flexibility
+
+**What are the differences between a starter and a library?**
+
+| **Characteristics** | **Starter**                    | **Library**              |
+| ------------------ | ------------------------------ | ------------------------ |
+| **Composition**         | Includes a set of libraries       | Single library     |
+| **Settings**      | Automatic                 | Requires manual configuration |
+| **Example**         | `spring-boot-starter-data-jpa` | `hibernate-core`         |
+"""
+source_hash = "bf987eedc175049f34d43f182372e0bdcf6c5f7293684548599a133f848d1586"
+
+[[questions]]
+id = 33
+question = "How is the Criteria API used with Spring?"
+answer = """
+The Spring Criteria API (part of Jakarta Persistence/JPA) provides a flexible way to build database queries. Allows you to compose queries using Java classes
+
+**Key Features of the Criteria API**
+1. **Dynamic query construction** - convenient for situations where the query structure can change at runtime depending on conditions
+2. **Type safety** - errors in query syntax are detected at compilation stage
+3. **Lazy** - the query is executed only when accessing the results
+4. **Support for complex queries** - subqueries, groupings, sorting, filtering and aggregate functions
+
+**Use example**
+```java
+@Entity
+public class Employee {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private double salary;
+
+    // getters and setters
+}
+
+@Repository
+public class EmployeeRepository {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public List<Employee> findEmployeesWithSalaryGreaterThan(double minSalary) {
+        // We get CriteriaBuilder
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+
+        // We create CriteriaQuery
+        CriteriaQuery<Employee> criteriaQuery = criteriaBuilder.createQuery(Employee.class);
+
+        // Root object (FROM Employee)
+        Root<Employee> root = criteriaQuery.from(Employee.class);
+
+        // Condition (WHERE salary > :minSalary)
+        criteriaQuery.select(root)
+                     .where(criteriaBuilder.gt(root.get("salary"), minSalary));
+
+        // Execute the request
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+}
+```
+"""
+source_hash = "e2c2f09c98332729226ed3403bafda2701d05bbcc2d053398640885a4142b6e0"
+
+[[questions]]
+id = 34
+question = "@Scheduled"
+answer = """
+The `@Scheduled` annotation is used to execute methods on a schedule. It allows you to run tasks at a fixed time interval, fixed delay or based on cron expressions
+"""
+source_hash = "6499659678d3aee10c019c7cfefe232ad7f3c5422cdc2495c56153a50e64596f"
+
+[[questions]]
+id = 35
+question = "How do controllers and servlets differ in Java?"
+answer = """
+The concepts of servlet and controller belong to different concepts, although both are used to handle HTTP requests in Java web applications.
+
+**Servlet** is a Java class that processes HTTP requests (HTTP GET, POST, etc.) and returns HTTP responses. It is the basis for creating server-side applications in Java
+
+**Controller** is a part of MVC (Model-View-Controller) architecture. In a Java context, this is usually a class, annotated for example with `@Controller` in Spring MVC, that handles HTTP requests and manages their routing
+
+The controller **abstracts the developer from low-level details** (such as dealing with HTTP requests and responses), allowing the developer to focus on business logic
+
+**Main differences between Servlet and Controller**
+
+| **Criterion**           | **Servlet**                                                                 | **Controller**                                             |
+| ---------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Scope of application** | Low-level processing of HTTP requests                                      | High-level component of MVC architecture                  |
+| **Handmade**      | Requires more manual work to route and process data         | Routing and processing of requests are automated        |
+| **Tools**        | Uses a servlet container (e.g. Tomcat)                           | Uses web frameworks (such as Spring MVC)           |
+| **Flexibility**           | Full control over HTTP requests and responses                               | Focuses on business logic, delegating details to the framework |
+| **Level of Abstraction** | Low: work directly with `HttpServletRequest` and <br>`HttpServletResponse` | High: Annotations and abstraction of low-level logic |
+| **Example**             | `HttpServlet`, `GenericServlet`                                             | `@Controller` in Spring, `@RestController`                  |
+"""
+source_hash = "20827eabf0b265a7fa44a0058330581cf13b12785daf0b7fe0f3df030b3e6119"
+
+[[questions]]
+id = 36
+question = "What is a servlet Filter, and when is it invoked?"
+answer = """
+`Filter` is an interface from the Java Servlet API that allows you to intercept and modify HTTP requests and responses. Filters are often used for tasks that need to be performed before or after a request is processed in a servlet (or controller in the case of Spring), for example:
+- Authentication and Authorization
+- Logging requests
+- Response compression
+- Caching
+- Add or change request and response headers
+
+**When is the filter called?**
+HTTP Request -> Filter chain -> DispatcherServlet -> Controller -> ... ->Response -> Filters
+
+Filters are called **before** the HTTP request hits the DispatcherServlet (and especially the controller) and **after** the response is returned from it
+- Before the controller - process the incoming HTTP request
+- After - can change the HTTP response before sending it to the client
+
+Most often, the `OncePerRequestFilter` class extension is used for custom filters
+"""
+source_hash = "f2b875d86c206a9e79772566e7d959b5a0f24c29393beef60a5b38528679a76d"
+
+[[questions]]
+id = 37
+question = "What is ApplicationContext, and how does it work internally?"
+answer = """
+**`ApplicationContext`** is the central interface of the Spring container that manages the lifecycle of beans, their dependencies, and provides additional capabilities for application development. This is an extension of the **`BeanFactory`** interface that adds many additional features such as event handling, internationalization support, and AOP integration.
+
+ **Main Features of ApplicationContext**
+
+1. **Manage bean components:**
+    - Automatic creation, linking and destruction of beans.
+2. **Dependency Injection:**
+    - Supports Dependency Injection (DI) mechanisms.
+3. **Event Handling:**
+    - Supports publishing and listening to events (eg ContextRefreshedEvent).
+4. **Internationalization:**
+    - Provides mechanisms for working with messages and locales.
+5. **AOP integration:**
+    - Allows you to embed aspects into your application.
+
+
+```java
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class MyApp {
+    public static void main(String[] args) {
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        MyBean myBean = context.getBean(MyBean.class);
+        myBean.doSomething();
+    }
+}
+
+```
+
+``` text
+reads the configuration
+↓
+registers BeanDefinition
+↓
+creates and configures beans
+↓
+wraps in proxy
+↓
+controls their lives
+```
+
+---
+***Tell me about the difference between ApplicationContext and BeanFactory***
+
+**`BeanFactory`** is the base Spring container for managing objects (beans).  
+It is responsible for initializing, binding, and providing beans upon request.  
+However, **`BeanFactory`** is less functional than **`ApplicationContext`**, as it only provides basic bean management capabilities.
+
+```java
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
+
+public class MyApp {
+    public static void main(String[] args) {
+        BeanFactory factory = new XmlBeanFactory(new ClassPathResource("beans.xml"));
+        MyBean myBean = (MyBean) factory.getBean("myBean");
+        myBean.doSomething();
+    }
+}
+
+```
+
+- **ApplicationContext** is a more powerful and functional container suitable for full-fledged applications.
+- **BeanFactory** is a lightweight container, used rarely and mainly in limited tasks or to optimize resources.
+
+ **Differences between ApplicationContext and BeanFactory**
+
+| Criterion                            | ApplicationContext                                                                  | BeanFactory                                               |
+| ----------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **Scope of application**              | A complete container for developing modern applications.                        | Basic container for managing beans.                  |
+| **Loading beans**                  | Loads all beans when the context is initialized (eager loading).                     | Loads beans on request (lazy loading).                 |
+| **Event support**               | Supports publishing and processing events (ApplicationEvent).                     | Does not support events.                                  |
+| **Internationalization**             | Built-in internationalization support (I18N).                                    | Absent.                                              |
+| **AOP integration**                | AOP support for aspect injection.                                               | Limited integration with AOP.                            |
+| **Performance Benefit** | Less productive with a large number of beans (loading all beans at startup). | It is productive because it loads beans only upon request. |
+| **Annotation support**             | Full annotation support (eg `@Component`, `@Autowired`).                  | Limited support.                                   |
+| **Advanced Features**         | Supports profiles, auto-configuration, REST and other features.                        | Only basic work with beans.                           |
+
+
+ **When to use**
+
+| Situation                                     | ApplicationContext     | BeanFactory |
+| -------------------------------------------- | ---------------------- | ----------- |
+| Full application                       | Yes                     | No         |
+| Requires working with events                 | Yes                     | No         |
+| Memory saving with a large number of beans | No                    | Yes          |
+| Test applications                          | Possible, but redundant | Yes          |
+
+---
+
+***Can I raise several contexts?***
+
+Yes, you can create multiple contexts in Spring. This can be useful for separating configuration, areas of responsibility, or working with nested contexts.
+
+ **Examples of using multiple contexts**
+
+ **1. Nested contexts**
+
+You can create a main (parent) and child (child) contexts. The main context can provide beans that are accessible to child contexts, but not vice versa.
+
+**Example:**
+
+```java
+ApplicationContext parentContext = new AnnotationConfigApplicationContext(ParentConfig.class);
+AnnotationConfigApplicationContext childContext = new AnnotationConfigApplicationContext();
+childContext.setParent(parentContext);
+childContext.register(ChildConfig.class);
+childContext.refresh();
+```
+
+ **2. Multiple independent contexts**
+
+If contexts are not related to each other, they do not share beans and settings.
+
+**Example:**
+
+```java
+ApplicationContext context1 = new AnnotationConfigApplicationContext(AppConfig1.class);
+ApplicationContext context2 = new AnnotationConfigApplicationContext(AppConfig2.class);
+```
+
+ **Benefits of using multiple contexts**
+
+- Sharing configuration between application modules.
+- Isolation of modules for testing.
+- Improved modularity and readability of code.
+
+ **Disadvantages**
+
+- Increased control complexity.
+- Possible bean conflicts between contexts.
+
+"""
+source_hash = "6f846e3bd87cce2f68cbc6d5317cdb24eed7e81650c827129fa2ee7a4af9a77d"
+
+[[questions]]
+id = 38
+question = "What are @RequestParam and @PathVariable used for?"
+answer = """
+These annotations are used in Spring MVC to extract parameters from HTTP requests. They are used in controller methods
+
+`@RequestParam(name)` allows you to extract a parameter named `name` from a request
+```java
+@GetMapping("/api/users")
+public String getUser(@RequestParam String name, @RequestParam(defaultValue = "0") int page) {
+    return "Name: " + name + ", Page: " + page;
+}
+```
+
+`@PathVariable` extracts the path parameter specified in the mapping into a method parameter
+```java
+@GetMapping("/api/users/{id}")
+public String getUserById(@PathVariable int id) {
+    return "User ID: " + id;
+}
+```
+"""
+source_hash = "d0d6ac20d373b5d03bd40792696143e8ec3b628720161953cf929da5daafe723"
+
+[[questions]]
+id = 39
+question = "How does @ConfigurationProperties differ from @Value?"
+answer = """
+`@ConfigurationProperties` allows you to extract properties from configurations like `application.properties`, `application.yaml` into class fields. Particularly useful for mapping multi-level properties
+- Binds properties by prefix to class fields
+- Convenient for working with groups of related settings
+- Requires annotation `@EnableConfigurationProperties` or components of type `@Component`
+
+```yaml
+app:
+  name: MyApp
+  version: 1.0
+```
+
+```java
+@Component
+@ConfigurationProperties(prefix = "app")
+public class AppProperties {
+    private String name;
+    private String version;
+
+    // Getters and setters
+}
+
+@Component
+public class MyService {
+    private final AppProperties appProperties;
+
+    public MyService(AppProperties appProperties) {
+        this.appProperties = appProperties;
+    }
+
+    public void printConfig() {
+        System.out.println("App Name: " + appProperties.getName());
+        System.out.println("Version: " + appProperties.getVersion());
+    }
+}
+```
+
+**Comparison of @ConfigurationProperties and @Value**
+
+| Criterion                     | `@ConfigurationProperties`                                        | `@Value`                            |
+| ---------------------------- | ----------------------------------------------------------------- | ----------------------------------- |
+| **Binding property groups**   | Convenient for groups of related <br>settings (with a prefix)             | Suitable for single properties      |
+| **Type casting**         | Automatically supports <br>complex types (such as lists)    | Supports basic types only    |
+| **Working with YAML files**    | Fully supported, <br>including complex structures           | Less convenient for complex structures   |
+| **Flexibility**                 | Convenient for large configurations.                                  | Faster for small adjustments         |
+| **Use example**     | `@ConfigurationProperties(prefix = "app")`                        | `@Value("${app.name}")`             |
+| **Annotations**                | Requires <br>`@EnableConfigurationProperties` <br>or `@Component` | Does not require additional annotations |
+| **Testing and Validation** | Supports validation via `@Validated`                         | Does not support validation           |
+
+**When to use?**
+
+| Situation                             | `@ConfigurationProperties` | `@Value` |
+| ------------------------------------ | -------------------------- | -------- |
+| Large number of related properties | Yes                         | No      |
+| Single property                   | No                        | Yes       |
+| Complex structures (lists, objects)  | Yes                         | No      |
+| Simple, static values        | No                        | Yes       |
+"""
+source_hash = "68d1880d139b5d2100ec5fdcb1c7133e0b1ee221434c21c3dc6b7ddf20ba5032"
+
+[[questions]]
+id = 40
+question = "What does @Value do?"
+answer = """
+`@Value` is a Spring annotation that allows you to inject values from configuration files (`application.properties`, `application.yaml`), system variables, or other external sources into fields, methods, or class constructors. Under the hood, it creates a scalar bean (i.e. a bean containing a constant), the value of which is injected
+
+```yaml
+app:
+  name: MyApp
+  version: 1.0
+```
+
+```java
+@Component
+public class AppConfig {
+
+    @Value("${app.name}")
+    private String appName;
+
+    @Value("${app.version}")
+    private String appVersion;
+
+    @Value("${app.description:Default Description}") // Default value
+    private String appDescription;
+
+    public void printConfig() {
+        System.out.println("Name: " + appName);
+        System.out.println("Version: " + appVersion);
+        System.out.println("Description: " + appDescription);
+    }
+}
+```
+"""
+source_hash = "399b353b4b26934ec53986d46e30042a52e1224e4ea073c2035c29188261f89e"
+
+[[questions]]
+id = 41
+question = "How does DispatcherServlet work?"
+answer = """
+**DispatcherServlet** is the core Spring MVC component that processes incoming HTTP requests, routes them to the appropriate controllers, processes the responses, and returns them to the client. This is the **central** HTTP request handler in Spring MVC
+
+**Main cycle of DispatcherServlet**  
+
+**Stage 1**. **Receiving an HTTP request** - `DispatcherServlet` processes all requests coming into the application (if configured as a front controller in `web.xml`, via Java Config or auto-configuration)
+  
+**Stages 2-3**. **Detecting a Suitable Controller** - Uses `HandlerMapping` to find the controller that should handle the request based on the URL and HTTP method. Using controller annotations (`@RequestMapping`, `@GetMapping`, `@PostMapping`, etc.) it is determined which method should be called  
+
+**Stages 4-5**. **Request processing** - `DispatcherServlet` calls the controller through `HandlerAdapter`, the controller executes the business logic and returns `ModelAndView` or an object in JSON/XML format (for example, with `@ResponseBody`)  
+
+**Steps 6-7**. **Response processing** - the result is passed to the `ViewResolver` component, which determines which view (HTML, JSP, JSON, etc.) needs to be rendered  
+
+**Steps 8-9**. **View Rendering**  
+
+**Stage 10**. **Return to client** - the finished HTTP response is sent back to the client  
+
+{{< figure src="/java-backend-interview-prep/dispatcher_servlet.png" title="" >}}"""
+source_hash = "a7a1d39db479a6a23f81be23284d843aec70ea86184d481194c781f41a2fe39a"
+
+[[questions]]
+id = 42
+question = "How can exceptions be handled in Spring?"
+answer = """
+**1. Methods with annotation `@ExceptionHandler` in the controller**
+- used to handle exceptions at the controller level
+- allow you to bind the handling of specific exceptions to a specific method in the controller
+```java
+@RestController
+public class MyController {
+                ...
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+    }
+}
+```
+
+**2. Methods with annotation `@ExceptionHandler` in `@ControllerAdvice`** for centralized global exception handling
+```java
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body("Global Error: " + e.getMessage());
+    }
+}
+```
+
+**3. ResponseStatusException** allows you to throw exceptions indicating the HTTP status and message
+```java
+@GetMapping("/error")
+public void error() {
+    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found");
+}
+```
+
+**4. @ResponseStatus on exception class**
+```java
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}
+
+@GetMapping("/resource")
+public void getResource() {
+    throw new ResourceNotFoundException("Resource not found");
+}
+```
+
+**5. HandlerExceptionResolver**
+- low-level approach for complete control over exception handling.
+- requires implementation of interface `HandlerExceptionResolver`
+```java
+@Component
+public class CustomExceptionResolver implements HandlerExceptionResolver {
+
+    @Override
+    public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        try {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ModelAndView();
+    }
+}
+```
+
+**6. RestTemplate and WebClient**
+To handle errors when executing REST requests, you can use custom error handlers, such as `ResponseErrorHandler` for `RestTemplate`
+```java
+RestTemplate restTemplate = new RestTemplate();
+restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+    @Override
+    public void handleError(ClientHttpResponse response) throws IOException {
+        // Error handling
+    }
+});
+```
+
+---
+***How does transaction logic handle exceptions?***
+
+
+Spring uses a transaction manager to handle transactions. Exceptions in transactional logic affect the commit or rollback of a transaction.
+
+ **Basic principles of exception handling in transactions:**
+
+1. **Rollback for `RuntimeException` and `Error`:**
+    
+    - By default, Spring rolls back a transaction when `RuntimeException` or `Error` occurs.
+    - Exceptions of type `Checked Exception` (for example, `SQLException`) **do not rollback the transaction** unless explicitly specified.
+2. **Setting rollback:** You can specify which exceptions should trigger a rollback.
+    
+
+**Example:**
+
+```java
+@Transactional(rollbackFor = Exception.class)
+public void performTransaction() throws Exception {
+    // If thrown Exception, the transaction is rolled back
+    throw new Exception("Transaction failed");
+}
+```
+
+3. **Save state after exception:** If a transaction is rolled back, the changes made to the database as part of the transaction are not saved.
+    
+4. **Working with `@Transactional`:**
+    
+    - If the transaction fails, the Spring container calls the `rollback` method on the transaction manager being used.
+    - For `private` methods or calls within the same class, transaction processing may fail.
+
+**Example:**
+
+```java
+@Transactional
+public void process() {
+    try {
+        performAction();
+    } catch (Exception e) {
+        // Exception handled, transaction rolled back
+        throw e;
+    }
+}
+
+private void performAction() {
+    // Actions that throw an exception
+    throw new RuntimeException("Error in action");
+}
+```
+
+ **Main problems and solutions:**
+
+|Problem|Solution|
+|---|---|
+|Internal method call with `@Transactional`.|Use a proxy or call a method through another bean.|
+|The `Checked Exception` exception does not result in a rollback.|Specify `rollbackFor` in the annotation `@Transactional`.|
+|Reusing a transaction.|Specify the `propagation` parameter, for example, `Propagation.REQUIRES_NEW` to open a new transaction.|
+
+"""
+source_hash = "82df6f983d6fa47c7e08af3448ebb2a388b8ba169e1ed3c0988d0256a1582b8e"
+
+[[questions]]
+id = 43
+question = "Is @Configuration a component, and what additional behavior does it provide?"
+answer = """
+The annotation `@Configuration` is a specialized Spring component. It indicates that the class is used for application configuration, including the creation of beans. Processes similarly to `@Component` annotation
+
+**Additional logic implemented by @Configuration**
+**1. Defining beans (@Bean)** - classes with `@Configuration` allow you to define methods marked `@Bean` that return beans
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MyService myService() {
+        return new MyService();
+    }
+}
+```
+
+**2. Proxy support (proxyBeanMethods = true)** - By default, Spring wraps a class with `@Configuration` in a proxy to ensure dependencies are created and managed correctly. This allows the same bean instance to be referenced
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public ServiceA serviceA() {
+        return new ServiceA(serviceB());
+    }
+
+    @Bean
+    public ServiceB serviceB() {
+        return new ServiceB();
+    }
+}
+```
+When calling `serviceB()` inside the `serviceA()` method, the Spring container returns the same instance of `ServiceB`
+
+**3. Logic for importing configuration** - class with `@Configuration` can import other configuration classes via `@Import`
+```java
+@Configuration
+@Import(AnotherConfig.class)
+public class AppConfig {}
+```
+
+** 4. Support for additional annotations** - in classes with `@Configuration` you can use annotations such as `@ComponentScan`, `@PropertySource`, and others
+
+**`@Configuration` vs `@Component`**
+The `@Configuration` and `@Component` annotations in Spring are used to register beans in a container, but they have different purposes and behavior
+
+|**Criterion**|`@Configuration`|`@Component`|
+|---|---|---|
+|**Purpose**|Used to create configuration classes and beans|Used to denote a regular Spring bean|
+|**Creating beans**|Defines beans through methods with annotation `@Bean`|Beans are created automatically (via class scanning)|
+|**Proxy (proxyBeanMethods)**|Default is `true`, which provides singleton for beans|No proxy used|
+|**Semantics**|Indicates that the class contains settings for the application|Describes the logical component of an application|
+|**Import configurations**|Supports `@Import` for connecting other configurations|Does not support|
+|**Use with @Bean**|Methods with `@Bean` guarantee the creation of one instance (singleton)|Methods with `@Bean` are called directly in the standard way|
+|**Where to use**|In configuration classes to define settings and beans|In utility classes, services, repositories, etc.|
+"""
+source_hash = "86ff0bcce27d16f17d007f4dc8b3b801c0c9877d658164ff3813feb9918029a1"
+
+[[questions]]
+id = 44
+question = "@PostConstruct"
+answer = """
+A method marked with the annotation `@PostConstruct` is defined by Spring as the `init` method on a bean, which must be executed after the bean has been completely created and its dependencies have been injected. This method is called once for each bean instance
+
+**How many `@PostConstruct` can be declared in a bean?**
+According to the specification, there should be only one method in one class, labeled `@PostConstruct`. However, one bean can have several `@PostConstruct` methods if they are declared in different classes of the inheritance hierarchy. Spring will call such methods when the bean is initialized.
+
+"""
+source_hash = "c8b807125e42677a4e01ae806a6921eba639f301518da58ffbc2a0b67d2ebb35"
+
+[[questions]]
+id = 45
+question = "How are dependencies managed in Spring Boot?"
+answer = """
+Spring Boot uses Maven or Gradle to automatically add, update and compatibility libraries
+1. **Spring Boot Starter Dependencies** - groups of dependencies that include everything necessary to work with certain functionality
+2. **Spring Boot Dependency Management:**
+    - uses BOM (Bill of Materials) for dependency versioning
+    - Dependency versions are defined in the parent POM (`spring-boot-dependencies`), which ensures they are compatible
+    ```xml
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.0.0</version>
+    </parent>
+    ```
+\t- in Gradle the `io.spring.dependency-management` plugin is used for this
+3. **Dependency Profiles** - you can include dependencies based on the runtime (e.g. dev, test, prod) using Maven profiles
+4. **Explicitly specifying the dependency** - Spring Boot allows you to override the dependency version if a specific one is required
+"""
+source_hash = "d8dfa714dbcf9598027dc0413ee949d25673729d98c83caef0267cfbe369cd7e"
+
+[[questions]]
+id = 46
+question = "How should user passwords be stored with Spring Security?"
+answer = """
+Hashing is used to store passwords - the original string is converted into a hash using cryptographic algorithms (recovering the original text is extremely difficult or impossible), and then stored in a database.
+
+**How to store password in Spring Security?**
+1. Hashing with BCrypt - Spring Security provides support for the BCrypt algorithm, which is suitable for hashing passwords
+```java
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+```
+When saving your password:
+```java
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    public void saveUser(String rawPassword) {
+        String hashedPassword = passwordEncoder.encode(rawPassword);
+        // Saving hashedPassword in the database
+    }
+```
+    
+2. **Password check** - during authentication, the entered password is compared with a hashed value in the database
+    ```java
+    boolean matches = passwordEncoder.matches(rawPassword, hashedPassword);
+    ```
+
+**Why BCrypt?**
+- **Protection against attacks using “rainbow tables”** - BCrypt automatically adds a random “salt” to each password so that the same passwords have different hashes
+- **Slowdown** - BCrypt has the ability to adjust the complexity (work factor), which increases the hash calculation time, making attacks more difficult
+
+Comparison with other modern hashing algorithms
+
+| Algorithm | CPU-hard | Memory-hard | GPU resistance | Popularity              |
+| -------- | -------- | ----------- | -------------- | ------------------------- |
+| BCrypt   | Yes       | No         | average        | very high             |
+| PBKDF2   | Yes       | No         | weaker         | enterprise/FIPS           |
+| Argon2   | Yes       | No         | high        | modern best practice |
+"""
+source_hash = "09b4b65658a8b13bd0fe9d7dc107047f6ace9ca0dec6a64baebb3af45c52f0e7"
+
+[[questions]]
+id = 47
+question = "How do Spring profiles work?"
+answer = """
+Spring profiles allow you to load different settings and components depending on your environment (development, testing, production)
+
+**How to install a profile?**
+1. In `application.properties/yml`
+```yaml
+spring:
+  profiles:
+    active: dev
+```
+2. Via JVM arguments (`-Dspring.profiles.active=prod`)
+You can transfer the profile at startup:
+```bash
+java -jar myapp.jar --spring.profiles.active=prod
+```
+
+**How to create different settings for profiles?**
+1. Miscellaneous files `application-{profile}.properties`
+\t- `application-dev.properties`
+\t- `application-prod.properties`
+\t- `application-test.properties`
+
+2. Using `@Profile` in code
+```java
+@Component
+@Profile("dev")
+public class DevDataSource implements DataSourceConfig {
+    @Override
+    public void setup() {
+        System.out.println("DEV database setup");
+    }
+}
+
+@Component
+@Profile("prod")
+public class ProdDataSource implements DataSourceConfig {
+    @Override
+    public void setup() {
+        System.out.println("PROD database setup");
+    }
+}
+```
+If the profile `dev` is active, then `DevDataSource` will be created; otherwise, `ProdDataSource` will be created. You can combine profiles using the operators `&, |, !,` (AND, OR, and NOT), for example:
+```java
+@Component
+@Profile("prod & some-other-profile")
+public class ProdDataSource implements DataSourceConfig {
+\t...
+}
+```
+`
+*Note: There is also the `@IfProfileValue` annotation, however it only applies to test classes or test class methods. Allows you to enable/disable the execution of specific tests depending on the environment settings, i.e. not directly related to Spring* profiles
+```java
+@IfProfileValue(name = "java.vendor", value = "Oracle Corporation")
+ public void testSomething() {
+     // ...
+ }
+```
+"""
+source_hash = "59b0620cacde91ec0ec340b7849dd87198132c3d1a04b0bc0ce68e833b696354"
+
+[[questions]]
+id = 48
+question = "What types of proxies does Spring use?"
+answer = """
+
+Spring uses dynamic proxying to create AOP wrappers around beans.
+
+|**Proxy type**|**Description**|**How is it created?**|
+|---|---|---|
+|**JDK Dynamic Proxy**|Uses `java.lang.reflect.Proxy`|Creates a proxy that implements interfaces|
+|**CGLIB Proxy**|Uses `org.springframework.cglib.proxy`|Creates a subclass of the target class|
+
+AspectJ is not a separate type of proxy. This is a separate AOP mechanism that uses bytecode weaving.
+
+**JDK Dynamic Proxy (`java.lang.reflect.Proxy`)**
+
+- Used for objects that implement interfaces.
+    
+- Creates a proxy class that implements the target object's interfaces.
+    
+
+```java
+public interface Service {
+    void doWork();
+}
+
+public class ServiceImpl implements Service {
+    public void doWork() {
+        ...
+    }
+}
+```
+
+Creating a dynamic proxy manually:
+
+```java
+Service target = new ServiceImpl();
+
+Service proxy = (Service) Proxy.newProxyInstance(
+    Service.class.getClassLoader(),
+    new Class[]{Service.class},
+    (proxyObj, method, args) -> {
+        System.out.println("Logging before calling a method...");
+        return method.invoke(target, args);
+    }
+);
+
+proxy.doWork();
+```
+
+**CGLIB Proxy (`org.springframework.cglib.proxy`)**
+
+- Used to proxy classes.
+    
+- Creates a subclass of the original class.
+    
+- Can be used even if the class implements an interface, as long as class-based proxy is explicitly enabled.
+    
+
+```java
+class UserService {}
+
+class UserService$$SpringCGLIB extends UserService {}
+```
+
+Creating CGLIB-proxy manually:
+
+```java
+Enhancer enhancer = new Enhancer();
+enhancer.setSuperclass(ServiceImpl.class);
+
+enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -> {
+    System.out.println("Logging before calling a method...");
+    return proxy.invokeSuper(obj, args);
+});
+
+ServiceImpl proxy = (ServiceImpl) enhancer.create();
+proxy.doWork();
+```
+
+You cannot proxy:
+
+- `final` classes
+    
+- `final` methods
+    
+- `private` methods
+    
+
+**CGLIB vs Dynamic Proxy**
+
+|**Function**|**JDK Dynamic Proxy**|**CGLIB Proxy**|
+|---|---|---|
+|**Where does he work?**|Through interfaces|Through inheritance from a class|
+|**How is it created?**|`java.lang.reflect.Proxy`|`org.springframework.cglib.proxy.Enhancer`|
+|**Working principle**|Proxy implements interfaces|Proxy is a subclass of the target class|
+|**Restrictions**|Calls are proxied through interfaces|You cannot proxy the `final` class, `final` and `private` methods|
+
+The performance difference between JDK Dynamic Proxy and CGLIB is usually insignificant and is not the main selection criterion.
+
+Hibernate and Mockito use Byte Buddy to generate and modify classes at runtime. Spring AOP uses JDK Dynamic Proxy and CGLIB.
+
+**What is the default proxy in the Spring Framework?**
+
+If the bean being proxied implements the interface, the default is JDK Dynamic Proxy. If there is no interface - CGLIB.
+
+**When is CGLIB used?**
+
+- If the class does not implement the interface
+    
+- If class-based proxy is explicitly enabled:
+    
+    - `@EnableAspectJAutoProxy(proxyTargetClass = true)`
+        
+    - `spring.aop.proxy-target-class=true`
+        
+
+Important: in Spring Boot, class-based proxy (CGLIB) is used by default for AOP, since `spring.aop.proxy-target-class=true`.
+"""
+source_hash = "23075b7e74316d12e06fd8c26b3c79828a0fbdc7a5060da534de9d5f0a2e273d"
+
+[[questions]]
+id = 49
+question = "@Lookup"
+answer = """
+`@Lookup` is an annotation in Spring that allows a `singleton` bean to obtain a new instance of the `prototype` bean each time a method is called. Without `@Lookup`, when a `prototype` bean is injected into `singleton`, it is created only once.
+
+**How it works**
+1. Mark a method in a singleton class with the annotation `@Lookup`
+2. Spring dynamically overrides this method (via CGLIB)
+3. Each time a method is called, Spring requests a new `prototype` bean from the context.
+
+```java
+@Component
+@Scope("prototype")
+public class PrototypeBean {
+    public void doSomething() {
+        System.out.println("PrototypeBean: " + this);
+    }
+}
+
+@Component
+public abstract class SingletonBean {
+
+    public void process() {
+        // Every time we get a new copy PrototypeBean
+        PrototypeBean prototypeBean = getPrototypeBean();
+        prototypeBean.doSomething();
+    }
+
+    @Lookup
+    protected abstract PrototypeBean getPrototypeBean();
+}
+```
+
+**Why is it necessary?**
+- When you need to frequently create `prototype` objects in a `singleton` bean
+- To avoid using `ApplicationContext.getBean()` manually
+- To avoid memory leaks (prototypes do not live forever inside a singleton)
+"""
+source_hash = "521908dbc783f0ff580d42679f718cc035de47b4e79ebcde0249c9c14be5c412"
+
+[[questions]]
+id = 50
+question = "How does BeanPostProcessor work, and why are there callbacks before and after initialization?"
+answer = """
+In Spring, `BeanPostProcessor` is a special interface that allows you to “intercept” the beans created by Spring and modify them before and after its initialization.
+
+```java
+public interface BeanPostProcessor {
+
+    // Called before any execution init-bean methods (@PostConstruct, InitializingBean.afterPropertiesSet, init-method)
+    Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException;
+
+    // Called after init-methods
+    Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException;
+}
+```
+
+**Why two methods - before and after?**
+1. `postProcessBeforeInitialization` allows you to prepare a bean before running its own initialization methods (`@PostConstruct`, `afterPropertiesSet`, `init-method`)
+2. `postProcessAfterInitialization` is called after the bean is completely ready for use: all properties are set, init methods are executed. The most common use case is wrapping a bean in a proxy (for example, for `@Transactional`, `@Async`)
+
+**Example of your own BeanPostProcessor**
+```java
+@Component
+public class LoggingBeanPostProcessor implements BeanPostProcessor {
+
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String name) {
+        System.out.println("Before init: " + name);
+        return bean; // you can return a wrapper or another object
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String name) {
+        System.out.println("After init: " + name);
+        // If the bean has an annotation @MyTransactional — return proxy
+        if (bean.getClass().isAnnotationPresent(MyTransactional.class)) {
+            return ProxyFactory.getProxy(bean);
+        }
+        return bean;
+    }
+}
+```
+
+All registered `BeanPostProcessor` are executed in the order of their PriorityOrdered/Ordered or by default in the order of registration.
+
+"""
+source_hash = "b7f48ae085c22d6e862d9a93921b7a0c15d4b2bde866c23b0569580548fa464f"
+
+[[questions]]
+id = 51
+question = "@Lazy"
+answer = """
+`@Lazy` is a Spring annotation that allows
+- delay the creation of the bean until the first time it is used instead of loading it when the context starts
+- delay dependency injection (see [[#19. Circular dependency]])
+
+Can be applied:
+- at the bean class declaration level
+- at the `@Bean` method level
+- at the injection point level
+
+**How it works under the hood**
+- With lazy initialization, Spring does not create the object itself, but a proxy.
+- The proxy holds a reference to the bean factory and the first time any method is called, it **initializes a real object** and delegates the call to it.
+- In the case of `@Lazy` above the injection point, the bean is initialized immediately, but the injection occurs later
+
+You can apply `@Lazy` for the entire application at once, then all beans will be initialized lazily
+```
+spring.main.lazy-initialization=true
+```
+"""
+source_hash = "99ea55ac121c49b51670e98162063302eb140acb15036c74e2c7f6509b5c160c"
+
+[[questions]]
+id = 52
+question = "@ControllerAdvice"
+answer = """
+An annotation to outline common aspect logic that applies to all controllers.
+
+**Main tasks**
+- global error handling (`@ExceptionHandler`)
+- general data for all controllers (`@ModelAttribute`)
+- general binders (validation, conversion) via `@InitBinder`
+
+Features
+- works by default for all controllers, you can limit the area (`basePackages`, `assignableTypes`)
+- For REST-API use `@RestControllerAdvice` (automatically adds `@ResponseBody`)
+"""
+source_hash = "5a7829768eec5a8cb5914f426edd260d3b62706720f28c1e03c988bf6d44400c"
+
+[[questions]]
+id = 53
+question = "How does Spring Security work?"
+answer = """
+Framework for authentication and authorization. Works as a chain of filters (Servlet Filters) that intercepts every request.
+
+**Main Components**
+1. **SecurityFilterChain** - a set of filters through which each request passes. Examples of filters:
+\t\t- `UsernamePasswordAuthenticationFilter` (login/password)
+        - `BearerTokenAuthenticationFilter` (JWT token)
+2. **Authentication** - an object representing the user after logging in:
+        - `principal` (the user himself, more often `UserDetails`)
+        - `credentials` (password or token)
+        - `authorities` (roles/permissions)
+3. **AuthenticationManager** - entry point for verifying login/password or token, delegates verification to **AuthenticationProvider**
+4. **AuthenticationProvider** - specific verification logic (for example, checking a password with a database)
+5. **UserDetailsService** - loads user data (by name/email), returns an object `UserDetails` with login, password and roles
+6. **Authorization** - after logging in, the system checks roles/rights. Annotations used:
+        - `@PreAuthorize("hasRole('ADMIN')")`
+        - `@Secured("ROLE_USER")`
+
+
+**Request Processing Flow**
+1. The request comes to the application
+2. Passes through **SecurityFilterChain**
+3. A filter (for example, `UsernamePasswordAuthenticationFilter`) attempts to authenticate
+4. `AuthenticationManager` calls `AuthenticationProvider`
+5. `UserDetailsService` loads user, verifies password
+6. If successful, `Authentication` is created and placed in **SecurityContext**
+7. Next, authorization (rights/roles) is checked
+8. The controller receives the request
+
+**Configuration example (new style, Spring Security 5.7+)
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .formLogin(withDefaults())   // login/password form
+            .httpBasic(withDefaults()); // basic authorization
+        return http.build();
+    }
+
+    @Bean
+    public UserDetailsService users() {
+        UserDetails user = User.withUsername("user")
+            .password("{noop}password") // {noop} = no encryption
+            .roles("USER")
+            .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+}
+```"""
+source_hash = "2c15eb9bfb40ee3320ea879c98252630b015dd0e2692a675948fd0ae796f0541"

@@ -1,0 +1,84 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 1
+title = "Object-Oriented Programming"
+popularity = 10.87
+
+[[questions]]
+id = 1
+question = "What is OOP?"
+answer = "It is a programming paradigm in which the object is central. A program is a collection of objects (instances of a class). Class - a template for creating an object, characterized by fields and methods"
+source_hash = "6eb7599216e7b6abe0e849f63db35e3c4ff01be8f8637fcc9e86461fc20e1890"
+
+[[questions]]
+id = 2
+question = "Pros and cons of OOP"
+answer = """
+Pros:
+
+- division into modules-classes, each of which is responsible for a separate part of the work
+- convenience of decomposing real world objects into models in code (the code is easy to read and quick to write)
+- ability to reuse code (saving time on similar functions)
+- the ability to create extensible systems, this distinguishes OOP from other programming paradigms
+
+Cons:
+
+- decreased application performance, increased memory consumption ("spreading" of logic across multiple objects -> increasing references to each other)"""
+source_hash = "fd5ad5266f5caaae25e65df06e4cc30f423fda3e89c1494506d994bc36eac219"
+
+[[questions]]
+id = 3
+question = "OOP principles (inheritance, encapsulation, polymorphism, abstraction)"
+answer = """
+**Inheritance** is the principle of extending the capabilities of the base (parent) class to its children with the ability to reuse and/or override the methods of the parent.
+
+**Encapsulation** is the principle of “packaging” and hiding the internal properties and logic of an object’s behavior from the user. In this case, the user is provided with APIs - external handles for interaction.
+
+**Polymorphism** (from the Latin “poly” - many and “morph” - form) is the ability of objects to take different “forms”, i.e. an object of one can act as an object of another class (due to inheritance or interface implementation).
+  + dynamic (runtime) - achieved by overriding methods in subclasses (`@Override` in Java), the decision about which named implementation of the method will be called is made during program execution
+  + static (at the compilation stage) - achieved by overloading methods (different method signatures with the same name) or using generics
+  
+**Abstraction** is the separation of common properties of entities into a separate class."""
+source_hash = "402644a6749e265c4a8e3093c2bc889a84f8583ca6fdd99bffbc7b6399f523ac"
+
+[[questions]]
+id = 4
+question = "Class, object, interface"
+answer = """
+**Class** is a template/specification by which an object should be created, a description of its properties and methods. Consists of:
+- methods (including constructor)
+- fields
+**Object** is an instance of a class.
+**Interface** is a contract/specification that must be followed by the implementing class and, by extension, the objects of that class."""
+source_hash = "38c1add973ae8df3f98aff3081ad4e33e1c2ac0a1cab624a2456e71214719c64"
+
+[[questions]]
+id = 5
+question = "Association, aggregation, composition"
+answer = """
+**Association** - means that objects of two classes can refer to one another, have a connection with each other. One class includes another class as one of its fields.
+Aggregation and composition are special cases of association. 
+
+**Aggregation** is a relationship when one object is part of another (the engine was put in one car, then in another).
+
+**Composition** is a more rigid relationship, when an object is not only part of another object, but cannot belong to anyone at all (a page belongs to only one book)."""
+source_hash = "8f537fc8c4e7cb6f02f15504e04ea3459dd5fd39c4305b0c57d1b3905db19382"
+
+[[questions]]
+id = 6
+question = "Static and dynamic binding"
+answer = """
+**Binding** is the process by which a program decides which method or variable should be called or used. Linking happens:
+  - Early static.  If the method is known to the compiler, it occurs at the compilation stage. Applies to generics, overloads, `private`, `final` and `static` methods. It is not objects that are used, but information about the type, that is, a reference
+  -  Later dynamic. Occurs while a JVM program is running. Used for abstract and overridden methods
+ """
+source_hash = "faed97ef2083e2c0adc6fb41ba3f5eafc6792d969b838763b1c80813da0d8054"
+
+[[questions]]
+id = 7
+question = "What is the difference between is-a and has-a relationships?"
+answer = """
+**Inheritance** (“is a” - IS) - generalization/extension, very strong connection.
+**Association** (“has a” HAS) - objects have links to each other
+"""
+source_hash = "a05c64184b4602bfd248975b2484fc381b42a15729fa4cc4ca416cd05e1b2a52"

@@ -1,0 +1,366 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 17
+title = "Web"
+popularity = 22.05
+
+[[questions]]
+id = 1
+question = "REST"
+answer = "REST (Representational State Transfer) is an architectural style for building WEB APIs. Describes how the client and server should communicate via the HTTP protocol"
+source_hash = "3bdfeb07ec52b11b8fc4ca6364b7ef3d6904cb58f974d9a06e08979e99c9ff5e"
+
+[[questions]]
+id = 2
+question = "RESTful and RESTless"
+answer = "RESTful strictly follows the principles of REST, using standard HTTP methods and clearly structured URLs, while RESTless breaks these principles by making the experience less standard and more flexible."
+source_hash = "66a4b032137e83fbe2b99eead91c99a050c2c94c5ffc3982e418f3a7342c0c90"
+
+[[questions]]
+id = 3
+question = "REST vs SOAP"
+answer = """
+SOAP and REST are two different approaches to API development. The SOAP approach is highly structured and uses the XML data format. REST is more flexible and allows applications to exchange data in multiple formats
+
+_Note: SOAP is currently considered an outdated approach, used only in legacy projects_
+"""
+source_hash = "064c5efaca925eb5ca4ae2f419ff0458c59ef804c0041f2f01d2e02214b4da5f"
+
+[[questions]]
+id = 4
+question = "In what situations is it acceptable to use RESTless?"
+answer = """
+Using RESTless is acceptable:
+- in a small application where strict REST principles are not critical
+- if the existing system already uses a different approach and redesign would be too difficult
+"""
+source_hash = "604b57f9d8606e4570c602ade728e72d3007256203f8ef7422b8e53deb064771"
+
+[[questions]]
+id = 5
+question = "REST vs RPC. How to choose which is best?"
+answer = """
+REST is usually used to work with data.
+To work with actions and operations (logout, login, signin), RPC will look better.
+
+RPC describes everything in verbs, while REST describes everything in nouns
+"""
+source_hash = "e96513ec4f1f052f1ae962e9cb46a4bb2cd97ea0081de566ed41c0ade6c1eb0d"
+
+[[questions]]
+id = 6
+question = "What are the six architectural constraints of REST?"
+answer = """
+- **Client-server architecture** - client and server work independently of each other. The client sends requests to the server, the server accepts them and returns responses. This allows the client and server to develop independently of each other
+- **Stateless** - the server does not save information about the client's state between requests. Information about the current session should be entirely stored by the client
+- **Caching** - in the REST API, the server can remember the results of frequent requests in order to return their result faster and not waste resources on repeated calculations
+- **Consistency of the interface** - the API uses standard HTTP methods to make interaction simple and predictable
+    - **`GET`** - retrieves a resource or collection of resources
+    - **`POST`** - creates a new resource or sends data for processing
+    - **`PUT`** - completely updates an existing resource, replacing it with new data
+    - **`PATCH`** - partially updates the resource
+    - **`DELETE`** - deletes a resource
+- **Layers** - the system can be divided into several layers, each of which performs its own task
+- **Code on Demand** - sometimes the server can send the client code (such as scripts) that the client can use to perform tasks
+
+[Good article about REST principles](https://appmaster.io/ru/blog/shest-pravil-otdykha-apis)
+"""
+source_hash = "49e84571c57c5831995c1cec4eff3ed2ff32c51e1a594df244d83c52e2435d30"
+
+[[questions]]
+id = 7
+question = "What makes an HTTP method idempotent?"
+answer = """
+Idempotency is the property of an HTTP request that, when executed again, produces the same result as the first time (without additional side effects)
+
+| **Method**   | **Description**                                | **Idempotent?**                     |
+| ----------- | ------------------------------------------- | ------------------------------------- |
+| **GET**     | Getting a resource                           | Yes                                    |
+| **POST**    | Creating a resource                            | No                                   |
+| **PUT**     | Resource update (replacement)                 | Yes                                    |
+| **PATCH**   | Partial update                        | No                                   |
+| **DELETE**  | Deleting a resource                            | Yes (if the server is implemented correctly) |
+| **HEAD**    | Retrieving meta information (without response body) | Yes                                    |
+| **OPTIONS** | Query available methods for a resource        | Yes                                    |
+
+**Example `PUT` (idempotent)**
+```
+PUT /users/1
+{
+    "name": "Alice",
+    "email": "alice@example.com"
+}
+```
+If you do it 100 times, the state will not change - the entry will simply be overwritten
+
+**Example `POST` (NOT idempotent)**
+```
+POST /users
+{
+    "name": "Alice",
+    "email": "alice@example.com"
+}
+```
+If executed 100 times, 100 users will be created.
+"""
+source_hash = "c37e9d1955d4cca65ef0775818705aa7d0ce0b8f73c7e7c32b9917a798531a09"
+
+[[questions]]
+id = 8
+question = "What are the main HTTP methods?"
+answer = """
+- GET - getting a resource
+- POST - creating a new resource
+- PUT - complete update of the resource or creation if it does not exist
+- PATCH - partial update of a resource
+- DELETE - resource deletion
+- HEAD - getting the resource header
+- OPTIONS - find out the available methods for a resource"""
+source_hash = "1dd5643836a979af29804e058ebc25f6c39b2f97f0d7d69b3f9c4a649bca381d"
+
+[[questions]]
+id = 9
+question = "What are HTTP response status codes?"
+answer = """
+- 1xx - informational
+- 2xx - successful
+- 3xx - redirects
+- 4xx - client errors
+- 5xx - server errors"""
+source_hash = "c0cbfa781eaeac7e1acf217382acf3aa757144bde8763fe5022ff574fc8a5c45"
+
+[[questions]]
+id = 10
+question = "GET vs POST"
+answer = """
+
+|**Criterion**|**GET**|**POST**|
+|---|---|---|
+|**Purpose**|Receiving data|Create or change data|
+|**Data transfer**|The data is passed in the URL (in the query string)|Data is transmitted in the body of the HTTP request|
+|**Security**|Less secure (data visible in URL and server logs)|More secure (data not visible in URL)|
+|**Idempotency**|Idempotent|Not idempotent|
+|**Caching**|Supported by browsers and proxy servers|Caching is not supported by default|
+|**Length limit**|URL string length restrictions vary by browser|There are usually no restrictions on the length of the request body|
+|**Use example**|Data search, page display|Submitting forms, creating resources, changing data|
+
+**Why it is recommended to use POST rather than GET requests for sensitive data**
+1. **Security** - in a GET request, the data is transmitted in a URL, which can be visible in the browser history, server and proxy logs; in a POST request, the data is transmitted in the body of the request, which reduces the risk of accidental leakage
+2. **Length Limits** - GET URL length is limited by browsers or servers, so large amounts of data (such as sensitive forms) may not get through
+3. **Caching** - GET requests may be cached by proxy servers or browsers, which is undesirable for sensitive information
+
+**Can we always use only POST and not work with GET?**
+In theory, yes, but it violates REST principles and web application architecture:
+1. **REST principles** - GET is for receiving data, POST is for creating. Using POST for all operations makes the API difficult to understand and support
+2. **Optimization and caching** - GET requests can be cached, which speeds up work. POST requests are not cached by default
+3. **Search Engines and SEO** - GET is used to index pages. If you use POST only, the pages will not appear in search results
+
+**Can we create a resource using GET? Are there technical limitations?**
+1. **Technical limitations** - from the point of view of the HTTP protocol, GET should not create resources. But technically the server can process GET requests so that they change data (for example, create a resource)
+2. **Practice** - creating or modifying resources via GET breaks idempotency and can cause problems with caching and repeated requests
+
+**Why did you decide to remove the body from the GET method?**
+1. **Undefined behavior** - GET semantics only mean receiving data. The request body is not a required part of this semantics, so servers can ignore it
+2. **Compatibility** - Many proxies, frameworks and libraries do not support body in GET, which could lead to compatibility issues.
+3. **Simplicity and Idempotency** - GET requests are considered idempotent and safe. Having a body could change this concept, creating more confusion
+"""
+source_hash = "1511c00801baf7a51bff6f7466411c2c6f3ca3d70c90d63cfef0ab36f0923951"
+
+[[questions]]
+id = 11
+question = "How do HTTP and HTTPS differ?"
+answer = """
+When using HTTPs, data sent to the server is encrypted
+"""
+source_hash = "ad04cc77e6b95256f24c2f06f4d344a0b7449cdfa363b45540875e527ac21018"
+
+[[questions]]
+id = 12
+question = "What does an HTTP request consist of?"
+answer = """
+
+| **Part**                       | **Description**                                                                                                                         |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Request Line | Contains the request method, URL, and HTTP protocol version.<br>Example: `GET /index.html HTTP/1.1`                                     |
+| Headers             | Metadata about the request: content type, length, authorization information and more.<br>Example: `Content-Type: application/json` |
+| Empty string                   | Separates request headers and body                                                                                                   |
+| Request body (Body)             | Directly the data that is transferred to the server (for example, JSON, XML, file). Not always present                               |
+"""
+source_hash = "39734ac89503c22c358eb8a6a74b8ef1de98f68431e4e5e0ab201b458dc4b353"
+
+[[questions]]
+id = 13
+question = "What authorization methods exist for the HTTP protocol?"
+answer = """
+
+| **Method**                 | **Description**                                                                                                           | **Features**                                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Basic Authentication**  | The client sends the username and password encoded in Base64 in the header<br>`Authorization: Basic <encoded_credentials>` | Vulnerable to interception without using HTTPS. Recommended for use in combination with SSL/TLS |
+| **Bearer Token**          | The client sends the token in the header<br>`Authorization: Bearer <token>`                                                 | Used with OAuth2 and JWT. Convenient for working with API                                           |
+| **Digest Authentication** | The server sends the client a nonce (one-time token), which the client uses to hash its credentials    | Outdated method, difficult to implement, less popular                                         |
+| **OAuth 2.0**             | Authorization mechanism through third-party services. The client receives an access token from the authorization server.                    | Extensible, allows use of third party applications (eg Google, Facebook)          |
+| **API Key**               | The client sends the API key in the header, URL, or request parameter                                                      | Simple, but less secure. Requires secure transmission (HTTPS)                                 |
+| **Session-based**         | The client stores the session ID in a cookie, and the server checks the session against the database                               | Widely used in web applications, requires server session management                    |
+| **Custom Authentication** | Using custom tokens or authorization mechanisms                                                             | Flexible, but requires more effort to implement and ensure security                   |
+| **Mutual TLS**            | Two-way authentication using TLS certificates                                                          | High level of security, difficult to configure                                               |
+"""
+source_hash = "ad35d9ec61ea56eddb0fed80b5c271a0286005142de62eaf7fe0881fd787f79d"
+
+[[questions]]
+id = 14
+question = "What does a JSON Web Token consist of?"
+answer = """
+JWT (JSON Web Token) is a standard way of transporting information in a compact format (JSON) with a signature to ensure its integrity and authenticity. Used for authorization, data transfer between client and server
+
+**What does JWT consist of?**
+The JWT consists of three parts, separated by dots (`.`):
+```
+<Header>.<Payload>.<Signature>
+```
+
+1. **Header** - contains meta information about the token:
+    - Signature algorithm (eg HMAC SHA256, RSA).
+    - Token type (`JWT`)
+    Example:
+    ```json
+    {
+      "alg": "HS256",
+      "typ": "JWT"
+    }
+    ```
+2. **Payload** - contains data (usually about the user) - marks that need to be transferred. May include:
+    - **reserved marks:** - standard fields such as `iss` (publisher), `exp` (expiration time), `sub` (subject) and some others
+    - **user brands** - any data, such as user role, identifier, etc.
+    Example:
+    ```json
+    {
+      "sub": "1234567890",
+      "name": "John Doe",
+      "admin": true
+    }
+    ```
+3. **Signature** - needed to sign the token so that its authenticity can be verified. Formed using a header, payload and secret key (or private key in the case of an asymmetric signature algorithm)
+    Example formula:
+    ```
+    HMACSHA256(
+      base64UrlEncode(header) + "." + base64UrlEncode(payload),
+      secret
+    )
+    
+    ```
+
+JWT example:
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+
+```
+1. Header - `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9`
+2. Payload - `eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWV9`
+3. Signature - `SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`
+"""
+source_hash = "c8845cdc5e2e0ae5e14578eb0f3479e9974a539522af18047a4c47e938e848c3"
+
+[[questions]]
+id = 15
+question = "What are application layer protocols?"
+answer = """
+Application layer protocols are the 7th layer of the OSI model, which is responsible for the interaction of applications over the network
+
+**Basic protocols:**
+- **HTTP, HTTPS** - data transfer on the web
+- **FTP, SFTP** - file transfer
+- **SMTP, POP3, IMAP** - mail protocols
+- **WebSockets** - real-time two-way communication
+- **DNS** - domain to IP conversion
+- **MQTT** - IoT messaging
+- **gRPC** is a binary protocol for microservices
+
+**Usage Examples**
+- Browser (Chrome, Firefox) - HTTP/HTTPS
+- Mail client (Outlook, Gmail) - IMAP/SMTP
+- FTP client (FileZilla) - FTP/SFTP
+"""
+source_hash = "1634a0a24e7b26be63b8c9120490a7cb61719f0f66933552edba947ebd5c7642"
+
+[[questions]]
+id = 16
+question = "What is HTTP?"
+answer = """
+HTTP (HyperText Transfer Protocol) is a hypertext transfer protocol (text + hyperlinks) that is used to communicate between browsers and servers
+
+**HTTP Key Features:**
+- **client-server model** (browser - client, server - website)
+- **stateless** (without saving state)
+- **text protocol** (easy to read)
+- **runs over TCP** (usually port 80 for HTTP, 443 for HTTPS)
+"""
+source_hash = "df3569b7e7de7727ca95bfb3debd85d76d1c7360d5b3699f9a9a57cef5f2c1b4"
+
+[[questions]]
+id = 17
+question = "What are cookies used for?"
+answer = """
+A cookie is a small data file that a browser stores on behalf of a website. They are transmitted between the client and server via HTTP headers.
+
+**Main purposes of Cookies**
+- **Authentication** - storing user session (`JSESSIONID`, `session_token`)
+- **Personalization** - remembering settings (language, site theme)
+- **Tracking and analytics** - collection of user data (Google Analytics)
+- **Saving cart** - storing goods in the online store
+
+**How does Cookie work?**
+1. The server sends a Cookie to the client (browser)
+```
+Set-Cookie: session_id=abc123; HttpOnly; Secure; Max-Age=3600
+```
+2. The client stores Cookies and sends them on every request
+```
+Cookie: session_id=abc123
+```
+3. The server checks the Cookie and makes a decision (for example, authorization)
+
+
+**Types of Cookies**
+
+|**Cookie Type**|**Description**|
+|---|---|
+|**Session Cookie**|Deleted after closing the browser|
+|**Persistent Cookie**|Stored for a certain time (`Max-Age`, `Expires`)|
+|**HttpOnly Cookie**|Available only to the server (JS cannot read)|
+|**Secure Cookie**|Sent via HTTPS only|
+|**SameSite Cookie**|CSRF protection (transmission can be limited)|
+
+**Set-Cookie example with attributes**
+```
+Set-Cookie: user=Alice; Expires=Wed, 21 Oct 2025 07:28:00 GMT; Secure; HttpOnly; SameSite=Strict
+```
+"""
+source_hash = "6d0afe890dd18e139221839a570924e3ba029a2c6e045de86958a744a81e3d5e"
+
+[[questions]]
+id = 18
+question = "How do POST, PUT, and PATCH differ?"
+answer = """
+|**Method**|**Purpose**|**Idempotency**|**Request body**|**Use example**|
+|---|---|---|---|---|
+|**POST**|Creating a new resource or performing some operation|❌ Non-idempotent|Complete creation data|`POST /users` (create a new user)|
+|**PUT**|Complete replacement of the resource (or creation if does not exist)|✅ Idempotent|Complete data for the resource|`PUT /users/123` (replace user with ID=123)|
+|**PATCH**|Partial resource update|❌ Non-idempotent (by standard)|Data with editable fields|`PATCH /users/123` (update user email only)|
+
+ **Additional explanations:**
+
+1. **POST**:
+    
+    - Used to **create** or run **operations** that can change state on the server.
+    - Repeatedly calling `POST` may result in **duplication** of resources (non-idempotency).
+2. **PUT**:
+    
+    - Typically implies a **full** update of the resource at the specified URI.
+    - **Idempotency**: calling again with the same request body will not change the result (if the resource already exists).
+3. **PATCH**:
+    
+    - Allows you to **partially update** a resource (we transfer only changeable fields).
+    - **Often** is not considered idempotent, since reapplying `PATCH` may result in other changes, but much is implementation dependent.
+
+Thus, **POST** is most often used for **creation**, **PUT** for **full replacement** (or creation if the resource is missing), and **PATCH** for **partial update**."""
+source_hash = "b849d1028895223842632c981eedb4c711c1a115f17b84b5498233f5cf68d03f"

@@ -16,16 +16,18 @@
 {{ $categories = sort $categories "id" "asc" }}
 
 {{ range $dict := $categories }}
-    {{ $category := $dict.data.category }}
+    {{ $data := partial "tech/category" (dict "page" $.Page "path" $dict.path) }}
+    {{ $category := $data.localized.category }}
     {{ $categoryPage := $.Site.GetPage $dict.path}}
     {{ $categoryLink := $categoryPage.RelPermalink }}
 
-    <h2><a href="{{ $categoryLink }}">{{ $category.title }}</a> [{{ $category.popularity }}%]</h2>
+    <h2><a href="{{ $categoryLink }}">{{ $category.title }}</a> [{{ $data.source.category.popularity }}%]</h2>
 
     {{ range $question := $dict.data.questions }}
-        {{ $questionAnchor := printf "%d %s" .id .question | anchorize }}
+        {{ $translated := index (where $data.localized.questions "id" .id) 0 }}
+        {{ $questionAnchor := printf "%d. %s" .id .question | anchorize }}
         {{ $questionLink := print $categoryLink "#" $questionAnchor }}
 
-        <h4>{{ .id }}. <a href="{{ $questionLink }}">{{ .question }}</a> [{{ .popularity }}%]</h4>
+        <h4 data-question-link>{{ .id }}. <a href="{{ $questionLink }}">{{ $translated.question }}</a> [{{ .popularity }}%]</h4>
     {{ end }}
 {{ end }}

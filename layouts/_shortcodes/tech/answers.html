@@ -1,11 +1,17 @@
-{{ $dataPath := path.Join .Page.File.Dir .Page.File.BaseFileName }}
-{{ $category := index .Site.Data (split $dataPath "/") }}
+{{ $dataPath := path.Join .Page.File.Dir .Page.File.TranslationBaseName }}
+{{ $category := partial "tech/category" (dict "page" .Page "path" $dataPath) }}
 
-{{ range $question := $category.questions }}
-    {{ $text := printf "%d. %s" .id .question }}
-    {{ $anchor := $text | anchorize }}
+{{ range $question := $category.source.questions }}
+    {{ $translated := index (where $category.localized.questions "id" .id) 0 }}
+    {{ $text := printf "%d. %s" .id $translated.question }}
+    {{ $anchor := printf "%d. %s" .id .question | anchorize }}
 
+    <section data-question-id="{{ .id }}">
     <h4 id="{{ $anchor }}">{{ $text }} <a href="#{{ $anchor }}" class="anchor">#</a></h4>
-    <p>{{ .answer | markdownify }}</p>
+    {{ if and (eq $.Page.File.TranslationBaseName "collections") (eq .id 1) (eq $.Page.Language.Lang "en") }}
+      <img src="{{ "collections_hierarchy.png" | relURL }}" alt="{{ if eq $.Page.Language.Lang "en" }}Collections hierarchy{{ else }}Иерархия коллекций{{ end }}">
+    {{ end }}
+    <div data-answer>{{ partial "tech/answer" $translated.answer }}</div>
     <hr>
+    </section>
 {{end}}

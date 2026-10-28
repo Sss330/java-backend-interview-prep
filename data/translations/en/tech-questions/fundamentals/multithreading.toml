@@ -1,0 +1,615 @@
+# English translation; keep question IDs aligned with the Russian source.
+[category]
+id = 9
+title = "Multithreading"
+popularity = 46.58
+
+[[questions]]
+id = 1
+question = "What is multithreading?"
+answer = """
+The ability of the program to execute several blocks simultaneously
+
+---
+**What is a thread?**
+A thread is an independent unit of execution of instructions within a single program. Threads allow you to perform multiple tasks simultaneously, taking advantage of the capabilities of multi-core processors
+
+**Main thread characteristics**:
+1. A thread runs within a single process and uses its memory
+2. Each thread has its own execution
+3. Has access to shared memory
+
+**Why do we need threads?**
+Threads are needed to implement multitasking, that is, performing several operations simultaneously. This is especially useful for:
+1. increased performance on multi-core processors
+2. improving the responsiveness of programs (for example, in the application GUI you can perform long operations in a background thread so that the interface does not freeze)
+3. asynchronous processing (for example, reading/writing files, working with the network)
+"""
+source_hash = "22a10669014f85e5249f44f5d62b302c1466cffb7fdf54d1196955da32e681bd"
+
+[[questions]]
+id = 2
+question = "How is a process different from a thread?"
+answer = """
+**Process** - an independent instance of an executing program with its own resources allocated by the system
+**Thread** is a method of executing a process that determines the sequence of code execution in the process. A thread is always created in the context of some process"""
+source_hash = "d789ccaf06d443a20ee9e4ab78608e45f5eca0f910056c53e899a1dc6aa16a2d"
+
+[[questions]]
+id = 3
+question = "How do Thread and Runnable differ, and when should each be used?"
+answer = """
+**Thread** is a class that is an add-on to a physical thread/thread. Used when you need to directly control the state of a thread
+**Runnable** is a functional interface whose implementations represent an abstraction over a task (code, set of instructions) that can be executed inside a thread. Used as a task for execution, can be transferred to multiple threads, more flexible
+"""
+source_hash = "1791c64df8745e475b7842fd82f9888aba175bde12c6d9617e68df5db5617024"
+
+[[questions]]
+id = 4
+question = "What is a monitor? How is it implemented in Java?"
+answer = """
+Monitor is a synchronization mechanism in Java. Every object that inherits from Object implicitly has a monitor. When a thread acquires a monitor (via the `synchronized` block), then other threads cannot interact with this object until the monitor is released by the capturing thread
+"""
+source_hash = "6acbb2611f44fc74d824ea53437f8a1c0481c5eecdaf080d0f4c4d52eeb84555"
+
+[[questions]]
+id = 5
+question = "What is synchronization? What synchronization methods are there in Java?"
+answer = """
+Synchronization (threads) is a mechanism for coordinating the access of multiple threads to prevent Race Conditions and ensure memory consistency. Achieved through locks and scopes
+
+**System Synchronization**
+In Java, the `synchronized(obj)` operator binds a block of code to a specific thread, capturing the monitor of the `obj` object and preventing other threads from accessing it at that moment. If this thread must wait for some conditions to be met, then it must call the `wait()` method on `obj` - the thread’s work is suspended (it “falls asleep”), it releases the captured monitor.
+Another thread can call the `notify()` method on the same object, having previously captured its monitor, as a result of which the thread waiting on `obj` “wakes up” and continues its execution
+
+**IMPORTANT**:
+- the `wait()` and `notify()` methods are not synchronized, so they can only be called inside the `synchronized` block. Otherwise, `IllegalMonitorException: current thread is not owner` will be thrown at runtime
+- after calling `notify()`, the sleeping thread “wakes up” no earlier than the thread that called `notify()` exits the synchronized block (i.e. only after it releases the monitor)
+```java
+public class Counter {
+    private int count;
+    public synchronized void increment() { 
+        count++;
+    }
+}
+
+equivalent
+
+public class Counter {
+    private int count;
+    public void increment() { 
+\t\t    synchronized (this) {
+\t        count++;
+        }
+    }
+}
+```
+
+Features of `syncronized` depending on the location of the ad:
+- code block - you must explicitly specify the synchronization object in parentheses
+- non-static method - synchronization on an instance (`this`)
+- static method - synchronization on a class object (`ClassName.class`), i.e. synchronization occurs at the class level and is distributed to all instances
+
+**Method `Thread.join()`**
+The thread that called this method will wait until the object on which this method was called finishes its execution.
+```java
+public static void main(String[] args) {
+        SimpleThread simpleThread = new SimpleThread();
+        simpleThread.start();
+        try {
+            simpleThread.join(); //Until this thread completes its work, we will not go further
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println(Thread.currentThread().getName());
+    }
+```
+
+**Classes from the package `java.util.concurrent`**
+`ReentrantLock`, `Semaphore`, `CyclicBarrier`. The concept of this approach is to use atomic operations and variables
+
+[An article on Habré about types of synchronizers java.util.concurrent](https://habr.com/ru/articles/277669/)
+"""
+source_hash = "9552b33c13285848f745cc966b2accc67c45c9cd04441a596ff7c2a70aca0d23"
+
+[[questions]]
+id = 6
+question = "What is FutureTask?"
+answer = """
+`Future` is an interface that reflects the result of asynchronous task execution and provides methods for working with asynchronous results. Used in combination with `ExecutorService` or other asynchronous APIs
+
+`FutureTask` is a base implementation of the `Future` interface. Allows you to perform a task asynchronously and then get its result or handle exceptions. If the task has not yet completed, attempting to retrieve the result will pause (block) execution until the task completes
+Implements the `RunnableFuture` interface, which combines the functionality of the `Runnable` and `Future` interfaces
+"""
+source_hash = "1587bc5c15117c9dfc9dbad056995e0debbf5d6fc5e009d5f9aecadbc4526200"
+
+[[questions]]
+id = 7
+question = "What is CompletableFuture?"
+answer = """
+`CompletableFuture` is an extended implementation of the `Future` interface that adds the ability to functional programming and work with multiple asynchronous tasks
+
+**Comparison of `FutureTask`, `Future` and `CompletableFuture`**
+
+|**Feature**|**FutureTask**|**CompletableFuture**|
+|---|---|---|
+|Asynchronous execution|Yes|Yes|
+|Getting the result|`get()`|`get()` / `join()` - block|
+|Cancel a task|Yes|Yes|
+|Task composition|No|Yes (`thenCombine`, `allOf`, `anyOf`)|
+|Functional style|No|Yes|
+|Difficulty|Simple|Advanced functionality|
+
+1. `Future` - interface for asynchronous operations, with basic methods (`get`, `cancel`)
+2. `FutureTask` - a combination of `Runnable` and `Future`, used to perform asynchronous tasks manually
+3. `CompletableFuture` is a modern and powerful tool for asynchronous programming with support for composition and functional style
+"""
+source_hash = "b1f1aada7af130282b3508372a81755b08e9fd51b58d094b1b18b8dc231f97e8"
+
+[[questions]]
+id = 8
+question = "What is ExecutorService?"
+answer = """
+`ExecutorService` is an interface that defines a service for working with asynchronous tasks, i.e. a contract for a service that manages a pool of asynchronous tasks.
+"""
+source_hash = "c619500e3ebc06037f21b253964fd24a41b8ebe316340c7c4ff96bdb49084a74"
+
+[[questions]]
+id = 9
+question = "How can collections be used safely in concurrent code?"
+answer = """
+- Turn a regular collection into a synchronized one using Collections.synchronized()
+    `List<String> list = Collections.synchronizedList(new ArrayList<>())`
+- Using Concurrent Collections
+    - `CopyOnWriteArrayList`, `CopyOnWriteArraySet`
+    - Non-blocking hash tables (`ConcurrentHashMap`, `ConcurrentSkipListMap`, ConcurrentSkipListSet`)`
+    - Non-blocking queues (`ConcurrentLinkedQueue` and `ConcurrentLinkedDeque`)
+
+**Why should we use thread-safe collections?**
+When multiple threads access the same collection simultaneously, a **race condition** can occur, leading to the following issues:
+1. **data corruption** - simultaneous modification may compromise data integrity
+2. **exceptions** - for example, `ConcurrentModificationException`, when one thread iterates through a collection and another changes its structure
+3. **unpredictable behavior** - the result of the program becomes unstable
+
+**CopyOnWriteCollections. What is this? How does the recording happen?**
+These are thread-safe collections (`CopyOnWriteArrayList`, `CopyOnWriteArraySet`). How the recording works:
+- When you add an item, a copy of the entire collection is created with the change added
+- After the operation completes, the original collection is replaced with a new copy, and all other threads continue to work with the old version until the new one becomes available
+_Note: should be used when there are a lot of read operations in the program_
+
+**ConcurrentHashMap. What is this? How does the recording happen?**
+This is a thread-safe hash table implementation. How the recording works:
+- key hashing - first the hash code of the key is calculated to determine which bucket of the hash table this element will fall into
+- bucket blocking - only the bucket to which the element will be added is blocked (if the bucket is empty, then CAS insertion without blocking is applied)
+- adding an element - the element is added, the lock on the bucket is removed
+
+_Note_: _in fact, it is not the bucket that is blocked (since this is generally an abstraction), but its first element_
+_Note 2: Before Java 8, ConcurrentHashMap divided the internal table into segments (Segment[]). Each segment was a small hash table with a separate lock (ReentrantLock). When a thread wrote data, only the segment containing the desired key was locked. This allowed multiple threads to work on different segments simultaneously. The legacy segment mechanism complicated the architecture and limited concurrency, so it was eliminated._
+"""
+source_hash = "4c5b71fdd1ae86fef824167559410f3feb4f7066eadc35c02bda8945fd8c0fd2"
+
+[[questions]]
+id = 10
+question = "What are synchronized collections, and how do they achieve thread safety?"
+answer = """
+These are special collections in Java that provide thread safety due to the fact that all methods are marked `synchronized`
+"""
+source_hash = "21040f2bacc94fa4c5cdfc431f4e23cfc5ee53c1a3ee756e42e521dc66bbd0cf"
+
+[[questions]]
+id = 11
+question = "What is a deadlock?"
+answer = """
+This is a situation where two or more threads block forever, waiting for resources that are already grabbed by other threads (**Thread A** is waiting for **Thread B**, and **Thread B** is waiting for **Thread A**)
+"""
+source_hash = "12fe754af6f8b8a479c2da222d53a2f96c841aeb664b48c22c1abdb5408174dc"
+
+[[questions]]
+id = 12
+question = "What is a livelock?"
+answer = """
+Several threads get into a loop when trying to obtain any resources. At the same time, their state is constantly changing (two people are constantly trying to give way to each other. Every time one takes a step to the side, the other does the same)
+"""
+source_hash = "77f8ebd4633afe5f07bc9de9b4bc69fb4beff37aa2796da4e05c0995f60a4a66"
+
+[[questions]]
+id = 13
+question = "What is a race condition?"
+answer = """
+This is a situation in which the result of program execution depends on the order in which the threads are executed. Occurs when multiple threads access shared resources at the same time, and the outcome depends on which thread completes the operations first
+"""
+source_hash = "3a0f9cafec0f87229ec28fb575736cacfbf35000434c43e9a46c73fd9066c222"
+
+[[questions]]
+id = 14
+question = "How do atomic classes and volatile differ, and when should each be used?"
+answer = """
+`Atomic` classes (AtomicInteger, AtomicLong, etc.) provide the ability to perform non-atomic operations on primitives (increment, decrement, compare and replace) atomically. They use Compare-And-Swap (CAS) mechanisms to provide safe operation on variables in a multi-threaded environment without explicit synchronization. Can increase performance due to the lack of explicit synchronization and CAS implementation at the processor architecture level
+
+`volatile` is a keyword that ensures that the value of a variable is always read from main memory and not from the thread cache. Each thread will see the actual value of the `volatile` variable, but if two threads change the variable at the same time, problems may arise
+
+**When to use what?**
+- `volatile` - when it is sufficient to guarantee only the visibility of changes (for example, for completion or status flags)
+- `Atomic` - when atomicity is required (incrementing, comparing and setting values)
+
+**Comparison** `volatile` **and** `Atomic`
+
+|**Characteristics**|`volatile`|`Atomic`|
+|---|---|---|
+|Visibility Guarantee|Yes|Yes|
+|Atomic operations|No|Yes|
+|Usage|For simple read/write|For complex operations (increment, CAS)|
+|Example of suitable cases|Flags (`boolean isRunning`)|Counters (`AtomicInteger.incrementAndGet`)|
+|Productivity|Higher because operations are simpler|Slightly lower due to synchronization mechanisms|
+"""
+source_hash = "351819a50918bdbb16b6325f170fe35d1ca4cca195849d4a681543d1ef58f4a3"
+
+[[questions]]
+id = 15
+question = "Why are atomic classes needed?"
+answer = """
+Classes from the `java.util.concurrent.atomic` package (for example, `AtomicInteger`, `AtomicLong`, `AtomicReference`) provide **safe operation on variables in a multi-threaded environment** without explicit synchronization.  
+They are useful for:
+
+1. **Non-atomic operations on primitives** (increment, decrement, comparison and replacement) with a guarantee of atomicity.
+2. **Performance optimizations** - instead of locks, low-level atomicity is used through processor hardware instructions.
+
+"""
+source_hash = "abda01ca3b605b0583906883449a587a30487c61566ce20f84a5440dcabee5cb"
+
+[[questions]]
+id = 16
+question = "What does volatile do?"
+answer = """
+The **`volatile`** keyword ensures that changes to a variable by one thread are **immediately visible to other threads**. This prevents the problem of caching variables in threads.
+
+- **When to use?**  
+    Used for variables that:
+    - can be changed by multiple threads;
+    - are read frequently, but synchronization of complex operations is not required.
+
+**Limitations `volatile`:**  
+1. Does not ensure atomicity of operations (for example, `count++` is still unsafe).
+2. Used for simple flags or variables where read/write guarantee is sufficient.
+
+"""
+source_hash = "5e7f5afab07ee289e4f3ce63409ad9d7b850e75d8a30eb64e6bfbfd503911c57"
+
+[[questions]]
+id = 17
+question = "What states can a Java thread be in?"
+answer = """
+{{< figure src="/java-backend-interview-prep/thread_life_cycle.png" title="Multithreading" >}}
+"""
+source_hash = "b54fc5b6f58e92480879c6c02c8f5779d22a57c80ffc1edc16413eabec8cbb94"
+
+[[questions]]
+id = 18
+question = "Collections.synchronizedMap vs ConcurrentHashMap"
+answer = """
+
+|Characteristics|`Collections.synchronizedMap`|`ConcurrentHashMap`|
+|---|---|---|
+|Lock|One common monitor for the entire card: each method is wrapped in `synchronized`.|Java 8+: A single cart is blocked (CAS for an empty cart, `synchronized` on its first node). Before Java 8 - blocking by segments.|
+|Reading|Executed under general blocking.|Usually without blocking; node fields use `volatile`.|
+|Productivity|Slower with competition: only one thread is working with the card at any time.|Higher with contention: Threads running different buckets interfere less with each other.|
+|Iteration|The bypass must be synchronized manually (`synchronized (map)`), otherwise `ConcurrentModificationException` is possible.|Iterators `weakly consistent`: do not throw `ConcurrentModificationException`, but may not reflect changes made during traversal.|
+|Compound Operations|Requires manual synchronization to ensure atomicity.|Supports atomic methods `putIfAbsent`, `computeIfAbsent`, `compute`, `merge`.|
+|`null`|Allowed if the wrapped `Map` supports it.|Disabled for keys and values (`NullPointerException`).|
+|`size()`|Returns the exact number of elements at the time of the call.|If parallel changes are made, the result may not be accurate.|
+|Application|When you need a thread-safe wrapper over a specific implementation (`LinkedHashMap`, `TreeMap`).|For multi-threaded access with high contention.|"""
+source_hash = "c5fdafa7ffa8127014746d093411dfced8300245fd77921891322c3c8963487b"
+
+[[questions]]
+id = 19
+question = "How can threads be created and started in Java?"
+answer = """
+There are several ways to start a thread in Java:
+
+**Inheritance from the Thread class**
+The `Thread` class already implements the `Runnable` interface. We can inherit from it and override the `run()` method
+```java
+public class MyThread extends Thread {
+    @Override
+    public void run() {
+        System.out.println("Thread is running");
+    }
+
+    public static void main(String[] args) {
+        MyThread thread = new MyThread();
+        thread.start(); // Starting a thread
+    }
+}
+```
+
+**Implementation of interface `Runnable`**
+A class is created that implements the interface `Runnable`. Then an object of this class is passed to the constructor `Thread`
+```java
+public class MyRunnable implements Runnable {
+    @Override
+    public void run() {
+        System.out.println("Runnable is running");
+    }
+
+    public static void main(String[] args) {
+        Thread thread = new Thread(new MyRunnable());
+        thread.start(); // Starting a thread
+    }
+}
+```
+
+**Using an anonymous class or lambda expression**
+Often used for brevity if the code in the thread is small
+```java
+public class Main {
+    public static void main(String[] args) {
+        Thread thread = new Thread(() -> System.out.println("Lambda thread is running"));
+        thread.start(); // Starting a thread
+    }
+}
+```
+
+**Using the Callable interface**
+`Callable` returns a result and can throw exceptions. Requires `ExecutorService` to complete
+```java
+public class CallableExample {
+    public static void main(String[] args) throws Exception {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<String> task = () -> "Callable result";
+
+        Future<String> future = executor.submit(task);
+        System.out.println(future.get()); // Getting the result
+
+        executor.shutdown();
+    }
+}
+```
+"""
+source_hash = "ea46a4f70b2a50666d6213ebb7097b5b2b05faff9f12e4a4a54b58eab78ee503"
+
+[[questions]]
+id = 20
+question = "How do Runnable and Callable differ?"
+answer = """
+
+| **Characteristics**    | **`Runnable`**                             | **`Callable`**                           |
+| --------------------- | ------------------------------------------ | ---------------------------------------- |
+| Method                 | `void run()`                               | `V call()`                               |
+| Return value | Missing                                | Result type `V`                       |
+| Exception Handling  | Exceptions must be handled manually | Can throw checked exceptions |
+| Usage         | Used with `Thread` or `Executor`     | Used with `Executor`                |
+"""
+source_hash = "e5f36ced4b6f319280b9d0677a153e5d9aa68d064970222a016a7b9b52bc25fc"
+
+[[questions]]
+id = 21
+question = "What does the java.util.concurrent package provide?"
+answer = """
+The `java.util.concurrent` package provides a set of tools for working with multithreading. Main components:
+1. **Executor and ExecutorService** - used to manage threads and execute tasks. ExecutorService allows you to manage a thread pool
+2. **Synchronized collections** are thread-safe collections such as:
+    - `ConcurrentHashMap`
+    - `CopyOnWriteArrayList`
+    - `BlockingQueue`
+3. **Locks** - a more flexible alternative to synchronized blocks:
+    - `ReentrantLock` - provides explicit lock management + reentrant
+    - `ReadWriteLock` - separates read and write locks
+4. **Synchronizers** - objects for coordinating threads:
+    - `Semaphore` - limit the number of simultaneously running threads
+    - `CountDownLatch` - literally “countdown latch” - stopping threads until the internal counter reaches zero
+    - `CyclicBarrier` - synchronization of several threads (inverse to a semaphore, stops execution until a certain number of threads arrive at a point)
+    - `Exchanger` - data exchange between **two** threads
+5. **Future and CompletableFuture**
+    - `Future` - used to obtain the result of an asynchronous task
+    - `CompletableFuture` is a convenient way to build asynchronous chains from results, supports a declarative programming style
+"""
+source_hash = "6f67269b9c1f7422d6193b1fd82e7104d31ad2aac694334479678c05bd49ae7d"
+
+[[questions]]
+id = 22
+question = "How can problems caused by concurrent access be addressed?"
+answer = """
+1. **Synchronization (`synchronized`)** Uses synchronized methods or blocks to control access to shared resources.
+2. **Using `Lock`** - more flexible control than `synchronized`, allows manual unlocking
+3. **Thread-safe collections**
+4. **Synchronizers**
+    - using `CountDownLatch` to wait for threads to complete
+    - using `Semaphore` to limit simultaneous access
+5. **Atomic classes** - provide atomic operations on variables
+6. **Thread pool** - multithreading control via `ExecutorService` allows you to avoid redundant thread creation
+"""
+source_hash = "33ac26f07181d48a3eb84a8613d1c18656b84e9d5af307aaed7061443f3a0775"
+
+[[questions]]
+id = 23
+question = "How is concurrency different from parallelism?"
+answer = """
+
+| Criterion           | Competition                                                 | Parallelism                                              |
+| ------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Definition**    | Ability to perform multiple tasks simultaneously, switching between them. | Simultaneous execution of multiple tasks on different processors/cores. |
+| **Goal**           | Make the most efficient use of resources.                                 | Speeding up a task by dividing it into parts.              |
+| **Interaction** | Can be on one core by switching between tasks.                | Requires multiple cores or processors.                               |
+| **Example**         | An operating system that runs many programs.                        | Large calculations divided into threads running simultaneously.    |
+"""
+source_hash = "08b89bc496629c62500141b75270a4d6eeb6d90ee506b08dfe99b864d50072b3"
+
+[[questions]]
+id = 24
+question = "What are compare-and-swap (CAS) operations?"
+answer = """
+**CAS (Compare And Swap)** is an atomic operation that is used to control multi-threaded access to data without using locks
+1. **Working principle:**
+    - Checks if the current value matches the expected value
+    - If yes, then the value is updated
+    - If not, the operation is repeated
+2. **Stages:**
+    - Comparing the current value with the expected value
+    - Update value if they match
+3. **Features:**
+    - Provides high performance as it does not require locking
+    - Used in `Atomic` classes and thread-safe collections (`ConcurrentHashMap`)
+
+Example of CAS operation
+```java
+AtomicInteger atomicInteger = new AtomicInteger(0);
+int expectedValue = 0;
+int newValue = 1;
+
+// CAS-operation
+boolean result = atomicInteger.compareAndSet(expectedValue, newValue);
+System.out.println(result); // true, if the value is updated
+```
+"""
+source_hash = "17b538868eb1c862419c4008a5fc4de747de7d653fc73f16c84a3e52c54b47ed"
+
+[[questions]]
+id = 25
+question = "How do asynchronous execution and multithreading differ?"
+answer = """
+
+| **Criterion**              | **Asynchrony**                                                                  | **Multithreading**                                 |
+| ------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **Definition**           | A way to perform tasks without blocking the current thread                             | Simultaneous execution of tasks in multiple threads |
+| **Using Threads** | The thread may not be used, tasks are executed later                            | Always uses multiple threads                 |
+| **Example**                | Asynchronous file reading: task execution continues when the result is ready | Computing on multiple threads simultaneously       |
+| **Areas of application**    | Network requests, work with I/O (for example, databases)                              | Parallelization of computing tasks              |
+"""
+source_hash = "eefcd948e99cc9ecc90913fbcfeebef9b9604ce06589b58c4c372b257b9bb0fa"
+
+[[questions]]
+id = 26
+question = "Why do we need thread pools?"
+answer = """
+**Thread Pools** are a group of threads that are reused to perform tasks. They are provided by the class `Executors` and implement the interface `ExecutorService`
+
+**Main reasons for use:**
+1. **Resource Management:**
+    - avoid creating a large number of threads, which can lead to memory shortage
+    - limit the maximum number of concurrently executing threads
+2. **Performance improvement** - threads are reused, which reduces the cost of creating and destroying them
+3. **Task control** - allow you to schedule tasks, add them to the queue or limit execution
+
+```java
+ExecutorService executor = Executors.newFixedThreadPool(2);
+executor.submit(() -> System.out.println("Task 1"));
+executor.submit(() -> System.out.println("Task 2"));
+executor.shutdown();
+```
+"""
+source_hash = "b1c8d7d06619ee8596e43a7ac52c251c75b8ead0526127fca5591b49bb0484c2"
+
+[[questions]]
+id = 27
+question = "What does thread safety mean?"
+answer = """
+**Thread-safe** means that an object or method works correctly when accessed by multiple threads at the same time.
+Without thread safety, race conditions are possible, which leads to incorrect program operation.
+"""
+source_hash = "1786c9e49432346a05f77574a469c24dffa6ce24826e6e12f1263ce39cb79aa9"
+
+[[questions]]
+id = 28
+question = "Which memory areas are shared between threads?"
+answer = """
+In Java, memory is divided into several areas that are managed by the JVM and can affect multi-threaded programming. The main ones:
+1. **Heap** - shared memory for all threads, objects are stored here
+2. **Stack (thread stack)** - a separate area for each thread, where local variables and method calls are stored, as well as references to objects
+3. **Metaspace** - area for storing information about classes
+4. **Thread Working Memory** - cache of each thread, which may differ from the data in main memory
+
+**Example problem:**  
+If one thread modifies an object in `Heap` and another reads old data from `Thread Working Memory`, a data race may occur.
+
+**How to avoid?**
+- use `volatile` to make changes in one thread visible to others
+- use `synchronized` and `Lock` for atomic operations
+"""
+source_hash = "545146c75029214a5458a29c383189316b36ffa5d073e11e4840173b51849f0f"
+
+[[questions]]
+id = 29
+question = "How does Executors.newCachedThreadPool() work?"
+answer = """
+`Executors.newCachedThreadPool()` creates a flexible thread pool:
+- no limit on the number of threads (creates new ones if necessary)
+- threads are reused when they are idle (idle timeout ≈ 60 sec)
+- Suitable for short-term and lightweight tasks
+
+**Cons:**  
+- may create too many threads and overload the system
+"""
+source_hash = "1c7f0ee6a8f7f47a507e2af5fbd52511912f1a8f5caf440dc04a3451fb03b963"
+
+[[questions]]
+id = 30
+question = "What is the happens-before relationship?"
+answer = """
+The concept of "happens before" describes the relationships between various operations in a multi-threaded program. In Java, it is defined in the Java Memory Model (JMM) specification. Basic rules
+1. **Program order**. In one thread, all operations are performed in the order in which they are written in the code. This means that if the same thread executes operation A first and then operation B, then operation A will always complete before operation B begins.
+2. **Monitor lock**. Unlocking a monitor in one thread occurs before the same monitor is subsequently locked in another thread. This rule ensures that critical sections of code protected by synchronization are executed sequentially and do not overlap.
+3. **Interaction through volatile variables**. Writing to a volatile variable occurs before the subsequent reading of this variable by another thread. This makes changes made by one thread visible to other threads.
+4. **Creating and terminating threads**. Thread creation occurs before it begins executing, and thread termination occurs before another thread detects its termination. This rule helps manage the lifecycle of threads and their interactions.
+5. **Data transfer via `join()`**. Calling the `Thread.join()` method on one thread occurs before that thread terminates. This allows one thread to wait for another thread to complete before continuing execution.
+
+These rules help developers understand how operations on different threads interact with each other and how to avoid problems with visibility and data synchronization. Correct application of these rules allows you to create reliable and efficient multi-threaded applications.
+"""
+source_hash = "92991072660fa0356d6ca62585bfe83f5aed7dd7aa36f8356e6eb39d39fb5c89"
+
+[[questions]]
+id = 31
+question = "ForkJoinPool vs FixedThreadPool"
+answer = """
+**The Fork/Join framework**, introduced in JDK 7, is a set of classes and interfaces that take advantage of the multiprocessor architecture of modern computers. It is designed to perform tasks that can be recursively broken down into small subtasks that can be solved in parallel
+- **Fork stage** - a large task is divided into several smaller subtasks, which in turn are also divided into smaller ones. And so on until the task becomes trivial and can be solved in a consistent way
+- **Stage Join** - then (optionally) there is a process of “convolution” - solutions to subtasks are combined in some way until the solution to the entire problem is obtained
+
+Another advantage of this framework is that it uses a **work-stealing** algorithm: threads that have completed their own subtasks can “steal” subtasks from other threads that are still busy
+
+```java
+import java.util.concurrent.*;
+
+class SumTask extends RecursiveTask<Integer> {
+    private final int[] array;
+    private final int start, end;
+
+    SumTask(int[] array, int start, int end) {
+        this.array = array;
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    protected Integer compute() {
+        if (end - start <= 2) {
+            return array[start] + array[end - 1]; // Base case
+        }
+
+        int mid = (start + end) / 2;
+        SumTask leftTask = new SumTask(array, start, mid);
+        SumTask rightTask = new SumTask(array, mid, end);
+
+        leftTask.fork();
+        return rightTask.compute() + leftTask.join();
+    }
+}
+
+public class ForkJoinExample {
+    public static void main(String[] args) {
+        ForkJoinPool pool = new ForkJoinPool();
+        int[] numbers = {1, 2, 3, 4, 5, 6, 7, 8};
+
+        int sum = pool.invoke(new SumTask(numbers, 0, numbers.length));
+        System.out.println("Amount: " + sum); // 36
+    }
+}
+```
+
+| Property                     | `ForkJoinPool`                                  | `FixedThreadPool`                    |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------ |
+| **Pool size**              | Automatically configured                     | Fixed number of threads          |
+| **Support for work-stealing?** | Yes                                              | No                                  |
+| **When to use?**      | Recursively shared tasks (`RecursiveTask`) | Independent (`Runnable`, `Callable`) |
+
+"""
+source_hash = "ff15e9798e5dcfe43dd856b5addf3b8cacde419b6d2d6d1516c504d26b237baf"
